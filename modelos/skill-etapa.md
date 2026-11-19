@@ -29,10 +29,10 @@ Se a etapa anterior não estiver `concluido`, pare e sugira terminá-la.
 <Quais arquivos do perfil ler antes de começar, e o que cada um decide nesta etapa.>
 
 ## Scripts
-<Tabela: script · o que faz · as armadilhas que ele precisa evitar (do guia).> Na primeira vez que a etapa rodar num vídeo, escreva os scripts que faltam na pasta de ferramentas, teste e anote aqui o uso. Nos próximos vídeos, reaproveite.
+<Tabela: script · o que faz · comando exato.> Primeiro os prontos de `<pasta de ferramentas>/scripts/` que esta etapa usa (ex.: na de cortes, `transcrever.py frases`, `estado.py --gravar cortes`, `exportar_xml.py exportar`). Depois os que faltam, com as armadilhas que precisam evitar (do guia): na primeira vez que a etapa rodar num vídeo, escreva-os na pasta de ferramentas reaproveitando os módulos de `edicao/`, teste e anote aqui o uso. Nos próximos vídeos, reaproveite.
 
 ## Passo a passo
-1. Status e pendências desta etapa (`<script de estado> <pasta> status`).
+1. Status e pendências desta etapa (`estado.py <pasta> status`).
 2. <…>
 3. Entrega conforme o caminho escolhido (programa ou vídeo pronto). **Primeira vez de todas:** arquivo de teste curto, <nome> confere, anotar no arquivo de validação, e só então seguir.
 

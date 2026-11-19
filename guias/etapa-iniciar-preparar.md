@@ -39,3 +39,13 @@ Transforma o bruto em algo que o Claude consegue ler: o inventário, a sincronia
   - anote o arquivo, o início e o fim (incluindo as expressões, para o trecho inteiro sair do corte), o texto, uma interpretação curta e a etapa a que se refere;
   - abertura sem fechamento: termina na próxima pausa longa (≥1 s), com confiança baixa.
 - **Saídas para o Claude ler:** uma transcrição por frase, com timecode e pausas marcadas (é isso que as etapas leem; o arquivo por palavra é só para os scripts).
+
+**Comandos prontos** (em `ferramentas/`; o `--help` de cada um tem os detalhes):
+- iniciar: `estado.py <pasta> --init <nome> --perfil <perfil> --fluxo <etapas>`;
+- inventário no estado: `midia.py <pasta>/Brutos --estado <pasta>` (depois confira o `tipo` de cada arquivo: camera, tela, audio);
+- silêncios: `silencios.py <arquivo> --saida _CLAUDE/silencios_<id>.json`;
+- transcrição: `transcrever.py rodar <arquivo> _CLAUDE/palavras_<id>.json --motor whisperx --termos "<nomes e termos>"` (com `--offset` para áudio externo), ou `normalizar` para uma transcrição já feita;
+- frases para ler, com as lacunas marcadas: `transcrever.py frases _CLAUDE/palavras_<id>.json --silencios _CLAUDE/silencios_<id>.json --saida _CLAUDE/frases_<id>.txt`;
+- notas faladas: `transcrever.py notas _CLAUDE/palavras_<id>.json --abertura "<frase combinada>" --fechamento "<frase combinada>"`.
+
+A sincronia por forma de onda ainda não vem pronta: escreva-a na primeira vez, usando `edicao.ff.ler_audio`.

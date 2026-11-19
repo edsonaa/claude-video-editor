@@ -8,7 +8,7 @@ Sem referências, o Claude anima "no médio". Com elas, ele mede o que a pessoa 
 - As referências servem para medir o **jeito de mover**. Nunca para copiar o desenho de outra pessoa.
 
 ## 2. Olhar (o que se vê)
-- **Folhas de contato densas:** quadros a cada poucos frames, lado a lado, com o tempo em cada um. Mostram como um elemento entra, assenta e sai.
+- **Folhas de contato densas:** quadros a cada poucos frames, lado a lado, com o tempo em cada um. Mostram como um elemento entra, assenta e sai. Pronto: `contato.py <video> <saida.png> --inicio S --fim S --cada 2`.
 - **Cortes de cena:** um detector de cenas (ex.: PySceneDetect) separa as tomadas. Para cada cena, uma folha com o começo, o meio e o fim.
 - **Resumo por referência:** uma faixa de 6–8 quadros de cada folha, numa imagem só. É o que o Claude relê depois, sem abrir tudo de novo (economiza muito limite).
 

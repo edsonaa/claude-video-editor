@@ -1,0 +1,137 @@
+{
+ "language": "pt",
+ "segments": [
+  {
+   "start": 0.52,
+   "end": 1.98,
+   "text": " Olá pessoal, ééé hoje",
+   "words": [
+    {
+     "word": "Olá",
+     "start": 0.52,
+     "end": 0.8,
+     "score": 0.98
+    },
+    {
+     "word": "pessoal,",
+     "start": 0.85,
+     "end": 1.3,
+     "score": 0.95
+    },
+    {
+     "word": "ééé",
+     "start": 1.35,
+     "end": 1.7,
+     "score": 0.6
+    },
+    {
+     "word": "hoje",
+     "start": 1.72,
+     "end": 1.98,
+     "score": 0.91
+    }
+   ]
+  },
+  {
+   "start": 2.62,
+   "end": 4.08,
+   "text": " hoje vamos falar de 20 placas.",
+   "words": [
+    {
+     "word": "hoje",
+     "start": 2.62,
+     "end": 2.9,
+     "score": 0.97
+    },
+    {
+     "word": "vamos",
+     "start": 2.95,
+     "end": 3.3,
+     "score": 0.96
+    },
+    {
+     "word": "falar",
+     "start": 3.35,
+     "end": 3.7,
+     "score": 0.94
+    },
+    {
+     "word": "de",
+     "start": 3.72,
+     "end": 3.8,
+     "score": 0.9
+    },
+    {
+     "word": "20"
+    },
+    {
+     "word": "placas.",
+     "start": 3.85,
+     "end": 4.08,
+     "score": 0.93
+    }
+   ]
+  },
+  {
+   "start": 5.52,
+   "end": 7.98,
+   "text": " nota de edicão usa esse take fim da nota.",
+   "words": [
+    {
+     "word": "nota",
+     "start": 5.52,
+     "end": 5.8,
+     "score": 0.9
+    },
+    {
+     "word": "de",
+     "start": 5.82,
+     "end": 5.9,
+     "score": 0.9
+    },
+    {
+     "word": "edicão",
+     "start": 5.95,
+     "end": 6.4,
+     "score": 0.7
+    },
+    {
+     "word": "usa",
+     "start": 6.5,
+     "end": 6.7,
+     "score": 0.9
+    },
+    {
+     "word": "esse",
+     "start": 6.72,
+     "end": 6.95,
+     "score": 0.9
+    },
+    {
+     "word": "take",
+     "start": 7.0,
+     "end": 7.3,
+     "score": 0.9
+    },
+    {
+     "word": "fim",
+     "start": 7.4,
+     "end": 7.6,
+     "score": 0.9
+    },
+    {
+     "word": "da",
+     "start": 7.62,
+     "end": 7.7,
+     "score": 0.9
+    },
+    {
+     "word": "nota.",
+     "start": 7.72,
+     "end": 7.98,
+     "score": 0.9
+    }
+   ]
+  }
+ ]
+}

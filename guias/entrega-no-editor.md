@@ -20,6 +20,8 @@ Como o resultado de cada etapa chega à pessoa. Escolha o caminho na entrevista 
 
 ## Caminho A: XML para Premiere (e outros que leem FCP7 XML)
 O formato que funcionou no fluxo de referência é o **FCP 7 XML (xmeml)**, importado em Arquivo → Importar. O DaVinci Resolve também importa XML; confira com um teste antes.
+
+**Pronto em `ferramentas/exportar_xml.py`:** cortes em V1, voz estéreo ligada ao vídeo, fades de 1 frame, animações em V3 (tela cheia) e V4 (sobreposição com alpha), efeitos sonoros com ganho, marcadores, versões que nunca sobrescrevem e a volta (`exportar_xml.py volta`). O primeiro uso é sempre `exportar <pasta> --teste`. O que cada programa pode ler diferente: os fades (opção `--menos-um`, a forma da especificação, se as bordas reais não funcionarem) e a cor dos marcadores (`--cores`, copiada de um XML exportado pelo programa). Keyframes de câmera ainda não estão lá: a etapa de câmera escreve, seguindo as regras abaixo.
 - **Áudio estéreo:** o xmeml não tem trilha estéreo; cada canal vira um `<track>`. Para o Premiere juntar os dois numa trilha só, o par precisa das marcas que o próprio Premiere grava quando exporta: `explodedTracks`, `totalExplodedTrackCount="2"`, `premiereTrackType="Stereo"` e clipes com `premiereChannelType="stereo"`. Sem elas, chegam duas trilhas mono iguais.
 - **Caminho do arquivo:** `file://localhost/C:/...` no Windows.
 - **Marcadores:** marcadores da sequência, com o texto no comentário e a cor por um atributo de cor do Premiere (descubra o valor exportando um marcador da cor desejada).

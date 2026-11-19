@@ -22,7 +22,7 @@ Para o vídeo inteiro ter ritmo sem desenhar cada corte à mão:
 - **Punch seco** na palavra de ápice: entra ~5–7% acima e assenta em ~0,3 s (`power2.out`).
 - **Zoom com speed ramp** (pico de velocidade na palavra) quando a viagem até o close importa; **corte com speed ramp** para voltar ao aberto. Varie as formas; não repita a mesma em sequência.
 - **Trava no rosto:** a câmera segue o rosto e ele fica parado na tela enquanto o fundo se mexe. Para ênfases, com zoom de ~120% ou mais (precisa de margem), de preferência de um corte a outro. Funciona em janelas curtas (~1 s) e longas (5–7 s). Não precisa ficar cravada como um rastreio profissional: é a intenção. Terminando no meio de um plano, solta devagar (~0,4 s).
-  - O rosto vem de um detector de rosto (ex.: YuNet, do OpenCV), rodado no proxy, com o resultado guardado em cache.
+  - O rosto vem de um detector de rosto (YuNet, do OpenCV), rodado no proxy, com o resultado guardado em cache. Pronto: `rosto.py baixar` uma vez, depois `rosto.py rastrear <proxy> _CLAUDE/rosto_<id>.json` (centro e tamanho normalizados, trilha suavizada sem buracos).
 
 ## 4. Cuidados (cada um pareceu bug quando aconteceu)
 - **Nada de salto de escala instantâneo no meio de um take visível.** Salto só onde fica escondido (saída de tela cheia, corte).

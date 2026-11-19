@@ -57,6 +57,7 @@ Esqueceu o nome? Digite `/` para ver a lista de skills, ou pergunte ao Claude qu
 | `SKILL.md` | O roteiro da conversa |
 | `guias/` | O conhecimento: princípios do fluxo, decisões, análise de referências, ofício de animação, HyperFrames, entrega no programa de edição e o ofício de cada etapa |
 | `modelos/` | Os esqueletos das skills, do perfil e do estado do vídeo |
+| `ferramentas/` | Os scripts prontos e testados que fazem as contas: estado do vídeo, inventário, silêncios, transcrição, XML do Premiere (ida e volta), tempo e timecode, folha de contato, índice de sons e rastreio de rosto. Veja o `ferramentas/README.md` |
 
 Tudo em texto. Leia, mude, adapte.
 

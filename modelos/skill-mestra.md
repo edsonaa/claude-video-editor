@@ -18,7 +18,7 @@ Antes de tudo, leia `regras-comuns.md` (nesta pasta), uma vez por sessão.
 
 ## /<skill mestra>
 1. **Sem projeto:** se não existir `_CLAUDE/projeto.json` na pasta atual, diga que o vídeo ainda não foi iniciado e ofereça a `<prefixo>iniciar`. Se a pasta não parecer um projeto, pergunte se o Claude Code foi aberto no lugar certo.
-2. **Status:** rode `<script de estado> <pasta> status` e mostre de forma curta: etapas, o que já foi feito por trecho, pendências, alertas e quantos aprendizados estão anotados.
+2. **Status:** rode `<python> <pasta de ferramentas>/scripts/estado.py <pasta> status` e mostre de forma curta: etapas, o que já foi feito por trecho, pendências, alertas e quantos aprendizados estão anotados.
 3. **Próximo passo:** diga qual é e pergunte se segue. Com o "sim", abra a skill da etapa e siga as instruções dela.
    - Etapa aguardando revisão: o próximo passo é continuar essa mesma etapa, nunca pular.
    - Alerta de algo desatualizado (ex.: o corte mudou depois do plano de animação): mostre primeiro e espere a decisão.

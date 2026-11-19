@@ -25,6 +25,7 @@ Você não edita vídeo nesta skill. Você conversa, decide junto e escreve as s
 | `guias/oficio-motion.md`, `guias/hyperframes.md` | Fase 5, nas etapas de motion |
 | `guias/entrega-no-editor.md` | Fase 5, em toda etapa que entrega para o programa de edição (ou renderiza o vídeo) |
 | `modelos/*.md` | Fase 5: os esqueletos das skills que você vai escrever |
+| `ferramentas/README.md` | Fases 1, 5 e 6: os scripts prontos e testados (estado, inventário, silêncios, transcrição, XML, tempo, folha de contato, sons, rosto) |
 
 Os guias trazem **critérios e armadilhas**, não detalhes que envelhecem. Preço, versão, comando de instalação e recursos de cada ferramenta: pesquise na hora.
 
@@ -43,6 +44,8 @@ Leia `guias/principios-do-fluxo.md`. Em poucas linhas, diga à pessoa:
 ## Fase 1. Ambiente
 Confira, sem instalar nada ainda: sistema operacional, Python, FFmpeg, Node.js (o HyperFrames roda por `npx`), Git e a placa de vídeo (uma GPU NVIDIA acelera muito a transcrição local; sem ela, funciona mais devagar, ou com transcrição na nuvem).
 Mostre o que existe e o que falta. Instale só depois das decisões da fase 2 (só o que o fluxo dela vai usar), explicando cada instalação.
+
+Depois das instalações, copie `ferramentas/` desta skill para `<pasta de ferramentas>/scripts/` (com um `git init` ali, para ter histórico) e rode os testes: `python -m pytest <pasta de ferramentas>/scripts/testes`. Eles geram um clipe sintético e passam o fluxo inteiro pelos scripts em ~10 s, sem internet e sem GPU. Se passarem, Python, FFmpeg e os scripts funcionam no computador dela. Anote no `montagem.md` a versão copiada (o commit desta skill).
 
 ## Fase 2. Entrevista
 Leia `guias/decisoes.md` e siga a ordem de lá. A primeira decisão é sempre **onde a pessoa revisa o vídeo** (num programa de edição ou só assistindo ao vídeo pronto), porque ela muda o fluxo inteiro. Para cada decisão: explique as opções em 2–3 linhas, dê a sua sugestão para o caso dela e registre a escolha no `montagem.md`.
@@ -73,12 +76,12 @@ Na ordem: regras comuns → skill mestra → uma etapa por vez, na ordem do flux
 3. Mostre um resumo curto do que a skill faz (não o arquivo inteiro, salvo se ela pedir) e grave em `~/.claude/skills/<prefixo><etapa>/SKILL.md`.
 4. Atualize o `montagem.md`.
 
-**Scripts:** as skills dizem *o que* cada script faz e as armadilhas que ele tem que evitar (estão nos guias). Os scripts em si são escritos na primeira vez que a etapa rodar num vídeo de verdade, testados e guardados na pasta de ferramentas para os próximos vídeos. Não escreva scripts especulativos agora.
+**Scripts:** os que fazem as contas mais delicadas já vêm prontos e testados em `ferramentas/` (ver o README de lá): estado, inventário, silêncios, transcrição, XML e a volta, tempo e timecode, folha de contato, índice de sons e rastreio de rosto. As skills chamam esses scripts pelo caminho na pasta de ferramentas, com os comandos exatos (`--help` de cada um). Os que ainda não existem (sincronia, bordas pela energia do áudio, keyframes de câmera, render final, FCPXML) a skill descreve com *o que* fazem e as armadilhas (estão nos guias), e eles são escritos na primeira vez que a etapa rodar num vídeo de verdade, reaproveitando os módulos de `ferramentas/edicao/` (a conversão de tempo é sempre a de `edicao.tempo`). Não escreva scripts especulativos agora.
 
 **Validação no programa dela:** toda etapa que gera um arquivo para o programa de edição começa, na primeira vez, por um arquivo de teste curto que a pessoa abre e confere. Só depois de ela confirmar a etapa segue. Isso fica escrito na skill de cada etapa (ver `guias/entrega-no-editor.md`).
 
 ## Fase 6. Teste num clipe curto
-Peça um vídeo de 1–3 minutos (pode ser gravado só para isso) e rode o fluxo inteiro com a pessoa, etapa por etapa, pela skill mestra. É aqui que os scripts nascem e os primeiros aprendizados entram no caderno. Corrija as skills com o que aparecer.
+Peça um vídeo de 1–3 minutos (pode ser gravado só para isso) e rode o fluxo inteiro com a pessoa, etapa por etapa, pela skill mestra. É aqui que nascem os scripts que ainda não vêm prontos e que os primeiros aprendizados entram no caderno. O primeiro XML é sempre o de teste (`exportar_xml.py exportar <pasta> --teste`): ela abre no programa e confere antes de seguir. Corrija as skills com o que aparecer.
 
 ## Fase 7. Fechamento
 Mostre, em destaque e antes de tudo, **o comando para editar um vídeo**: "Para editar, abra o Claude Code na pasta do vídeo e digite `/<skill mestra>`. Ela vê em que etapa o vídeo está e te guia." Sugira que a pessoa anote esse comando. Se ela esquecer, basta digitar `/` para ver a lista de skills, ou perguntar ao Claude qual é a skill mestra dela; o nome também fica no `montagem.md`.

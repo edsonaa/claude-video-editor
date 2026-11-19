@@ -15,12 +15,13 @@ Os bons costumes que fazem um fluxo de edição com o Claude funcionar vídeo ap
 ## 3. A memória fica nos arquivos, não na conversa
 - Cada vídeo tem uma pasta de trabalho do Claude (ex.: `_CLAUDE/`) com um **arquivo de estado** (ex.: `projeto.json`): o que cada etapa decidiu, o status de cada uma e as pendências.
 - Por isso dá para limpar o chat (`/clear`) entre as etapas sem perder nada. A skill mestra lê o estado e diz onde o vídeo parou.
-- O arquivo de estado cresce muito. Um script pequeno lê e muda só o pedaço que cada etapa precisa (ex.: `ver.py <pasta> status`, `ver.py <pasta> cortes`). Ler o arquivo inteiro a cada passo gasta limite à toa.
+- O arquivo de estado cresce muito. Um script pequeno lê e muda só o pedaço que cada etapa precisa (`estado.py <pasta> status`, `estado.py <pasta> cortes`, já pronto em `ferramentas/`). Ler o arquivo inteiro a cada passo gasta limite à toa.
 
 ## 4. O Claude decide, os scripts calculam
 - O Claude decide sobre o **texto**: qual take, onde entra uma animação, qual som. Ele lê a transcrição por frase, não por palavra.
 - Os **scripts** fazem as contas: tempo por palavra, frames, bordas de corte, keyframes, níveis de áudio e o arquivo para o programa de edição. Script erra menos que conta feita à mão e gasta menos limite.
-- Um script escrito para um vídeo fica guardado na pasta de ferramentas e é reaproveitado nos próximos.
+- Os scripts das contas mais delicadas já vêm prontos e testados (`ferramentas/`): estado, inventário, silêncios, transcrição, XML, tempo, folha de contato, sons e rosto. Um script novo, escrito para um vídeo, fica guardado na pasta de ferramentas e é reaproveitado nos próximos.
+- Uma conversão de segundos para frames só, para todos os scripts (`edicao.tempo`). Duas conversões diferentes geram um descompasso de 1 frame que ninguém acha.
 
 ## 5. Ponto salvo, pendência e `/clear`
 - **Ponto salvo:** a etapa (ou o trecho) terminou, as revisões foram aplicadas e o arquivo de entrega foi gerado. Só aí a skill sugere `/clear` e a skill mestra.
@@ -51,7 +52,7 @@ Os bons costumes que fazem um fluxo de edição com o Claude funcionar vídeo ap
 ## 10. Conferir antes de confiar
 - Todo formato de entrega novo começa por um **arquivo de teste curto** que a pessoa abre no programa dela e confere. Só depois de ela confirmar, o fluxo usa aquilo de verdade.
 - Quando não souber como o programa representa algo, peça à pessoa para exportar um exemplo do próprio programa e copie o formato, em vez de chutar.
-- Depois de mexer em scripts que já funcionam, compare o resultado novo com o de antes num vídeo de teste congelado (um "teste de regressão"). Mudança que ninguém pediu é bug.
+- Depois de mexer em scripts que já funcionam, compare o resultado novo com o de antes num vídeo de teste congelado (um "teste de regressão"). Mudança que ninguém pediu é bug. As ferramentas prontas já têm o seu: `python -m pytest <pasta de ferramentas>/scripts/testes`.
 
 ## 11. Economia de limite
 - `/clear` entre as etapas. O histórico longo é reprocessado a cada mensagem.

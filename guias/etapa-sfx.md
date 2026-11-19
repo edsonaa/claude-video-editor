@@ -40,7 +40,7 @@ O Claude lê essa lista, mais a ideia e o storyboard de cada animação. Não pr
 10. **Nível.** Efeito bem abaixo da voz. O script nivela cada som pela loudness da voz, com um alvo por categoria e camada e um teto de pico (os números ficam no perfil e se ajustam pelo feedback). Nada mais alto que a voz, salvo um momento intencional. A mixagem final é da pessoa.
 
 ## 3. A biblioteca
-- Pastas por categoria (whoosh, impacto, grave, riser, pop, clique, glitch, interface, ding, papel…), com um índice que o script gera. Para cada som, o índice guarda:
+- Pastas por categoria (whoosh, impacto, grave, riser, pop, clique, glitch, interface, ding, papel…), com um índice que o script gera (pronto: `sons.py indexar <biblioteca>` e `sons.py buscar`). Para cada som, o índice guarda:
   - a duração útil (sem o silêncio do começo);
   - o **tempo até o pico**;
   - a forma (ataque seco, crescendo…);

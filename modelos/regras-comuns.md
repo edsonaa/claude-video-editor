@@ -18,14 +18,18 @@ Perfil: `<pasta de ferramentas>/perfis/<nome>/`. O nome do perfil vem do estado 
 - Nunca sobrescrever um arquivo já entregue: versão nova.
 
 ## 2. Estado do vídeo sem ler inteiro
-O `_CLAUDE/projeto.json` cresce muito. Ler e mudar sempre pelo script de estado:
-- `<script de estado> <pasta> status` mostra onde o vídeo está;
-- `<script de estado> <pasta> <bloco>` mostra o resumo de um bloco;
+O `_CLAUDE/projeto.json` cresce muito. Ler e mudar sempre pelo script de estado (`<python> <pasta de ferramentas>/scripts/estado.py`), nunca abrindo nem editando o arquivo à mão:
+- `estado.py <pasta> status` mostra onde o vídeo está;
+- `estado.py <pasta> <bloco>` mostra o resumo de um bloco (`--json` para o bloco inteiro) e `--item <id>` um item;
 - `--set <caminho> <valor>` muda um campo solto;
 - `--etapa <etapa>=<status>` muda o status de uma etapa;
-- `--pendencia <etapa> "<texto>"` anota uma pendência, e `--resolver <id>` a resolve.
+- `--pendencia <etapa> "<texto>"` anota uma pendência, e `--resolver <id>` a resolve;
+- `--gravar <bloco> <arquivo.json>` grava um bloco inteiro (os scripts de cada etapa).
 
-Os blocos inteiros são gravados pelos scripts de cada etapa.
+Estado inválido não é gravado: leia o erro e corrija. Conflito de revisão quer dizer que outro processo gravou no meio: leia de novo e refaça.
+
+## 2b. Ferramentas prontas
+Os scripts de `<pasta de ferramentas>/scripts/` fazem as contas (ver o `README.md` de lá e o `--help` de cada um): `midia.py`, `silencios.py`, `transcrever.py`, `exportar_xml.py`, `tempo.py`, `contato.py`, `sons.py`, `rosto.py`. Scripts novos de etapa importam os módulos de `edicao/`; segundos viram frames **só** por `edicao.tempo`. Mexeu num script que já funciona? Rode `python -m pytest <pasta de ferramentas>/scripts/testes` antes de usar.
 
 ## 3. Caderno de aprendizados (`_CLAUDE/aprendizados.md`)
 Anotar na hora, durante a revisão de qualquer etapa, toda correção, elogio ou preferência que vale para outros vídeos:

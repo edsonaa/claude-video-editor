@@ -10,7 +10,7 @@ Leia antes: `oficio-motion.md` e o perfil (identidade visual, estilo de motion, 
 - **O catálogo é repertório, nunca obrigação.** Padrões que já funcionaram são ponto de partida; algo novo entra sempre que servir melhor. No começo do vídeo, um conceito próprio do assunto vale mais, para os vídeos não ficarem iguais entre si.
 
 ## 1. A fala no tempo da sequência
-Um script converte a transcrição para o tempo da sequência (pelos segmentos do corte, com a mesma conversão de frames da entrega). Ele gera um texto para o Claude ler, com uma frase por linha:
+Um script converte a transcrição para o tempo da sequência (pelos segmentos do corte, com a mesma conversão de frames da entrega). Já vem pronto: `transcrever.py fala <pasta> --saida _CLAUDE/fala_seq.txt`. Ele gera um texto para o Claude ler, com uma frase por linha:
 - o timecode da sequência;
 - o segmento;
 - a marca de gravação de tela, quando houver;

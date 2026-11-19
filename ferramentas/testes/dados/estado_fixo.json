@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "revisao": 7,
+  "projeto": "2026-01-15_Teste",
+  "perfil": "padrao",
+  "fluxo": ["iniciar", "preparar", "cortes", "motion_mapa", "assets", "motion_render", "camera", "sfx"],
+  "etapas": {"iniciar": "concluido", "preparar": "concluido", "cortes": "concluido", "motion_mapa": "concluido",
+             "assets": "nao_precisa", "motion_render": "concluido", "camera": "pendente", "sfx": "aguardando_aprovacao"},
+  "midia": {
+    "fps": "30000/1001",
+    "resolucao": [1920, 1080],
+    "principal": "cam01",
+    "arquivos": [
+      {"id": "cam01", "caminho": "/videos/2026-01-15_Teste/Brutos/cam 01.mp4", "tipo": "camera",
+       "duracao": 60.0, "fps": "30000/1001", "resolucao": [1920, 1080], "canais_audio": 2},
+      {"id": "cam02", "caminho": "C:\\Videos\\Teste\\Brutos\\câmera 2.mov", "tipo": "camera",
+       "duracao": 30.0, "fps": "30000/1001", "resolucao": [1920, 1080], "canais_audio": 2}
+    ]
+  },
+  "cortes": {
+    "versao": 2,
+    "segmentos": [
+      {"id": "s001", "video": "cam01", "inicio": 1.2, "fim": 5.5, "texto": "Olá pessoal"},
+      {"id": "s002", "video": "cam01", "inicio": 8.0, "fim": 12.25, "texto": "hoje vamos falar"},
+      {"id": "s003", "video": "cam02", "inicio": 0.0, "fim": 4.0, "texto": "começa no frame zero"},
+      {"id": "s004", "video": "cam01", "inicio": 20.0, "fim": 26.6, "texto": "e para terminar"}
+    ]
+  },
+  "marcadores": [
+    {"id": "m001", "video": "cam01", "tempo": 9.0, "tipo": "duvida_take", "texto": "take 2 em 0:31 também está bom"},
+    {"id": "m002", "video": "cam01", "tempo": 15.0, "tipo": "hesitacao", "texto": "trecho cortado"}
+  ],
+  "motions": {
+    "versao": 1, "base_cortes_versao": 2,
+    "itens": [
+      {"id": "mo01", "status": "renderizado", "inicio_seq": 0.5, "fim_seq": 3.5, "formato": "tela_cheia",
+       "ideia": "título", "render": {"arquivo": "/videos/2026-01-15_Teste/_CLAUDE/motion/mo01_v01.mp4", "versao": 1, "duracao": 3.0}},
+      {"id": "mo02", "status": "renderizado", "inicio_seq": 6.0, "fim_seq": 9.0, "formato": "sobreposicao",
+       "ideia": "etiqueta", "render": {"arquivo": "/videos/2026-01-15_Teste/_CLAUDE/motion/mo02_v01.mov", "versao": 1, "duracao": 3.0}},
+      {"id": "mo03", "status": "riscado", "inicio_seq": 10.0, "fim_seq": 12.0, "formato": "sobreposicao", "ideia": "fora"}
+    ]
+  },
+  "sfx": {
+    "base_cortes_versao": 2, "base_motions_versao": 1,
+    "itens": [
+      {"id": "sfx01", "arquivo": "/sons/whoosh/whoosh_01.wav", "inicio_seq": 0.2, "duracao": 1.2, "canais": 2, "ganho_db": -6},
+      {"id": "sfx02", "arquivo": "/sons/pop/pop_01.wav", "inicio_seq": 0.6, "duracao": 0.25, "canais": 1, "ganho_db": -12},
+      {"id": "sfx03", "arquivo": "/sons/impacto/impacto_01.wav", "inicio_seq": 6.0, "duracao": 0.6, "canais": 2}
+    ]
+  },
+  "pendencias": [],
+  "entregas": []
+}
