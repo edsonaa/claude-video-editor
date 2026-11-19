@@ -45,7 +45,7 @@ Cada vídeo tem um arquivo de estado em `_CLAUDE/projeto.json`. É a memória do
 - Itens aceitam campos extras: cada fluxo acrescenta o que precisar. Os campos do schema têm sempre o formato do schema.
 
 ## O script de estado (`estado.py`)
-Já vem pronto. Na skill de cada etapa, use o caminho na pasta de ferramentas da pessoa:
+Já vem pronto no motor (`<motor>/ferramentas/estado.py`; as skills usam `${CLAUDE_PLUGIN_ROOT}/ferramentas/estado.py`). Sem `--fluxo`, o `--init` usa as etapas da configuração da pessoa:
 - `estado.py <pasta> status`: as etapas, o que foi feito por trecho, as pendências e os alertas;
 - `estado.py <pasta> <bloco>`: um resumo legível de um bloco; com `--json`, o bloco completo;
 - `estado.py <pasta> --item <id>`: um item inteiro;

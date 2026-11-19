@@ -1,0 +1,47 @@
+{
+  "titulo": "Tutorial com gravação de tela",
+  "descricao": "Gravação de tela com ou sem a câmera do apresentador, horizontal. Animação só onde a tela não explica; a câmera virtual faz zoom na tela em vez de seguir o rosto.",
+  "para_quem": "Quem ensina software, configuração ou passo a passo na tela.",
+  "perguntas": [
+    "Grava a câmera junto com a tela, ou só a tela?",
+    "Revisa no Premiere, no DaVinci Resolve ou só assistindo ao vídeo pronto?",
+    "Quer efeitos sonoros (cliques, whoosh) ou só a voz?",
+    "Que programas, sites e termos aparecem sempre?"
+  ],
+  "config": {
+    "video": {
+      "tipo": "tutorial",
+      "formato": "16:9"
+    },
+    "fluxo": [
+      "iniciar",
+      "preparar",
+      "cortes",
+      "motion_mapa",
+      "assets",
+      "motion_render",
+      "camera",
+      "sfx"
+    ],
+    "revisao": {
+      "programa": "premiere",
+      "etapas_no_programa": [
+        "cortes",
+        "motion_render",
+        "camera",
+        "sfx"
+      ]
+    },
+    "motion": {
+      "ativo": true,
+      "densidade": "leve"
+    },
+    "camera": {
+      "ativa": true,
+      "seguir_rosto": false
+    },
+    "som": {
+      "ativo": true
+    }
+  }
+}

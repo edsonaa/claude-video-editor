@@ -1,0 +1,36 @@
+{
+  "titulo": "Só os cortes",
+  "descricao": "O começo mais rápido: transcrição, escolha de takes e o primeiro corte limpo no seu programa. Sem animação, câmera ou som. Dá para ligar as outras etapas depois.",
+  "para_quem": "Quem quer testar o fluxo hoje, ou só precisa de ajuda com a parte chata do corte.",
+  "perguntas": [
+    "Revisa no Premiere ou no DaVinci Resolve?",
+    "Que nomes e termos aparecem sempre?"
+  ],
+  "config": {
+    "video": {
+      "tipo": "apresentador",
+      "formato": "16:9"
+    },
+    "fluxo": [
+      "iniciar",
+      "preparar",
+      "cortes"
+    ],
+    "revisao": {
+      "programa": "premiere",
+      "etapas_no_programa": [
+        "cortes"
+      ]
+    },
+    "motion": {
+      "ativo": false
+    },
+    "camera": {
+      "ativa": false,
+      "seguir_rosto": false
+    },
+    "som": {
+      "ativo": false
+    }
+  }
+}

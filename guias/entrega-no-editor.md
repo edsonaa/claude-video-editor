@@ -3,7 +3,7 @@
 Como o resultado de cada etapa chega à pessoa. Escolha o caminho na entrevista e escreva as regras dele nas skills que entregam algo (cortes, motion-render, câmera, sfx).
 
 ## Regras para qualquer caminho
-- **Teste curto primeiro.** Na primeira vez que um formato é usado (ou quando muda), gere um arquivo de teste com 3–4 clipes e peça para a pessoa abrir e conferir: abre, os clipes certos, o áudio certo, os marcadores visíveis, o tempo batendo. Anote o que foi confirmado num arquivo de validação na pasta de ferramentas. Só depois a etapa usa o formato de verdade.
+- **Teste curto primeiro.** Na primeira vez que um formato é usado (ou quando muda), gere um arquivo de teste com 3–4 clipes e peça para a pessoa abrir e conferir: abre, os clipes certos, o áudio certo, os marcadores visíveis, o tempo batendo. Anote o que foi confirmado em `~/.edicao/ajustes/geral.md` (programa, versão, data, opções que funcionaram). Só depois a etapa usa o formato de verdade.
 - **Copie, não chute.** Quando não souber como o programa representa algo (uma transição, um keyframe, uma trilha estéreo), peça para a pessoa montar aquilo no programa, exportar e mandar. Copie o formato exportado.
 - **Versões, nunca sobrescrever:** `<projeto>_cortes_v01`, `_v02`…; depois `<projeto>_final_v01`… Cada etapa continua a numeração.
 - **Apontar para os originais**, nunca para os proxies, com caminho absoluto. A pessoa conecta os proxies no programa.

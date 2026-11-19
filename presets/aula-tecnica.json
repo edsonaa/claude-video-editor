@@ -1,0 +1,51 @@
+{
+  "titulo": "Aula técnica (bancada e tela)",
+  "descricao": "Aula de curso: câmera de bancada ou de apresentador, close em placa ou componente, gravação de tela e muito termo técnico. Cortes cuidadosos, animação para esquemas e medições, som discreto.",
+  "para_quem": "Quem grava aulas para uma plataforma de cursos, com explicação técnica longa.",
+  "perguntas": [
+    "Quantas câmeras: apresentador, bancada (close), tela?",
+    "Revisa no Premiere, no DaVinci Resolve ou só assistindo ao vídeo pronto?",
+    "Que termos técnicos e nomes de peças aparecem sempre (para a transcrição acertar)?",
+    "Quer efeitos sonoros ou só a voz?"
+  ],
+  "config": {
+    "video": {
+      "tipo": "aula",
+      "formato": "16:9"
+    },
+    "fluxo": [
+      "iniciar",
+      "preparar",
+      "cortes",
+      "motion_mapa",
+      "assets",
+      "motion_render",
+      "camera",
+      "sfx"
+    ],
+    "revisao": {
+      "programa": "premiere",
+      "etapas_no_programa": [
+        "cortes",
+        "motion_render",
+        "camera",
+        "sfx"
+      ]
+    },
+    "cortes": {
+      "usa_roteiro": false
+    },
+    "motion": {
+      "ativo": true,
+      "densidade": "leve"
+    },
+    "camera": {
+      "ativa": true,
+      "seguir_rosto": false
+    },
+    "som": {
+      "ativo": true,
+      "musica": "nenhuma"
+    }
+  }
+}

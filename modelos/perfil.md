@@ -1,6 +1,6 @@
 # Modelo: perfil
 
-O perfil é o gosto da pessoa, separado do fluxo. Fica em `<pasta de ferramentas>/perfis/<nome>/`. Um estilo novo (outro canal, um cliente) é um perfil novo, nunca uma cópia das skills.
+O perfil é o gosto da pessoa, separado do fluxo. Fica em `~/.edicao/perfis/<nome>/` (a pasta da pessoa, que as atualizações do motor nunca tocam). Um estilo novo (outro canal, um cliente) é um perfil novo (`config.py perfil-novo <nome> [--de <perfil>]`), nunca uma cópia das skills. O perfil inicial, neutro, está em `modelos/perfil-inicial/` e é copiado na montagem.
 
 Cada regra do perfil traz o número e a origem ("medido nas refs 02 e 05", "pedido em 12/03"). Regra sem origem vira chute. Comece simples: o perfil cresce com o caderno de aprendizados.
 

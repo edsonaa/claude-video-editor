@@ -1,6 +1,6 @@
 # Decisões da entrevista
 
-Siga esta ordem. Para cada decisão: explique as opções em poucas linhas, dê a sua sugestão para o caso da pessoa, registre a escolha no `montagem.md`. Detalhes que mudam com o tempo (preço, versão, recurso novo), pesquise na hora antes de recomendar.
+Siga esta ordem. Para cada decisão: explique as opções em poucas linhas, dê a sua sugestão para o caso da pessoa, registre a escolha na configuração (`config.py set <campo> <valor>`, ou tudo de uma vez no `--json` do `config.py criar`; os campos estão em `ferramentas/schema/config.schema.json`). Detalhes que mudam com o tempo (preço, versão, recurso novo), pesquise na hora antes de recomendar.
 
 ## 1. Onde a pessoa revisa (pergunte primeiro: muda o fluxo inteiro)
 - **Num programa de edição** (Premiere, DaVinci Resolve, Final Cut, outro): o Claude entrega um arquivo de projeto (XML ou similar) que abre no programa com os cortes, as animações, a câmera e os sons em trilhas separadas. A pessoa revisa, faz o retoque fino à mão e continua dona do acabamento. É o caminho mais flexível para quem já edita.
@@ -15,7 +15,7 @@ Siga esta ordem. Para cada decisão: explique as opções em poucas linhas, dê 
 
 ## 3. Pasta e organização
 - Como a pessoa organiza um projeto hoje. Se não tiver um padrão, sugira um simples: `AAAA-MM-DD_Nome/` com `Brutos/`, `Assets/`, `Docs/` (roteiro), `Renders/`, e a pasta de trabalho do Claude (`_CLAUDE/`).
-- Pasta de ferramentas, compartilhada entre os vídeos (ex.: `~/.edicao/`): scripts, ambiente Python, perfil, biblioteca de sons, `montagem.md`.
+- A pasta da pessoa, compartilhada entre os vídeos, é `~/.edicao/` (configuração, perfis, ajustes, scripts próprios, ambiente Python). A biblioteca de sons pode ficar onde ela já guarda (`som.biblioteca`).
 - Proxies: se o programa dela usa, onde ficam.
 
 ## 4. Transcrição (a base de tudo)
@@ -53,5 +53,6 @@ Sugira o costume de deixar instruções faladas para o editor durante a gravaç�
 - Em que etapas a pessoa quer revisar no programa (ex.: depois dos cortes, das animações, da câmera e do som) e quais aprova só pelo chat (ex.: o plano das animações).
 - Como ela prefere devolver correções: pelo chat, citando o tempo ou o número do item ("mo04 mais lento"), ou com marcadores no próprio programa.
 
-## 11. Nome e comandos
-- Prefixo das skills (ex.: `edit-` gera `/edit-cortes`) e nome da skill mestra (ex.: `/editar`). Sem acento e sem espaço.
+## 11. Etapas
+- Quais etapas entram e em que ordem (`fluxo`). Os presets já trazem uma lista; ligar e desligar depois é `config.py set fluxo '[...]'`, e o `config.py validar` avisa das incoerências (câmera antes das animações, sem `render` quando não há programa).
+- Algo que o motor não faz (ex.: legenda queimada, capítulos)? Uma etapa própria em `~/.edicao/etapas/` (ver `/edicao:montar`).

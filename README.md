@@ -1,67 +1,76 @@
 # Fluxo de edição com o Claude Code
 
-Uma skill gratuita que te guia, passo a passo, a montar o **seu** fluxo de edição de vídeo com o Claude Code: cortes, animações, movimentos de câmera e efeitos sonoros, no seu estilo.
+Um plugin para o Claude Code que edita vídeo com você, etapa por etapa: cortes, animações, movimentos de câmera e efeitos sonoros, no seu estilo, com entrega no Premiere/DaVinci Resolve ou o vídeo pronto.
 
-Ela não é um prompt mágico e não entrega o meu fluxo pronto. Ela conversa com você, pergunta o que você quer, analisa as referências de que você gosta e escreve as skills de cada etapa para o seu jeito de trabalhar: YouTube, reels, vídeo narrado, com ou sem programa de edição.
-
-O ponto de partida é um fluxo de 8 etapas que eu uso nos meus vídeos, com os bons costumes de animação e de fluxo que aprendi testando: curvas, ritmo, câmera, sincronia de som, as armadilhas do HyperFrames e do XML do Premiere. Sem a minha identidade visual: o estilo é o seu.
+Não é um prompt mágico. É um fluxo de etapas pequenas, cada uma com um trabalho só, que você aprova antes de seguir, com scripts testados fazendo as contas (tempo, frames, XML) e o Claude decidindo sobre o texto. Partiu do fluxo de 8 etapas que o Lucas Leite usa nos vídeos dele ([LeiteZ/fluxo-de-edicao](https://github.com/LeiteZ/fluxo-de-edicao)), com os bons costumes de animação e de fluxo que ele aprendeu testando.
 
 ## O que você precisa
-- Assinatura do Claude (Pro ou superior).
-- [Claude Code](https://claude.com/claude-code) instalado no computador.
-- O resto (Python, FFmpeg, transcrição, HyperFrames…) a própria skill confere e instala com você, explicando cada passo.
+- Assinatura do Claude (Pro ou superior) e o [Claude Code](https://claude.com/claude-code).
+- Python 3.10+, FFmpeg e Git. O resto (transcrição, HyperFrames…) a montagem confere e instala com você, explicando cada passo.
 
-## Como instalar
-Abra o Claude Code e cole:
-
-```
-Instala esta skill para mim: https://github.com/LeiteZ/fluxo-de-edicao
-```
-
-Ou, pelo terminal:
-
+## Instalar
+**Com git** (atualiza com `git pull`, que a própria skill faz para você):
 ```bash
-git clone https://github.com/LeiteZ/fluxo-de-edicao ~/.claude/skills/fluxo-de-edicao
+git clone https://github.com/edsonaa/claude-video-editor ~/.claude/skills/edicao
 ```
-
-## Como usar
-No Claude Code, digite:
-
+**Ou pelo marketplace de plugins**, dentro do Claude Code:
 ```
-/fluxo-de-edicao
+/plugin marketplace add edsonaa/claude-video-editor
+/plugin install edicao@edicao-de-video
 ```
+Depois, abra o Claude Code e rode `/edicao:montar`.
 
-Ela começa a te guiar:
+## Montar (uma vez, ~10 minutos)
+`/edicao:montar` confere o ambiente e pergunta que tipo de vídeo você faz. Você escolhe um ponto de partida e ela pergunta só o que falta:
 
-1. **Ambiente:** confere o que já está instalado.
-2. **Entrevista:** tipo de vídeo, formato, programa de edição (ou nenhum), transcrição, animação, câmera e som.
-3. **Referências:** você junta trechos de vídeos de que gosta, e ela analisa e cria o seu perfil de estilo.
-4. **Plano do fluxo:** as etapas, adaptadas para você.
-5. **As skills:** ela escreve uma por etapa, mais uma skill mestra que te guia pelo fluxo e um caderno de aprendizados.
-6. **Teste:** um vídeo curto, do começo ao fim.
+| Preset | Para quê |
+|---|---|
+| `youtube-apresentador` | Pessoa falando para a câmera, 16:9, as 8 etapas |
+| `tutorial-tela` | Gravação de tela, animação só onde a tela não explica, zoom na tela |
+| `aula-tecnica` | Aulas de curso: bancada, tela e muito termo técnico |
+| `reels` | Vertical, curto e denso, sem programa: o vídeo sai pronto |
+| `narrado` | Só a voz sobre imagens e animações, sem câmera |
+| `so-cortes` | O começo mais rápido: só a transcrição e o primeiro corte |
 
-Dá para parar e continuar depois: ela anota onde parou.
+Depois ela cria o seu ambiente Python, roda os testes das ferramentas no seu computador e, se você quiser, analisa vídeos de que você gosta para montar o seu estilo.
 
-## Depois de montar: como editar um vídeo
-O `/fluxo-de-edicao` não edita vídeo: ele monta o seu fluxo. Durante a montagem, você escolhe o nome da sua **skill mestra** (por exemplo, `/editar`). É ela que você usa no dia a dia:
+## Editar um vídeo
+Abra o Claude Code na pasta do vídeo e digite:
+```
+/edicao:editar
+```
+Ela vê em que etapa o vídeo está e te guia, uma etapa por vez. Entre as etapas, `/clear` e `/edicao:editar` de novo: tudo fica salvo no estado do vídeo (`_CLAUDE/projeto.json`).
 
-1. Abra o Claude Code na pasta do vídeo.
-2. Digite a sua skill mestra (ex.: `/editar`).
-3. Ela vê em que etapa o vídeo está e te guia, uma etapa por vez.
+As etapas também podem ser chamadas direto: `/edicao:iniciar`, `/edicao:preparar`, `/edicao:cortes`, `/edicao:motion-mapa`, `/edicao:assets`, `/edicao:motion-render`, `/edicao:camera`, `/edicao:sfx` e `/edicao:render`.
 
-Esqueceu o nome? Digite `/` para ver a lista de skills, ou pergunte ao Claude qual é a sua skill mestra. Para continuar a montagem ou mudar o fluxo depois, use `/fluxo-de-edicao` de novo.
+Outros comandos:
+- `/edicao:editar aprendizados`: aplica o que você corrigiu nos vídeos ao seu estilo e aos seus ajustes;
+- `/edicao:editar atualizar`: traz a versão nova do motor e mostra o que mudou;
+- `/edicao:editar config`: mostra e muda as suas escolhas;
+- `/edicao:montar`: muda o fluxo, troca de preset, cria um perfil ou uma etapa sua.
+
+## O que é do motor e o que é seu
+O plugin é o **motor**: skills, guias e ferramentas. Ele se atualiza, e ninguém precisa editá-lo para personalizar. O que é seu fica em `~/.edicao/`, que nenhuma atualização toca (e que tem histórico git, para desfazer):
+
+| Em `~/.edicao/` | O que é |
+|---|---|
+| `config.json` | As suas escolhas: programa de revisão, formato, etapas, transcrição, notas faladas, biblioteca de sons |
+| `perfis/<nome>/` | O seu gosto: cores, fontes, curvas, quanto zoom, quanto som. Um canal ou cliente novo é um perfil novo |
+| `ajustes/<etapa>.md` | O seu jeito de trabalhar: aprendizados que valem para todos os seus vídeos. As skills leem depois das próprias instruções, e o seu ajuste prevalece |
+| `etapas/` | Etapas que você criou (ex.: legenda, capítulos) |
+| `scripts/` | Scripts escritos para o seu fluxo (ex.: sincronia, render) |
 
 ## O que tem aqui
 | Pasta | O que tem |
 |---|---|
-| `SKILL.md` | O roteiro da conversa |
-| `guias/` | O conhecimento: princípios do fluxo, decisões, análise de referências, ofício de animação, HyperFrames, entrega no programa de edição e o ofício de cada etapa |
-| `modelos/` | Os esqueletos das skills, do perfil e do estado do vídeo |
-| `ferramentas/` | Os scripts prontos e testados que fazem as contas: estado do vídeo, inventário, silêncios, transcrição, XML do Premiere (ida e volta), tempo e timecode, folha de contato, índice de sons e rastreio de rosto. Veja o `ferramentas/README.md` |
+| `skills/` | A montagem, a `editar` (com as regras comuns) e uma skill por etapa |
+| `guias/` | O ofício: princípios do fluxo, decisões, referências, animação, HyperFrames, entrega no programa de edição e o de cada etapa |
+| `ferramentas/` | Os scripts prontos e testados: estado do vídeo, configuração, inventário, silêncios, transcrição, XML (ida e volta), tempo e timecode, folha de contato, índice de sons e rastreio de rosto. Veja o [README](ferramentas/README.md) |
+| `presets/` | Os pontos de partida da montagem |
+| `modelos/` | O perfil inicial, o formato do perfil e do estado do vídeo |
+| `CHANGELOG.md` | As novidades de cada versão do motor |
 
-Tudo em texto. Leia, mude, adapte.
+Tudo em texto. Leia, mude, adapte. Achou algo que vale para todo mundo? Abra uma issue ou um PR.
 
 ## Licença
-MIT. Use, mude e compartilhe à vontade.
-
-Feito por Lucas Leite.
+MIT. Fluxo original de Lucas Leite; motor, plugin e ferramentas por Edson.

@@ -50,8 +50,15 @@ def main(argv=None) -> int:
 
     try:
         if a.init:
-            fluxo = [x for x in a.fluxo.split(",") if x.strip()] if a.fluxo else None
-            d = E.criar(a.pasta, a.init, a.perfil, fluxo)
+            # Sem --fluxo/--perfil, vale a configuração da pessoa (~/.edicao/config.json).
+            from edicao import config as C
+            cfg = C.carregar(obrigatorio=False) or {}
+            if a.fluxo:
+                fluxo = [x for x in a.fluxo.split(",") if x.strip()]
+            else:
+                fluxo = cfg.get("fluxo")
+            perfil = a.perfil or cfg.get("perfil_padrao")
+            d = E.criar(a.pasta, a.init, perfil, fluxo)
             print(f"estado criado: {E.caminho_estado(a.pasta)}")
             print("\n".join(E.resumo_status(d)))
             return 0

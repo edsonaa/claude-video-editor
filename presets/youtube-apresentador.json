@@ -1,0 +1,47 @@
+{
+  "titulo": "YouTube com apresentador",
+  "descricao": "Pessoa falando para a câmera, horizontal, revisão no Premiere. O fluxo completo de 8 etapas: cortes, animações, câmera e som.",
+  "para_quem": "Quem já edita num programa e quer o vídeo longo com acabamento de canal.",
+  "perguntas": [
+    "Revisa no Premiere, no DaVinci Resolve ou só assistindo ao vídeo pronto?",
+    "Quanta animação: só ênfases, média ou muita (gancho forte)?",
+    "Já tem uma pasta de efeitos sonoros? Onde?",
+    "Que nomes e termos aparecem sempre (canal, marcas, jargão)?"
+  ],
+  "config": {
+    "video": {
+      "tipo": "apresentador",
+      "formato": "16:9"
+    },
+    "fluxo": [
+      "iniciar",
+      "preparar",
+      "cortes",
+      "motion_mapa",
+      "assets",
+      "motion_render",
+      "camera",
+      "sfx"
+    ],
+    "revisao": {
+      "programa": "premiere",
+      "etapas_no_programa": [
+        "cortes",
+        "motion_render",
+        "camera",
+        "sfx"
+      ]
+    },
+    "motion": {
+      "ativo": true,
+      "densidade": "media"
+    },
+    "camera": {
+      "ativa": true,
+      "seguir_rosto": true
+    },
+    "som": {
+      "ativo": true
+    }
+  }
+}

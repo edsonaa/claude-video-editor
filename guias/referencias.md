@@ -19,7 +19,7 @@ Sem referências, o Claude anima "no médio". Com elas, ele mede o que a pessoa 
 - **Curvas:** para cada movimento marcante, do primeiro quadro parado antes ao primeiro parado depois, compare a curva medida com as curvas do GSAP (`power2.out`, `expo.out`, `power4.in`…) e anote a mais parecida e a duração em frames.
 - O rastreio falha em quadros escuros e muito desfocados (perto de um corte rápido): meça até 1–2 quadros antes.
 
-Os scripts de medição são escritos na primeira análise (OpenCV, NumPy, PySceneDetect, FFmpeg) e ficam na pasta de ferramentas para as próximas.
+Os scripts de medição são escritos na primeira análise (OpenCV, NumPy, PySceneDetect, FFmpeg) e ficam em `~/.edicao/scripts/` para as próximas (a folha de contato já vem pronta: `ferramentas/contato.py`).
 
 ## 4. Escrever o perfil
 Uma ficha por referência (o que foi medido, com números) e uma síntese. Da síntese saem os arquivos do perfil (modelo em `../modelos/perfil.md`):

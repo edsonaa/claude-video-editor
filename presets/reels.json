@@ -1,0 +1,44 @@
+{
+  "titulo": "Reels / Shorts / TikTok",
+  "descricao": "Vertical 9:16, curto e denso. Sem programa de edição: o Claude entrega o vídeo pronto e os ajustes são pelo chat. Cortes apertados, câmera com punch, animação e som fortes, render no fim.",
+  "para_quem": "Quem publica vídeos curtos e prefere não abrir programa de edição.",
+  "perguntas": [
+    "Quer revisar só assistindo ao vídeo pronto, ou abrir num programa?",
+    "Quanta energia: forte (padrão para reels) ou moderada?",
+    "Já tem uma pasta de efeitos sonoros? Onde?",
+    "Que nomes e termos aparecem sempre?"
+  ],
+  "config": {
+    "video": {
+      "tipo": "reels",
+      "formato": "9:16",
+      "duracao_tipica_min": 1
+    },
+    "fluxo": [
+      "iniciar",
+      "preparar",
+      "cortes",
+      "motion_mapa",
+      "motion_render",
+      "camera",
+      "sfx",
+      "render"
+    ],
+    "revisao": {
+      "programa": "nenhum",
+      "etapas_no_programa": [],
+      "correcoes": "chat"
+    },
+    "motion": {
+      "ativo": true,
+      "densidade": "forte"
+    },
+    "camera": {
+      "ativa": true,
+      "seguir_rosto": true
+    },
+    "som": {
+      "ativo": true
+    }
+  }
+}

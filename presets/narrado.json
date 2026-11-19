@@ -1,0 +1,48 @@
+{
+  "titulo": "Vídeo narrado",
+  "descricao": "Só a voz sobre imagens, animações e gravações; sem apresentador na tela. Sem etapa de câmera; a animação carrega o vídeo.",
+  "para_quem": "Explicativos, vídeo-ensaios e documentários curtos.",
+  "perguntas": [
+    "A narração é gravada num arquivo só ou em vários takes?",
+    "Revisa no Premiere, no DaVinci Resolve ou só assistindo ao vídeo pronto?",
+    "Usa roteiro? (ajuda a reconhecer os takes)",
+    "Que nomes e termos aparecem sempre?"
+  ],
+  "config": {
+    "video": {
+      "tipo": "narrado",
+      "formato": "16:9"
+    },
+    "fluxo": [
+      "iniciar",
+      "preparar",
+      "cortes",
+      "motion_mapa",
+      "assets",
+      "motion_render",
+      "sfx"
+    ],
+    "revisao": {
+      "programa": "premiere",
+      "etapas_no_programa": [
+        "cortes",
+        "motion_render",
+        "sfx"
+      ]
+    },
+    "cortes": {
+      "usa_roteiro": true
+    },
+    "motion": {
+      "ativo": true,
+      "densidade": "forte"
+    },
+    "camera": {
+      "ativa": false,
+      "seguir_rosto": false
+    },
+    "som": {
+      "ativo": true
+    }
+  }
+}

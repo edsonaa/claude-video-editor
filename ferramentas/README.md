@@ -2,12 +2,13 @@
 
 Os scripts que fazem as contas do fluxo, prontos e testados. O Claude decide sobre o texto; estes scripts calculam tempo, frames, bordas e o arquivo de entrega. Antes, cada pessoa escrevia os seus no primeiro vídeo, e as partes que mais dão erro (taxa 29,97, timecode, XML do Premiere) saíam diferentes em cada fluxo.
 
-Na montagem, esta pasta é copiada para a pasta de ferramentas da pessoa (ex.: `~/.edicao/scripts/`). As skills de cada etapa chamam os scripts de lá.
+As skills do plugin chamam os scripts direto daqui (`${CLAUDE_PLUGIN_ROOT}/ferramentas/…`), com o Python do ambiente da pessoa (`~/.edicao/venv`). Assim, uma atualização do motor atualiza os scripts de todo mundo. Scripts que a pessoa escrever ficam em `~/.edicao/scripts/` e importam os módulos daqui (`edicao.*`).
 
 ## O que tem
 
 | Script | Para quê | Etapa |
 |---|---|---|
+| `config.py` | A configuração da pessoa (`~/.edicao`): presets, criar, mostrar, mudar, validar, perfis, novidades do motor | montar, editar |
 | `estado.py` | Lê e muda o `_CLAUDE/projeto.json` sem abrir o arquivo inteiro: status, blocos, itens, pendências, alertas de plano desatualizado | todas |
 | `midia.py` | Inventário (ffprobe): fps exato, duração, áudio, data de gravação, VFR; `--estado` grava no estado | preparar |
 | `silencios.py` | Mapa de silêncios e de trechos com som | preparar |
@@ -17,7 +18,7 @@ Na montagem, esta pasta é copiada para a pasta de ferramentas da pessoa (ex.: `
 | `contato.py` | Folha de contato (quadros lado a lado com tempo e frame) | referências, revisão |
 | `sons.py` | Índice da biblioteca de sons: duração, **tempo até o pico**, nível; busca | sfx |
 | `rosto.py` | Rastreio de rosto (YuNet, local, sem GPU) para a câmera seguir o rosto | câmera |
-| `schema/projeto.schema.json` | O formato do estado do vídeo | — |
+| `schema/projeto.schema.json`, `schema/config.schema.json` | O formato do estado do vídeo e da configuração | — |
 
 Todos têm `--help` em português. Os módulos ficam em `edicao/`, para os scripts de etapa reaproveitarem (`from edicao.tempo import Taxa`).
 

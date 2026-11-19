@@ -1,0 +1,12 @@
+{
+  "name": "edicao-de-video",
+  "owner": { "name": "Edson", "url": "https://github.com/edsonaa" },
+  "description": "Fluxo de edição de vídeo com o Claude Code.",
+  "plugins": [
+    {
+      "name": "edicao",
+      "source": "./",
+      "description": "Edita vídeo etapa por etapa no seu estilo: cortes, animações, câmera e som."
+    }
+  ]
+}
