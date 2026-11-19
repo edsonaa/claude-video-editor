@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" data-composition-variables='[]'>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<link rel="stylesheet" href="../_comum/tema.css" />
+<style>
+#topo { inset: auto; top: 6%; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; }
+.vertical #topo { top: 9%; }
+#pilula { display: flex; align-items: center; gap: 24px; padding: 18px 40px 18px 18px; border-radius: 999px; }
+#num { width: 68px; height: 68px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--t-destaque); color: var(--t-fundo); font-size: 30px; font-weight: 800; }
+#tit { font-size: 44px; white-space: nowrap; }
+#prog { display: flex; gap: 8px; margin-top: 16px; }
+.seg { width: 96px; height: 10px; border-radius: 4px; background: color-mix(in srgb, var(--t-texto) 25%, transparent); overflow: hidden; }
+.seg i { display: block; width: 100%; height: 100%; background: var(--t-destaque); transform-origin: left center; }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="efeito" data-start="0" data-duration="3.5" data-width="1920" data-height="1080" data-fps="30" data-motion-blur="on" data-motion-blur-tier="filter">
+<div id="topo" class="clip" data-start="0" data-duration="3.5">
+    <div id="pilula" class="superficie"><div id="num" class="numero"></div><div id="tit" class="titulo"></div></div>
+    <div id="prog"></div>
+  </div>
+</div>
+<script src="../_comum/tema.js"></script>
+<script>
+const { v, df, D } = HF;
+const n = Math.max(1, Number(v.numero) || 1), tot = Math.max(n, Number(v.total) || n);
+document.getElementById("num").textContent = n;
+document.getElementById("tit").textContent = v.titulo;
+const segs = [];
+for (let i = 0; i < tot; i++) { const s = document.createElement("div"); s.className = "seg"; s.innerHTML = "<i></i>"; document.getElementById("prog").appendChild(s); segs.push(s.firstChild); }
+const tl = HF.timeline();
+HF.entrada(tl, "#pilula", { y: -60, opacity: 0 }, 0);
+HF.entrada(tl, "#prog", { opacity: 0 }, df(6));
+segs.forEach((s, i) => {
+  if (i < n - 1) tl.set(s, { scaleX: 1 }, 0);
+  else if (i === n - 1) tl.fromTo(s, { scaleX: 0 }, { scaleX: 1, duration: df(20), ease: "power2.inOut", lazy: false }, df(10));
+  else tl.set(s, { scaleX: 0 }, 0);
+});
+HF.saida(tl, "#topo", { y: -40, opacity: 0 }, D - HF.saidaD());
+HF.pronto(tl);
+</script>
+</body>
+</html>

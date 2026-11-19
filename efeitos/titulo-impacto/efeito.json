@@ -1,0 +1,59 @@
+{
+  "titulo": "Título de impacto",
+  "descricao": "Uma frase curta em tela cheia, palavra por palavra, com uma palavra em destaque e uma linha de apoio opcional. A câmera virtual se aproxima devagar o tempo todo.",
+  "formato": "tela_cheia",
+  "duracao": {
+    "padrao": 3.5,
+    "min": 2,
+    "max": 7
+  },
+  "parametros": [
+    {
+      "id": "texto",
+      "tipo": "texto",
+      "rotulo": "Frase",
+      "padrao": "A frase que importa",
+      "obrigatorio": true,
+      "descricao": "Até ~8 palavras."
+    },
+    {
+      "id": "destaque",
+      "tipo": "texto",
+      "rotulo": "Palavra(s) em destaque",
+      "padrao": "",
+      "descricao": "Uma ou mais palavras da frase, separadas por espaço."
+    },
+    {
+      "id": "apoio",
+      "tipo": "texto",
+      "rotulo": "Linha de apoio",
+      "padrao": ""
+    }
+  ],
+  "exemplo": {
+    "texto": "Ninguém te conta isso sobre placas",
+    "destaque": "ninguém",
+    "apoio": "e custa caro descobrir sozinho"
+  },
+  "eventos_som": [
+    {
+      "t": "2f",
+      "tipo": "entrada_palavras",
+      "forca": "media",
+      "descricao": "palavras entram em sequência, de baixo, rápidas"
+    },
+    {
+      "t": "-8f",
+      "tipo": "sai_desfocando",
+      "forca": "leve",
+      "descricao": "tudo se afasta e desfoca"
+    }
+  ],
+  "bom_para": "gancho; a frase-chave do vídeo; abrir um capítulo",
+  "evitar": "frases longas (vira leitura); usar várias vezes seguidas",
+  "tags": [
+    "texto",
+    "gancho",
+    "tela cheia"
+  ]
+}

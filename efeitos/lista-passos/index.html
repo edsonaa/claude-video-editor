@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR" data-composition-variables='[]'>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<link rel="stylesheet" href="../_comum/tema.css" />
+<style>
+#cena { display: flex; flex-direction: column; justify-content: center; padding: 0 14%; }
+.vertical #cena { padding: 0 8%; }
+#titulo { font-size: 78px; margin-bottom: 56px; }
+.item { display: flex; align-items: center; gap: 34px; margin: 18px 0; }
+.n { flex: 0 0 auto; width: 88px; height: 88px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 44px; font-weight: 800; background: var(--t-destaque); color: var(--t-fundo); }
+.t { font-size: 50px; }
+.vertical .t { font-size: 58px; } .vertical #titulo { font-size: 92px; }
+.vertical .n { width: 104px; height: 104px; font-size: 52px; } .vertical .item { margin: 30px 0; }
+.item.passado .n { background: color-mix(in srgb, var(--t-texto) 22%, transparent); color: var(--t-texto); }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="efeito" data-start="0" data-duration="6" data-width="1920" data-height="1080" data-fps="30" data-motion-blur="on" data-motion-blur-tier="filter">
+<div class="fundo clip" data-start="0" data-duration="6"></div>
+  <div id="cena" class="clip" data-start="0" data-duration="6">
+    <div id="titulo" class="titulo"></div>
+    <div id="itens"></div>
+  </div>
+</div>
+<script src="../_comum/tema.js"></script>
+<script>
+const { v, df, D } = HF;
+const itens = HF.lista("itens").slice(0, 6);
+document.getElementById("titulo").textContent = v.titulo || "";
+const passo = Number(v.intervalo_f) || 30;
+const els = itens.map((txt, i) => {
+  const e = document.createElement("div"); e.className = "item";
+  e.innerHTML = '<div class="n numero superficie"></div><div class="t texto"></div>';
+  e.querySelector(".n").textContent = i + 1; e.querySelector(".t").textContent = txt;
+  document.getElementById("itens").appendChild(e); return e;
+});
+const tl = HF.timeline();
+HF.camera(tl, "#cena", 0.035);
+HF.entrada(tl, "#titulo", { y: -30, opacity: 0 }, 0);
+els.forEach((e, i) => {
+  const t = df(12 + i * passo);
+  HF.entrada(tl, e.querySelector(".n"), { scale: 0.4, opacity: 0 }, t, { duracao: df(12) });
+  HF.entrada(tl, e.querySelector(".t"), { x: 40, opacity: 0 }, t + df(3));
+  if (i > 0) tl.to(els[i - 1], { opacity: 0.55, duration: df(10), ease: "power1.inOut", lazy: false }, t);
+});
+HF.saida(tl, "#cena", { opacity: 0, x: -40 }, D - HF.saidaD());
+HF.pronto(tl);
+</script>
+</body>
+</html>

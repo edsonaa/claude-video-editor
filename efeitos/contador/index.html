@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" data-composition-variables='[]'>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<link rel="stylesheet" href="../_comum/tema.css" />
+<style>
+#cena { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 8%; }
+#num { font-size: 300px; line-height: 1; font-weight: var(--t-peso-titulo); letter-spacing: -0.03em; }
+.vertical #num { font-size: 240px; }
+#trilho { width: 640px; height: 10px; border-radius: 5px; margin-top: 40px; background: color-mix(in srgb, var(--t-texto) 14%, transparent); overflow: hidden; }
+.vertical #trilho { width: 560px; }
+#enche { width: 100%; height: 100%; background: var(--t-destaque); transform-origin: left center; }
+#rotulo { margin-top: 36px; font-size: 52px; max-width: 1300px; }
+.vertical #rotulo { font-size: 50px; max-width: 880px; }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="efeito" data-start="0" data-duration="3.5" data-width="1920" data-height="1080" data-fps="30" data-motion-blur="on" data-motion-blur-tier="filter">
+<div class="fundo clip" data-start="0" data-duration="3.5"></div>
+  <div id="cena" class="clip" data-start="0" data-duration="3.5">
+    <div id="num" class="numero destaque brilho"></div>
+    <div id="trilho"><div id="enche"></div></div>
+    <div id="rotulo" class="texto"></div>
+  </div>
+</div>
+<script src="../_comum/tema.js"></script>
+<script>
+const { v, df, D } = HF;
+const ini = Number(v.inicio) || 0, fim = Number(v.valor) || 0;
+const num = document.getElementById("num");
+document.getElementById("rotulo").textContent = v.rotulo || "";
+const tl = HF.timeline();
+HF.camera(tl, "#cena", 0.04);
+HF.entrada(tl, "#num", { y: 40, opacity: 0, scale: 0.92 }, 0);
+const durConta = Math.min(df(34), D * 0.5);
+HF.contar(tl, num, ini, fim, df(6), durConta, { casas: Number(v.casas) || 0, prefixo: v.prefixo || "", sufixo: v.sufixo || "", ease: "expo.out" });
+tl.fromTo("#enche", { scaleX: 0 }, { scaleX: 1, duration: durConta, ease: "expo.out", lazy: false }, df(6));
+tl.fromTo("#num", { scale: 1 }, { scale: 1.05, duration: df(4), ease: "power2.out", yoyo: true, repeat: 1, lazy: false, immediateRender: false }, df(6) + durConta);
+HF.entrada(tl, "#trilho", { opacity: 0 }, df(4));
+if (v.rotulo) HF.entrada(tl, "#rotulo", { y: 26, opacity: 0 }, df(14));
+HF.saida(tl, "#cena", { opacity: 0, y: -30 }, D - HF.saidaD());
+HF.pronto(tl);
+</script>
+</body>
+</html>

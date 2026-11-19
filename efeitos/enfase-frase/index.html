@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR" data-composition-variables='[]'>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<link rel="stylesheet" href="../_comum/tema.css" />
+<style>
+#escuro { background: linear-gradient(to top, rgba(0,0,0,.72) 0%, rgba(0,0,0,.35) 32%, transparent 55%); }
+.pos-centro #escuro { background: radial-gradient(70% 60% at 50% 50%, rgba(0,0,0,.55), transparent 75%); }
+#bloco { display: flex; align-items: flex-end; justify-content: center; padding: 0 8% 9%; }
+.pos-centro #bloco { align-items: center; padding-bottom: 0; }
+.vertical #bloco { padding-bottom: 26%; }
+#frase { font-size: 104px; text-align: center; color: #fff; max-width: 1600px; text-shadow: 0 6px 30px rgba(0,0,0,.45); }
+.vertical #frase { font-size: 96px; max-width: 920px; }
+#frase .palavra { position: relative; margin: 0 .06em; }
+#frase .marca { position: absolute; left: -.12em; right: -.12em; top: 18%; bottom: 6%; background: var(--t-destaque); z-index: -1;
+  border-radius: .12em; transform-origin: left center; }
+#frase .palavra.dest { text-shadow: none; }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="efeito" data-start="0" data-duration="3" data-width="1920" data-height="1080" data-fps="30" data-motion-blur="on" data-motion-blur-tier="filter">
+<div id="escuro" class="clip" data-start="0" data-duration="3"></div>
+  <div id="bloco" class="clip" data-start="0" data-duration="3"><div id="frase" class="titulo"></div></div>
+</div>
+<script src="../_comum/tema.js"></script>
+<script>
+const { v, df, D } = HF;
+HF.raiz.classList.add("pos-" + v.posicao);
+const pals = HF.palavras(document.getElementById("frase"), v.frase);
+const dest = String(v.destaque || "").toLowerCase().split(/\s+/).filter(Boolean);
+const marcas = [];
+pals.forEach((p) => {
+  if (dest.includes(p.textContent.toLowerCase().replace(/[.,!?;:…]/g, ""))) {
+    p.classList.add("dest");
+    const m = document.createElement("span"); m.className = "marca"; p.appendChild(m); marcas.push(m);
+  }
+});
+const tl = HF.timeline();
+HF.entrada(tl, "#escuro", { opacity: 0 }, 0, { duracao: df(10), ease: "power1.inOut" });
+HF.entrada(tl, "#frase", { y: 50, opacity: 0 }, 0);
+const corFundo = getComputedStyle(document.documentElement).getPropertyValue("--t-fundo").trim() || "#000";
+marcas.forEach((m, i) => {
+  HF.entrada(tl, m, { scaleX: 0 }, df(10 + i * 3), { duracao: df(9), ease: "power4.out" });
+  tl.fromTo(m.parentNode, { color: "#ffffff" }, { color: corFundo, duration: df(5), ease: "none", lazy: false }, df(12 + i * 3));
+});
+HF.saida(tl, ["#frase", "#escuro"], { opacity: 0, y: 20 }, D - HF.saidaD());
+HF.pronto(tl);
+</script>
+</body>
+</html>

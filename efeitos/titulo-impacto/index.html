@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR" data-composition-variables='[]'>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<link rel="stylesheet" href="../_comum/tema.css" />
+<style>
+#cena { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 9%; text-align: center; }
+#frase { font-size: 128px; max-width: 1500px; }
+.vertical #frase { font-size: 116px; max-width: 900px; }
+#frase .palavra { margin: 0 .08em; }
+#frase .palavra.dest { color: var(--t-destaque); }
+#linha { width: 160px; height: 8px; border-radius: 4px; background: var(--t-destaque); margin-top: 44px; transform-origin: center; }
+#apoio { margin-top: 34px; font-size: 44px; }
+.vertical #apoio { font-size: 46px; max-width: 860px; }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="efeito" data-start="0" data-duration="3.5" data-width="1920" data-height="1080" data-fps="30" data-motion-blur="on" data-motion-blur-tier="filter">
+<div class="fundo clip" data-start="0" data-duration="3.5"></div>
+  <div id="cena" class="clip" data-start="0" data-duration="3.5">
+    <div id="frase" class="titulo brilho"></div>
+    <div id="linha"></div>
+    <div id="apoio" class="texto suave"></div>
+  </div>
+</div>
+<script src="../_comum/tema.js"></script>
+<script>
+const { v, df, D } = HF;
+const pals = HF.palavras(document.getElementById("frase"), v.texto);
+const dest = String(v.destaque || "").toLowerCase().split(/\s+/).filter(Boolean);
+const limpa = (s) => s.toLowerCase().replace(/[.,!?;:…]/g, "");
+pals.forEach((p) => { if (dest.includes(limpa(p.textContent))) p.classList.add("dest"); });
+const apoio = document.getElementById("apoio");
+apoio.textContent = v.apoio || "";
+if (!v.apoio) apoio.style.display = "none";
+const tl = HF.timeline();
+HF.camera(tl, "#cena", 0.06);
+pals.forEach((p, i) => HF.entrada(tl, p, { y: 70, opacity: 0, filter: "blur(10px)" }, df(2 + i * 4)));
+const fimPal = df(2 + pals.length * 4);
+HF.entrada(tl, "#linha", { scaleX: 0 }, fimPal, { duracao: df(14) });
+if (v.apoio) HF.entrada(tl, "#apoio", { y: 24, opacity: 0 }, fimPal + df(4));
+HF.saida(tl, "#cena", { opacity: 0, filter: "blur(14px)", scale: 1.12 }, D - HF.saidaD());
+HF.pronto(tl);
+</script>
+</body>
+</html>

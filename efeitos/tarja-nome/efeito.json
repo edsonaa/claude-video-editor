@@ -1,0 +1,20 @@
+{
+  "titulo": "Tarja de nome",
+  "descricao": "Nome e cargo (ou um dado curto) numa caixa que se abre a partir de uma barra de destaque, no canto de baixo. A apresentação clássica de quem fala, ou de um nome citado.",
+  "formato": "sobreposicao",
+  "duracao": { "padrao": 4, "min": 2.5, "max": 8 },
+  "parametros": [
+    { "id": "nome", "tipo": "texto", "rotulo": "Nome", "padrao": "Nome da pessoa", "obrigatorio": true },
+    { "id": "cargo", "tipo": "texto", "rotulo": "Cargo ou linha de apoio", "padrao": "Cargo ou contexto" },
+    { "id": "lado", "tipo": "opcao", "rotulo": "Lado", "opcoes": ["esquerda", "direita"], "padrao": "esquerda",
+      "descricao": "O lado oposto ao rosto." }
+  ],
+  "exemplo": { "nome": "Marina Costa", "cargo": "Engenheira de hardware" },
+  "eventos_som": [
+    { "t": "4f", "tipo": "abre_caixa", "forca": "leve", "descricao": "caixa abre de lado, rápida e limpa" },
+    { "t": "-8f", "tipo": "sai", "forca": "leve", "descricao": "tarja sai para o lado" }
+  ],
+  "bom_para": "apresentar quem fala na primeira aparição; nomear um especialista citado",
+  "evitar": "mais de uma por minuto; sobre gravação de tela (tampa a interface)",
+  "tags": ["texto", "apresentacao", "nome"]
+}

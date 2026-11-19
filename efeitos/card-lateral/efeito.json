@@ -1,0 +1,74 @@
+{
+  "titulo": "Card lateral",
+  "descricao": "Um card grande num lado do quadro, com etiqueta, título, texto curto e imagem opcional, enquanto o rosto fica no terço oposto. Entra deslizando do lado de fora e sai pelo mesmo lado.",
+  "formato": "sobreposicao_lateral",
+  "duracao": {
+    "padrao": 5,
+    "min": 2.5,
+    "max": 10
+  },
+  "parametros": [
+    {
+      "id": "etiqueta",
+      "tipo": "texto",
+      "rotulo": "Etiqueta",
+      "padrao": "DICA"
+    },
+    {
+      "id": "titulo",
+      "tipo": "texto",
+      "rotulo": "Título",
+      "padrao": "Título do card",
+      "obrigatorio": true
+    },
+    {
+      "id": "texto",
+      "tipo": "texto",
+      "rotulo": "Texto curto",
+      "padrao": ""
+    },
+    {
+      "id": "imagem",
+      "tipo": "imagem",
+      "rotulo": "Imagem (opcional)",
+      "padrao": ""
+    },
+    {
+      "id": "lado",
+      "tipo": "opcao",
+      "rotulo": "Lado do card",
+      "opcoes": [
+        "direita",
+        "esquerda"
+      ],
+      "padrao": "direita",
+      "descricao": "O lado oposto ao rosto; a câmera leva o rosto para o outro terço."
+    }
+  ],
+  "exemplo": {
+    "etiqueta": "ATENÇÃO",
+    "titulo": "Nunca meça com a placa ligada na tomada",
+    "texto": "Use a fonte de bancada com limite de corrente."
+  },
+  "eventos_som": [
+    {
+      "t": "0f",
+      "tipo": "card_entra",
+      "forca": "media",
+      "descricao": "card grande desliza de fora do quadro e freia"
+    },
+    {
+      "t": "-8f",
+      "tipo": "card_sai",
+      "forca": "leve",
+      "descricao": "card sai pelo mesmo lado"
+    }
+  ],
+  "bom_para": "dica, aviso ou definição enquanto a pessoa fala; ferramenta citada com imagem",
+  "evitar": "texto longo (o card não é slide); sem a câmera levar o rosto para o terço",
+  "tags": [
+    "card",
+    "texto",
+    "lateral"
+  ]
+}

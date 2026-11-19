@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt-BR" data-composition-variables='[]'>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<link rel="stylesheet" href="../_comum/tema.css" />
+<style>
+#cena { display: flex; flex-direction: column; justify-content: center; padding: 0 12%; }
+.vertical #cena { padding: 0 8%; }
+#titulo { font-size: 76px; margin-bottom: 64px; }
+.vertical #titulo { font-size: 88px; }
+.linha { display: grid; grid-template-columns: 360px 1fr; align-items: center; gap: 32px; margin: 20px 0; }
+.vertical .linha { grid-template-columns: 1fr; gap: 12px; margin: 26px 0; }
+.rot { font-size: 38px; text-align: right; }
+.vertical .rot { text-align: left; font-size: 52px; }
+.vertical .trilho { height: 96px; } .vertical .val { font-size: 52px; }
+.trilho { height: 74px; position: relative; }
+.barra { height: 100%; border-radius: calc(var(--t-raio) * .6); background: color-mix(in srgb, var(--t-texto) 22%, transparent); transform-origin: left center; }
+.linha.dest .barra { background: var(--t-destaque); }
+.val { position: absolute; top: 50%; transform: translateY(-50%); margin-left: 20px; font-size: 40px; font-weight: 800; white-space: nowrap; }
+.linha.dest .val { color: var(--t-destaque); }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="efeito" data-start="0" data-duration="5" data-width="1920" data-height="1080" data-fps="30" data-motion-blur="on" data-motion-blur-tier="filter">
+<div class="fundo clip" data-start="0" data-duration="5"></div>
+  <div id="cena" class="clip" data-start="0" data-duration="5">
+    <div id="titulo" class="titulo"></div>
+    <div id="linhas"></div>
+  </div>
+</div>
+<script src="../_comum/tema.js"></script>
+<script>
+const { v, df, D } = HF;
+const dados = HF.lista("dados").slice(0, 6);
+document.getElementById("titulo").textContent = v.titulo || "";
+const max = Math.max(...dados.map((d) => Number(d.valor) || 0), 1);
+let idx = Number(v.destaque) || 0;
+if (idx === 0) idx = dados.findIndex((d) => Number(d.valor) === max) + 1;
+const cont = document.getElementById("linhas");
+const linhas = dados.map((d, i) => {
+  const l = document.createElement("div"); l.className = "linha" + (i + 1 === idx ? " dest" : "");
+  l.innerHTML = '<div class="rot texto"></div><div class="trilho"><div class="barra"></div><div class="val numero"></div></div>';
+  l.querySelector(".rot").textContent = d.rotulo;
+  const larg = Math.max(4, 82 * (Number(d.valor) || 0) / max);
+  l.querySelector(".barra").style.width = larg + "%";
+  l.querySelector(".val").style.left = larg + "%";
+  cont.appendChild(l); return l;
+});
+const tl = HF.timeline();
+HF.camera(tl, "#cena", 0.03);
+HF.entrada(tl, "#titulo", { y: -30, opacity: 0 }, 0);
+linhas.forEach((l, i) => {
+  const t = df(10 + i * 8);
+  HF.entrada(tl, l.querySelector(".rot"), { x: -20, opacity: 0 }, t);
+  tl.fromTo(l.querySelector(".barra"), { scaleX: 0 }, { scaleX: 1, duration: df(22), ease: "expo.out", lazy: false }, t);
+  HF.entrada(tl, l.querySelector(".val"), { opacity: 0 }, t + df(4));
+  HF.contar(tl, l.querySelector(".val"), 0, Number(dados[i].valor) || 0, t, df(22), { casas: Number(v.casas) || 0, sufixo: v.unidade || "", ease: "expo.out" });
+});
+HF.saida(tl, "#cena", { opacity: 0, y: -24 }, D - HF.saidaD());
+HF.pronto(tl);
+</script>
+</body>
+</html>

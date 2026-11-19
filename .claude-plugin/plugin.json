@@ -1,11 +1,23 @@
 {
   "name": "edicao",
   "displayName": "Fluxo de edição de vídeo",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Edita vídeo com o Claude Code etapa por etapa (cortes, animações, câmera, som) no seu estilo, com entrega no Premiere/Resolve ou o vídeo pronto. O motor se atualiza; suas escolhas, seu estilo e seus ajustes ficam em ~/.edicao.",
-  "author": { "name": "Edson", "url": "https://github.com/edsonaa" },
+  "author": {
+    "name": "Edson",
+    "url": "https://github.com/edsonaa"
+  },
   "homepage": "https://github.com/edsonaa/claude-video-editor",
   "repository": "https://github.com/edsonaa/claude-video-editor",
   "license": "MIT",
-  "keywords": ["video", "edicao", "premiere", "davinci-resolve", "hyperframes", "youtube", "reels", "transcricao"]
+  "keywords": [
+    "video",
+    "edicao",
+    "premiere",
+    "davinci-resolve",
+    "hyperframes",
+    "youtube",
+    "reels",
+    "transcricao"
+  ]
 }

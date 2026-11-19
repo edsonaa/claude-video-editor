@@ -1,0 +1,58 @@
+{
+  "titulo": "Marcador de capítulo",
+  "descricao": "Uma pílula no alto com o número e o nome da parte, e uma barra de progresso do vídeo que enche até aquela parte. Discreta, sobre a filmagem.",
+  "formato": "sobreposicao",
+  "duracao": {
+    "padrao": 3.5,
+    "min": 2,
+    "max": 6
+  },
+  "parametros": [
+    {
+      "id": "numero",
+      "tipo": "numero",
+      "rotulo": "Número da parte",
+      "padrao": 1,
+      "obrigatorio": true
+    },
+    {
+      "id": "total",
+      "tipo": "numero",
+      "rotulo": "Total de partes",
+      "padrao": 4
+    },
+    {
+      "id": "titulo",
+      "tipo": "texto",
+      "rotulo": "Nome da parte",
+      "padrao": "Nome da parte",
+      "obrigatorio": true
+    }
+  ],
+  "exemplo": {
+    "numero": 2,
+    "total": 4,
+    "titulo": "O diagnóstico"
+  },
+  "eventos_som": [
+    {
+      "t": "0f",
+      "tipo": "pilula_entra",
+      "forca": "leve",
+      "descricao": "pílula desce do topo"
+    },
+    {
+      "t": "10f",
+      "tipo": "progresso",
+      "forca": "leve",
+      "descricao": "barra de progresso enche até a parte"
+    }
+  ],
+  "bom_para": "abrir cada parte de um vídeo longo ou aula; situar quem pulou para o meio",
+  "evitar": "vídeos curtos; partes sem nome claro",
+  "tags": [
+    "capitulo",
+    "estrutura",
+    "sobreposicao"
+  ]
+}

@@ -72,6 +72,19 @@ def test_caminhos_do_motor_existem(md):
         assert (RAIZ / rel).exists(), f"{md.name} cita {rel}, que não existe"
 
 
+_CACHE_SUBS = {}
+
+
+def _subcomandos(script: Path) -> set:
+    """Os subcomandos que o próprio script declara (pelo --help do argparse)."""
+    if script not in _CACHE_SUBS:
+        import sys
+        p = subprocess.run([sys.executable, "-I", str(script), "--help"], capture_output=True, text=True, encoding="utf-8")
+        m = re.search(r"\{([a-z,-]+)\}", p.stdout)
+        _CACHE_SUBS[script] = set(m.group(1).split(",")) if m else set()
+    return _CACHE_SUBS[script]
+
+
 @pytest.mark.parametrize("md", MDS, ids=lambda p: str(p.relative_to(RAIZ)))
 def test_comandos_citados_existem(md):
     """`<f>/x.py sub` e `x.py sub`: o script existe e, se tem subcomandos, o citado é um deles."""
@@ -80,8 +93,7 @@ def test_comandos_citados_existem(md):
         caminho = RAIZ / "ferramentas" / script
         if not caminho.exists():
             continue  # scripts que a pessoa escreve (sync.py, render.py…) ou módulos do Python
-        codigo = caminho.read_text(encoding="utf-8")
-        subs = set(re.findall(r'add_parser\("([a-z-]+)"', codigo))
+        subs = _subcomandos(caminho)
         if subs and sub and sub not in ("e", "o", "a", "do", "da", "de", "em", "no", "com", "para", "que"):
             assert sub in subs, f"{md.name}: '{script} {sub}' não é um subcomando ({sorted(subs)})"
 

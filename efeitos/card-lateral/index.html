@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" data-composition-variables='[]'>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<link rel="stylesheet" href="../_comum/tema.css" />
+<style>
+#card { inset: auto; top: 50%; right: 5%; width: 44%; transform: translateY(-50%); padding: 54px 58px; }
+.lado-esquerda #card { right: auto; left: 5%; }
+.vertical #card { width: 86%; right: 7%; top: auto; bottom: 9%; transform: none; }
+.vertical.lado-esquerda #card { left: 7%; }
+#img { height: 300px; margin-bottom: 36px; border-radius: calc(var(--t-raio) * .7); overflow: hidden; }
+#etiqueta { margin-bottom: 24px; }
+#titulo { font-size: 64px; }
+#texto { margin-top: 22px; font-size: 38px; }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="efeito" data-start="0" data-duration="5" data-width="1920" data-height="1080" data-fps="30" data-motion-blur="on" data-motion-blur-tier="filter">
+<div id="card" class="clip superficie" data-start="0" data-duration="5">
+    <div id="img"></div>
+    <div id="etiqueta" class="chip texto"></div>
+    <div id="titulo" class="titulo"></div>
+    <div id="texto" class="texto suave"></div>
+  </div>
+</div>
+<script src="../_comum/tema.js"></script>
+<script>
+const { v, df, D } = HF;
+HF.raiz.classList.add("lado-" + v.lado);
+document.getElementById("etiqueta").textContent = v.etiqueta || "";
+if (!v.etiqueta) document.getElementById("etiqueta").style.display = "none";
+document.getElementById("titulo").textContent = v.titulo;
+document.getElementById("texto").textContent = v.texto || "";
+const img = document.getElementById("img");
+if (v.imagem) HF.imagem(img, v.imagem); else img.style.display = "none";
+const s = v.lado === "esquerda" ? -1 : 1;
+const tl = HF.timeline();
+const fora = HF.vertical ? { y: 700, opacity: 1 } : { xPercent: 140 * s, opacity: 1 };
+tl.fromTo("#card", fora, Object.assign({ duration: df(18), ease: HF.easeEntrada(), lazy: false }, HF.vertical ? { y: 0 } : { xPercent: 0 }), 0);
+HF.entrada(tl, ["#etiqueta", "#titulo", "#texto"], { y: 20, opacity: 0 }, df(8), { para: {}, duracao: df(14) });
+tl.to("#card", Object.assign({ duration: HF.saidaD(), ease: HF.easeSaida(), lazy: false }, HF.vertical ? { y: 700 } : { xPercent: 140 * s }), D - HF.saidaD());
+HF.pronto(tl);
+</script>
+</body>
+</html>

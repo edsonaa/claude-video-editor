@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" data-composition-variables='[]'>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<link rel="stylesheet" href="../_comum/tema.css" />
+<style>
+#tarja { inset: auto; left: 7.3%; bottom: 13%; display: flex; align-items: stretch; }
+.vertical #tarja { left: 8%; bottom: 22%; }
+#barra { width: 10px; background: var(--t-destaque); border-radius: 5px; transform-origin: center bottom; }
+#caixa { margin-left: 16px; padding: 22px 38px 24px 32px; overflow: hidden; }
+#nome { font-size: 58px; white-space: nowrap; }
+#cargo { margin-top: 8px; font-size: 32px; white-space: nowrap; }
+.vertical #nome { font-size: 64px; } .vertical #cargo { font-size: 36px; }
+.lado-direita #tarja { left: auto; right: 7.3%; flex-direction: row-reverse; text-align: right; }
+.lado-direita #caixa { margin-left: 0; margin-right: 16px; }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="efeito" data-start="0" data-duration="4" data-width="1920" data-height="1080" data-fps="30" data-motion-blur="on" data-motion-blur-tier="filter">
+  <div id="tarja" class="clip" data-start="0" data-duration="4">
+    <div id="barra"></div>
+    <div id="caixa" class="superficie"><div id="nome" class="titulo brilho"></div><div id="cargo" class="texto destaque"></div></div>
+  </div>
+</div>
+<script src="../_comum/tema.js"></script>
+<script>
+const { v, df, D } = HF;
+HF.raiz.classList.add("lado-" + v.lado);
+document.getElementById("nome").textContent = v.nome;
+document.getElementById("cargo").textContent = v.cargo;
+const dir = v.lado === "direita" ? 1 : -1;
+const tl = HF.timeline();
+tl.set("#caixa", { transformOrigin: "left center" }, 0);
+HF.entrada(tl, "#barra", { scaleY: 0 }, 0, { duracao: df(10) });
+tl.fromTo("#caixa", { clipPath: dir < 0 ? "inset(0 100% 0 0)" : "inset(0 0 0 100%)" },
+  { clipPath: "inset(0 0% 0 0%)", duration: HF.entradaD(), ease: HF.easeEntrada(), lazy: false }, df(4));
+HF.entrada(tl, "#nome", { x: 30 * dir, opacity: 0 }, df(8));
+HF.entrada(tl, "#cargo", { x: 20 * dir, opacity: 0 }, df(12));
+HF.saida(tl, "#tarja", { x: 40 * dir, opacity: 0 }, D - HF.saidaD());
+HF.pronto(tl);
+</script>
+</body>
+</html>

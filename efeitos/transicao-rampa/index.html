@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" data-composition-variables='[]'>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<link rel="stylesheet" href="../_comum/tema.css" />
+<style>
+#vira { position: absolute; left: 50%; top: 50%; }
+#grupo { position: absolute; left: 0; top: 0; height: 100%; }
+.p { position: absolute; top: -45%; height: 190%; transform: skewX(-14deg); }
+#cobre { background: var(--t-fundo); }
+#a1 { background: var(--t-destaque); } #a2 { background: var(--t-apoio); }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="efeito" data-start="0" data-duration="1.0" data-width="1920" data-height="1080" data-fps="30" data-motion-blur="on" data-motion-blur-tier="filter">
+<div class="clip" data-start="0" data-duration="1.0">
+    <div id="vira"><div id="grupo"><div id="cobre" class="p"></div><div id="a1" class="p"></div><div id="a2" class="p"></div></div></div>
+  </div>
+</div>
+<script src="../_comum/tema.js"></script>
+<script>
+const { v, D, W, H } = HF;
+// Gira o conjunto para a direção pedida; dentro dele, tudo anda da esquerda para a direita.
+const ang = { direita: 0, esquerda: 180, baixo: 90, cima: -90 }[v.direcao] || 0;
+const horiz = ang === 0 || ang === 180;
+const LW = horiz ? W : H, LH = horiz ? H : W;
+const vira = document.getElementById("vira");
+vira.style.width = LW + "px"; vira.style.height = LH + "px";
+vira.style.marginLeft = -LW / 2 + "px"; vira.style.marginTop = -LH / 2 + "px";
+vira.style.transform = "rotate(" + ang + "deg)";
+const cobreW = 1.5 * LW, aW = 0.14 * LW;
+const pos = (id, x, w) => { const e = document.getElementById(id); e.style.left = x + "px"; e.style.width = w + "px"; };
+pos("cobre", 0, cobreW); pos("a2", cobreW - 20, aW); pos("a1", cobreW + aW * 0.9, aW);
+const total = cobreW + 2 * aW + 0.3 * LW;
+const tl = HF.timeline();
+// rampa: acelera até cobrir o quadro (o corte fica aqui), segura um instante e sai freando
+tl.fromTo("#grupo", { x: -total }, { x: -0.25 * LW, duration: D * 0.45, ease: "power4.in", lazy: false }, 0);
+tl.to("#grupo", { x: LW + 0.05 * LW, duration: D * 0.5, ease: "expo.out", lazy: false }, D * 0.5);
+HF.pronto(tl);
+</script>
+</body>
+</html>

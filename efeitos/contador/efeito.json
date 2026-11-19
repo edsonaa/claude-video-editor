@@ -1,0 +1,77 @@
+{
+  "titulo": "Contador",
+  "descricao": "Um número grande contando até o valor, com prefixo e sufixo, um rótulo embaixo e uma barra fina que enche junto. Assenta com um leve pulso no fim.",
+  "formato": "tela_cheia",
+  "duracao": {
+    "padrao": 3.5,
+    "min": 2,
+    "max": 7
+  },
+  "parametros": [
+    {
+      "id": "valor",
+      "tipo": "numero",
+      "rotulo": "Valor final",
+      "padrao": 100,
+      "obrigatorio": true
+    },
+    {
+      "id": "inicio",
+      "tipo": "numero",
+      "rotulo": "Valor inicial",
+      "padrao": 0
+    },
+    {
+      "id": "casas",
+      "tipo": "numero",
+      "rotulo": "Casas decimais",
+      "padrao": 0
+    },
+    {
+      "id": "prefixo",
+      "tipo": "texto",
+      "rotulo": "Prefixo",
+      "padrao": "",
+      "descricao": "Ex.: R$ "
+    },
+    {
+      "id": "sufixo",
+      "tipo": "texto",
+      "rotulo": "Sufixo",
+      "padrao": "",
+      "descricao": "Ex.: %, mil, x"
+    },
+    {
+      "id": "rotulo",
+      "tipo": "texto",
+      "rotulo": "O que o número significa",
+      "padrao": ""
+    }
+  ],
+  "exemplo": {
+    "valor": 87,
+    "sufixo": "%",
+    "rotulo": "das placas chegam com o mesmo defeito"
+  },
+  "eventos_som": [
+    {
+      "t": "6f",
+      "tipo": "contagem",
+      "forca": "media",
+      "descricao": "número sobe rápido e desacelera (tique-tique)"
+    },
+    {
+      "t": "40f",
+      "tipo": "trava",
+      "forca": "forte",
+      "descricao": "número trava no valor final com pulso"
+    }
+  ],
+  "bom_para": "estatísticas, preços, resultados; um número que sustenta o argumento",
+  "evitar": "números que a pessoa não diz na fala (o som e a imagem brigam)",
+  "tags": [
+    "numero",
+    "dado",
+    "tela cheia"
+  ]
+}

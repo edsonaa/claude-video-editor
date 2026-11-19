@@ -1,0 +1,70 @@
+{
+  "titulo": "Cursor e clique",
+  "descricao": "Um cursor que viaja de um ponto a outro numa curva natural, clica com uma onda e mostra um balão com o rótulo. Para apontar onde clicar sobre uma gravação de tela.",
+  "formato": "sobreposicao",
+  "duracao": {
+    "padrao": 2.5,
+    "min": 1.5,
+    "max": 5
+  },
+  "parametros": [
+    {
+      "id": "de",
+      "tipo": "lista",
+      "rotulo": "Partida [x, y] de 0 a 1",
+      "padrao": [
+        0.3,
+        0.7
+      ]
+    },
+    {
+      "id": "ate",
+      "tipo": "lista",
+      "rotulo": "Clique [x, y] de 0 a 1",
+      "padrao": [
+        0.62,
+        0.38
+      ],
+      "obrigatorio": true
+    },
+    {
+      "id": "rotulo",
+      "tipo": "texto",
+      "rotulo": "Balão",
+      "padrao": ""
+    }
+  ],
+  "exemplo": {
+    "de": [
+      0.25,
+      0.75
+    ],
+    "ate": [
+      0.66,
+      0.36
+    ],
+    "rotulo": "clique em Exportar"
+  },
+  "eventos_som": [
+    {
+      "t": "4f",
+      "tipo": "movimento_cursor",
+      "forca": "leve",
+      "descricao": "cursor desliza"
+    },
+    {
+      "t": "26f",
+      "tipo": "clique",
+      "forca": "media",
+      "descricao": "clique de mouse seco"
+    }
+  ],
+  "bom_para": "tutoriais com tela: onde clicar, qual menu, qual botão",
+  "evitar": "seguir o cursor real da gravação (já aparece); vários cliques seguidos numa tela só",
+  "tags": [
+    "tutorial",
+    "tela",
+    "cursor",
+    "sobreposicao"
+  ]
+}

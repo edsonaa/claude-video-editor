@@ -1,0 +1,34 @@
+{
+  "titulo": "Impacto",
+  "descricao": "Preto e amarelo, títulos condensados em caixa alta, tudo rápido e com batida: chega passando do ponto e assenta. Feito para reter em vídeo curto.",
+  "cores": {
+    "fundo": "#0A0A0A",
+    "superficie": "#171717",
+    "texto": "#FFFFFF",
+    "texto_suave": "#A3A3A3",
+    "destaque": "#FACC15",
+    "apoio": "#EF4444"
+  },
+  "fontes": {
+    "titulo": "Anton",
+    "texto": "Inter",
+    "numeros": "Anton"
+  },
+  "pesos": {
+    "titulo": 400,
+    "texto": 700
+  },
+  "tracking_titulo": 0.01,
+  "raio": 10,
+  "material": "plano",
+  "movimento": {
+    "entrada_f": 10,
+    "saida_f": 6,
+    "ease_entrada": "expo.out",
+    "ease_saida": "power4.in",
+    "overshoot": 1.7,
+    "velocidade": 1.35
+  },
+  "para": "reels, shorts, TikTok; ganchos agressivos; conteúdo de retenção",
+  "caixa_titulo": "alta"
+}

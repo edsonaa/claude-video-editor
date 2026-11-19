@@ -1,0 +1,33 @@
+{
+  "titulo": "Tech neon",
+  "descricao": "Escuro com ciano e roxo, superfícies com borda luminosa e um leve brilho no texto. Rápido, com um pequeno passo além na chegada.",
+  "cores": {
+    "fundo": "#070B1A",
+    "superficie": "#0E1530",
+    "texto": "#E6F1FF",
+    "texto_suave": "#8CA3C7",
+    "destaque": "#22D3EE",
+    "apoio": "#A855F7"
+  },
+  "fontes": {
+    "titulo": "Montserrat",
+    "texto": "Inter",
+    "numeros": "Montserrat"
+  },
+  "pesos": {
+    "titulo": 800,
+    "texto": 500
+  },
+  "tracking_titulo": -0.01,
+  "raio": 14,
+  "material": "neon",
+  "movimento": {
+    "entrada_f": 13,
+    "saida_f": 7,
+    "ease_entrada": "expo.out",
+    "ease_saida": "power3.in",
+    "overshoot": 1.2,
+    "velocidade": 1.1
+  },
+  "para": "tecnologia, games, hardware, programação; canal com cara de 'futuro'"
+}

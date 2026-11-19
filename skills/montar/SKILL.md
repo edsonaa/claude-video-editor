@@ -39,7 +39,7 @@ Quer decidir tudo em detalhe (outro programa, outro formato, ordem das etapas)? 
 
 ## 3. Criar
 1. **Ambiente Python** em `<pessoa>/venv` (explique: isola as bibliotecas do fluxo): `python3 -m venv ~/.edicao/venv`, depois `<venv>/bin/python -m pip install -r <f>/requirements.txt pytest` (no Windows, `<venv>\Scripts\python.exe`). Daí em diante, `<py>` é esse python.
-2. **Configuração:** `<py> <f>/config.py criar --nome "<nome>" --preset <preset> --python <py> --json '<respostas>'`, com as respostas no formato do config (ex.: `{"revisao":{"programa":"resolve"},"transcricao":{"termos":["VRM","BIOS"]},"som":{"biblioteca":"D:/Sons"}}`). Mostre o resumo e os avisos.
+2. **Configuração:** `<py> <f>/config.py criar --nome "<nome>" --preset <preset> --estilo <estilo> --python <py> --json '<respostas>'` (o estilo é escolhido no passo 4; pode fazer o 4 antes), com as respostas no formato do config (ex.: `{"revisao":{"programa":"resolve"},"transcricao":{"termos":["VRM","BIOS"]},"som":{"biblioteca":"D:/Sons"}}`). Mostre o resumo e os avisos.
 3. **Histórico:** `git init` em `<pessoa>` e um primeiro commit ("montagem: preset <preset>"). Assim toda mudança de perfil e de ajuste pode ser desfeita.
 4. **Testes das ferramentas:** `<py> -m pytest <f>/testes -q`. Geram um clipe sintético e passam o fluxo inteiro pelos scripts em ~10 s. Passou: Python, FFmpeg e os scripts funcionam neste computador. Falhou: resolva antes de seguir.
 5. **Só o que o fluxo usa**, uma instalação por vez, explicada:
@@ -50,7 +50,9 @@ Quer decidir tudo em detalhe (outro programa, outro formato, ordem das etapas)? 
    - HyperFrames roda por `npx`, sem instalar; a versão fica fixa por vídeo (ver `guias/hyperframes.md`).
 
 ## 4. Perfil
-O perfil inicial (`<pessoa>/perfis/<perfil>/`) é neutro e já funciona. Para ele virar o estilo dela:
+**Estilo de partida.** A biblioteca tem estilos prontos, perfis completos com cores, fontes, curvas, câmera, cortes e som (`<py> <f>/config.py estilos`). Mostre a prévia de cada um: `${CLAUDE_PLUGIN_ROOT}/estilos/<estilo>/previa.png` (os mesmos seis efeitos em cada estilo). Sugira o `estilo_sugerido` do preset e pergunte. O escolhido entra no `config.py criar ... --estilo <estilo>` (ou, depois, `config.py perfil-novo <nome> --estilo <estilo>`); sem estilo, fica o perfil inicial neutro. As fontes do estilo precisam estar instaladas no computador que renderiza (são livres, licença OFL): confira e, se faltar, explique como instalar.
+
+Para ele virar o estilo **dela**:
 - **identidade** (cores com código, fontes, logotipo, o que nunca usar): pergunte agora, leva 2 minutos, e grave em `identidade.md`. Sem animação no fluxo, pule;
 - **referências:** ofereça analisar 5–10 trechos de vídeos de que ela gosta (`${CLAUDE_PLUGIN_ROOT}/guias/referencias.md`). Recomendado antes do primeiro vídeo de verdade com animação, mas não trava: dá para fazer depois, com `/edicao:montar` de novo.
 

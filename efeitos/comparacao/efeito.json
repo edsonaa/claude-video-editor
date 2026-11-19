@@ -1,0 +1,96 @@
+{
+  "titulo": "Comparação lado a lado",
+  "descricao": "Duas colunas (antes e depois, errado e certo, A e B) que entram dos lados, com um divisor no meio e os itens marcados com ✕ e ✓. Na vertical, uma coluna em cima da outra.",
+  "formato": "tela_cheia",
+  "duracao": {
+    "padrao": 6,
+    "min": 3.5,
+    "max": 12
+  },
+  "parametros": [
+    {
+      "id": "titulo_a",
+      "tipo": "texto",
+      "rotulo": "Título do lado A",
+      "padrao": "Antes"
+    },
+    {
+      "id": "titulo_b",
+      "tipo": "texto",
+      "rotulo": "Título do lado B",
+      "padrao": "Depois"
+    },
+    {
+      "id": "itens_a",
+      "tipo": "lista",
+      "rotulo": "Itens do lado A",
+      "padrao": [
+        "item 1",
+        "item 2"
+      ]
+    },
+    {
+      "id": "itens_b",
+      "tipo": "lista",
+      "rotulo": "Itens do lado B",
+      "padrao": [
+        "item 1",
+        "item 2"
+      ]
+    },
+    {
+      "id": "marcas",
+      "tipo": "opcao",
+      "rotulo": "Marcas",
+      "opcoes": [
+        "errado_certo",
+        "neutro"
+      ],
+      "padrao": "errado_certo",
+      "descricao": "errado_certo: ✕ no A e ✓ no B; neutro: pontos."
+    }
+  ],
+  "exemplo": {
+    "titulo_a": "Trocando peça no chute",
+    "titulo_b": "Com diagnóstico",
+    "itens_a": [
+      "3 peças trocadas",
+      "2 dias parado",
+      "cliente desconfiado"
+    ],
+    "itens_b": [
+      "1 peça certa",
+      "pronto em horas",
+      "cliente volta"
+    ]
+  },
+  "eventos_som": [
+    {
+      "t": "0f",
+      "tipo": "divisor",
+      "forca": "leve",
+      "descricao": "linha do meio risca de cima a baixo"
+    },
+    {
+      "t": "6f",
+      "tipo": "colunas_entram",
+      "forca": "media",
+      "descricao": "as duas colunas deslizam dos lados ao mesmo tempo"
+    },
+    {
+      "t": "18f",
+      "tipo": "item",
+      "forca": "leve",
+      "descricao": "itens aparecem em pares",
+      "por_item": "itens_a",
+      "passo": "8f"
+    }
+  ],
+  "bom_para": "antes e depois; o jeito errado e o certo; duas opções",
+  "evitar": "listas desiguais demais; mais de 4 itens por lado",
+  "tags": [
+    "comparacao",
+    "lista",
+    "tela cheia"
+  ]
+}

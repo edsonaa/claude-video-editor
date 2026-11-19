@@ -40,5 +40,6 @@
     "som": {
       "ativo": true
     }
-  }
+  },
+  "estilo_sugerido": "impacto"
 }

@@ -1,0 +1,100 @@
+{
+  "titulo": "Gráfico de barras",
+  "descricao": "Barras horizontais que crescem em sequência com o valor contando na ponta, e uma delas em destaque. Para comparar poucas coisas (2 a 6).",
+  "formato": "tela_cheia",
+  "duracao": {
+    "padrao": 5,
+    "min": 3,
+    "max": 10
+  },
+  "parametros": [
+    {
+      "id": "titulo",
+      "tipo": "texto",
+      "rotulo": "Título",
+      "padrao": "Comparação"
+    },
+    {
+      "id": "dados",
+      "tipo": "lista",
+      "rotulo": "Barras",
+      "obrigatorio": true,
+      "padrao": [
+        {
+          "rotulo": "A",
+          "valor": 40
+        },
+        {
+          "rotulo": "B",
+          "valor": 75
+        },
+        {
+          "rotulo": "C",
+          "valor": 55
+        }
+      ],
+      "descricao": "Lista de {\"rotulo\": …, \"valor\": …}, de 2 a 6."
+    },
+    {
+      "id": "unidade",
+      "tipo": "texto",
+      "rotulo": "Unidade",
+      "padrao": ""
+    },
+    {
+      "id": "destaque",
+      "tipo": "numero",
+      "rotulo": "Barra em destaque (1 = a primeira; 0 = a maior)",
+      "padrao": 0
+    },
+    {
+      "id": "casas",
+      "tipo": "numero",
+      "rotulo": "Casas decimais",
+      "padrao": 0
+    }
+  ],
+  "exemplo": {
+    "titulo": "Tempo médio de reparo",
+    "unidade": " min",
+    "dados": [
+      {
+        "rotulo": "Sem diagnóstico",
+        "valor": 95
+      },
+      {
+        "rotulo": "Com esquema",
+        "valor": 48
+      },
+      {
+        "rotulo": "Com o método",
+        "valor": 22
+      }
+    ],
+    "destaque": 3
+  },
+  "eventos_som": [
+    {
+      "t": "0f",
+      "tipo": "titulo_entra",
+      "forca": "leve",
+      "descricao": "título desce"
+    },
+    {
+      "t": "10f",
+      "tipo": "barra_cresce",
+      "forca": "leve",
+      "descricao": "cada barra cresce da esquerda",
+      "por_item": "dados",
+      "passo": "8f"
+    }
+  ],
+  "bom_para": "comparar poucas opções; antes e depois em números",
+  "evitar": "mais de 6 barras; dados que precisam de eixo e escala exatos",
+  "tags": [
+    "dado",
+    "grafico",
+    "comparacao",
+    "tela cheia"
+  ]
+}

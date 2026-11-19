@@ -1,0 +1,69 @@
+{
+  "titulo": "Lista de passos",
+  "descricao": "Um título e passos numerados que entram um a um no ritmo da fala; o passo atual fica aceso e os anteriores esmaecem um pouco.",
+  "formato": "tela_cheia",
+  "duracao": {
+    "padrao": 6,
+    "min": 3,
+    "max": 14
+  },
+  "parametros": [
+    {
+      "id": "titulo",
+      "tipo": "texto",
+      "rotulo": "Título",
+      "padrao": "Passo a passo"
+    },
+    {
+      "id": "itens",
+      "tipo": "lista",
+      "rotulo": "Passos",
+      "obrigatorio": true,
+      "padrao": [
+        "Primeiro passo",
+        "Segundo passo",
+        "Terceiro passo"
+      ],
+      "descricao": "De 2 a 6 frases curtas."
+    },
+    {
+      "id": "intervalo_f",
+      "tipo": "numero",
+      "rotulo": "Intervalo entre passos (frames a 30 fps)",
+      "padrao": 30,
+      "descricao": "Case com a fala: o tempo entre as palavras-gatilho de cada passo."
+    }
+  ],
+  "exemplo": {
+    "titulo": "Antes de trocar o chip",
+    "itens": [
+      "Meça a tensão de entrada",
+      "Confira o curto no barramento",
+      "Só então aqueça a placa"
+    ],
+    "intervalo_f": 30
+  },
+  "eventos_som": [
+    {
+      "t": "0f",
+      "tipo": "titulo_entra",
+      "forca": "leve",
+      "descricao": "título entra"
+    },
+    {
+      "t": "12f",
+      "tipo": "passo_entra",
+      "forca": "media",
+      "descricao": "número pula e o passo desliza",
+      "por_item": "itens",
+      "passo": "param:intervalo_f"
+    }
+  ],
+  "bom_para": "processos, checklists, ordem de operações",
+  "evitar": "passos longos (mais de ~6 palavras); mais de 6 passos numa tela só",
+  "tags": [
+    "lista",
+    "processo",
+    "tela cheia"
+  ]
+}

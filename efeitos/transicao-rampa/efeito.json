@@ -1,0 +1,42 @@
+{
+  "titulo": "Transição com rampa",
+  "descricao": "Painéis de cor atravessam o quadro em diagonal, acelerando até cobrir tudo e freando ao sair (speed ramp). Fica por cima do corte entre duas cenas, com transparência nas pontas.",
+  "formato": "sobreposicao",
+  "duracao": {
+    "padrao": 1.0,
+    "min": 0.6,
+    "max": 1.6
+  },
+  "parametros": [
+    {
+      "id": "direcao",
+      "tipo": "opcao",
+      "rotulo": "Direção",
+      "opcoes": [
+        "direita",
+        "esquerda",
+        "cima",
+        "baixo"
+      ],
+      "padrao": "direita",
+      "descricao": "Para onde os painéis vão. A câmera da cena seguinte chega da direção oposta."
+    }
+  ],
+  "exemplo": {
+    "direcao": "direita"
+  },
+  "eventos_som": [
+    {
+      "t": "0f",
+      "tipo": "whoosh_rampa",
+      "forca": "forte",
+      "descricao": "whoosh que acelera até o meio (pico no corte) e solta"
+    }
+  ],
+  "bom_para": "troca de assunto, de cenário ou de capítulo; disfarçar um corte grande",
+  "evitar": "entre frases do mesmo raciocínio (vira enfeite)",
+  "tags": [
+    "transicao",
+    "corte"
+  ]
+}

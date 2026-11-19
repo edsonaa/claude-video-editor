@@ -32,5 +32,6 @@
     "som": {
       "ativo": false
     }
-  }
+  },
+  "estilo_sugerido": "limpo"
 }

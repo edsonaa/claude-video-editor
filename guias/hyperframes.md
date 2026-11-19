@@ -34,7 +34,16 @@ Ao construir, anote num arquivo de eventos tudo o que um editor de som ia querer
 
 A etapa de som parte disso. Movimento de "vida" (deriva, partícula, reflexo) não é evento.
 
+## Biblioteca de efeitos
+O motor traz efeitos prontos e testados em `efeitos/` (ver `efeitos/README.md`), instanciados com `ferramentas/efeitos.py criar`. Eles seguem as regras abaixo e usam a base comum `efeitos/_comum/` (`tema.css` e `tema.js`: cores, fontes e curvas do perfil, câmera virtual, contador, marcador de asset faltando).
+- **Versão testada:** a biblioteca foi conferida com o HyperFrames 0.9.70 (`check` de todos os efeitos em todos os estilos). Num vídeo com outra versão, rode o `check` do efeito antes de confiar.
+- **Variáveis da composição:** `data-composition-variables` declara, `window.__hyperframes.getVariables()` lê, e `render --variables '{…}'` troca no render. O `efeitos.py criar` já grava os valores do item como padrão, então `check`, `snapshot` e `render` usam o mesmo conteúdo.
+- **GSAP pela CDN** (licença própria da GreenSock, por isso não vai no repositório). Sem internet: `--gsap <caminho do gsap.min.js>` copia uma cópia local para o projeto.
+
 ## Armadilhas (cada uma custou uma rodada)
+- **Variável com nome de variável CSS:** cada variável da composição também vira uma variável CSS (`--<id>`). Um parâmetro chamado `texto` apagou a cor `--texto` do tema e deixou o título preto. As variáveis CSS do tema usam o prefixo `--t-`; não use esse prefixo em parâmetros.
+- **`transform` do CSS some quando o GSAP anima `x`/`y`/`scale`:** o GSAP reescreve o `transform` inteiro. Um `translate(-50%, -170%)` no CSS de um balão sumiu na primeira animação. Posicione pelo GSAP (`tl.set(el, {xPercent: -50, yPercent: -170}, 0)`), não pelo CSS.
+- **Render local lento:** sem o `chrome-headless-shell`, o HyperFrames cai para a captura por screenshot (~1,5 s por quadro numa máquina sem GPU). O `snapshot` continua rápido; use-o para olhar e para prévias, e o `render` só no fim. `hyperframes doctor` e `hyperframes browser ensure` mostram qual navegador está em uso.
 - **Snapshot e render só mostram o mesmo se:**
   - todo movimento encadeado tiver a partida explícita (`fromTo`; com `to`, a partida é lida da tela);
   - todo tween novo tiver `lazy: false` (senão o GSAP adia o primeiro quadro);

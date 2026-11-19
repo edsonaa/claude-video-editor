@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="pt-BR" data-composition-variables='[]'>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<link rel="stylesheet" href="../_comum/tema.css" />
+<style>
+#cena { display: flex; align-items: center; justify-content: center; }
+#janela { width: 72%; overflow: hidden; }
+.vertical #janela { width: 90%; }
+#barra { height: 54px; display: flex; align-items: center; gap: 12px; padding: 0 22px; background: color-mix(in srgb, var(--t-superficie) 80%, black 20%); }
+.bola { width: 16px; height: 16px; border-radius: 50%; background: color-mix(in srgb, var(--t-texto) 30%, transparent); }
+#url { margin-left: 18px; flex: 1; height: 32px; border-radius: 16px; padding: 0 18px; display: flex; align-items: center; font-size: 20px;
+  background: color-mix(in srgb, var(--t-fundo) 70%, transparent); color: var(--t-texto); }
+#area { position: relative; aspect-ratio: 16 / 9; background: #fff; overflow: hidden; }
+#zoom { position: absolute; inset: 0; transform-origin: 0 0; }
+#print { position: absolute; inset: 0; }
+#print img { object-fit: cover !important; }
+#veu { position: absolute; inset: 0; pointer-events: none; }
+#caixa { position: absolute; border: 5px solid var(--t-destaque); border-radius: 10px; box-shadow: 0 0 0 9999px rgba(0,0,0,.45), 0 0 30px color-mix(in srgb, var(--t-destaque) 60%, transparent); }
+#rot { position: absolute; white-space: nowrap; }
+.falso { position: absolute; inset: 0; background:
+  linear-gradient(#e8edf3 0 0) 6% 10% / 40% 6% no-repeat, linear-gradient(#f1f4f8 0 0) 6% 24% / 88% 3% no-repeat,
+  linear-gradient(#f1f4f8 0 0) 6% 31% / 70% 3% no-repeat, linear-gradient(#dbe4ef 0 0) 52% 40% / 38% 20% no-repeat,
+  linear-gradient(#f1f4f8 0 0) 6% 44% / 40% 3% no-repeat, linear-gradient(#f1f4f8 0 0) 6% 51% / 36% 3% no-repeat,
+  linear-gradient(#f1f4f8 0 0) 6% 72% / 88% 3% no-repeat, #fff; }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="efeito" data-start="0" data-duration="5" data-width="1920" data-height="1080" data-fps="30" data-motion-blur="on" data-motion-blur-tier="filter">
+<div class="fundo clip" data-start="0" data-duration="5"></div>
+  <div id="cena" class="clip" data-start="0" data-duration="5">
+    <div id="janela" class="superficie">
+      <div id="barra"><div class="bola"></div><div class="bola"></div><div class="bola"></div><div id="url"></div></div>
+      <div id="area"><div id="zoom"><div id="print"></div></div><div id="veu"><div id="caixa"></div><div id="rot" class="chip solido texto"></div></div></div>
+    </div>
+  </div>
+</div>
+<script src="../_comum/tema.js"></script>
+<script>
+const { v, df, D } = HF;
+const print = document.getElementById("print");
+if (v.imagem) HF.imagem(print, v.imagem); else print.innerHTML = '<div class="falso"></div><div class="faltando pequeno">ASSET FALTANDO: print</div>';
+document.getElementById("url").textContent = v.url || "";
+const [rx, ry, rw, rh] = HF.lista("regiao").map(Number);
+const z = Number(v.zoom) || 1.6;
+// zoom centrado na região, sem mostrar fora do print
+const cx = rx + rw / 2, cy = ry + rh / 2;
+const tx = Math.min(0, Math.max(1 - z, 0.5 - cx * z)), ty = Math.min(0, Math.max(1 - z, 0.5 - cy * z));
+const caixa = document.getElementById("caixa"), rot = document.getElementById("rot");
+const pos = (x, y, w, h) => { caixa.style.left = x * 100 + "%"; caixa.style.top = y * 100 + "%"; caixa.style.width = w * 100 + "%"; caixa.style.height = h * 100 + "%"; };
+pos(rx * z + tx, ry * z + ty, rw * z, rh * z);
+rot.style.left = (rx * z + tx) * 100 + "%"; rot.style.top = (ry * z + ty) * 100 + "%";
+rot.textContent = v.rotulo || ""; if (!v.rotulo) rot.style.display = "none";
+const tl = HF.timeline();
+HF.camera(tl, "#cena", 0.03);
+HF.entrada(tl, "#janela", { y: 120, opacity: 0, scale: 0.94 }, 0, { duracao: df(18) });
+tl.set("#zoom", { transformOrigin: "0 0" }, df(30));
+tl.fromTo("#zoom", { scale: 1, xPercent: 0, yPercent: 0 }, { scale: z, xPercent: tx * 100, yPercent: ty * 100, duration: df(20), ease: "power3.inOut", lazy: false }, df(30));
+tl.fromTo(caixa, { opacity: 0, scale: 1.15 }, { opacity: 1, scale: 1, duration: df(12), ease: HF.easeEntrada(), lazy: false }, df(48));
+tl.set(rot, { yPercent: -125 }, 0);
+if (v.rotulo) HF.entrada(tl, rot, { y: 10, opacity: 0 }, df(54));
+HF.saida(tl, "#cena", { opacity: 0, y: 40 }, D - HF.saidaD());
+HF.pronto(tl);
+</script>
+</body>
+</html>

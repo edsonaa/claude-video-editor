@@ -1,0 +1,85 @@
+{
+  "titulo": "Print com destaque",
+  "descricao": "Um print de site ou programa dentro de uma janela, que entra e depois aproxima até uma região, desenhando uma caixa de destaque ao redor e escurecendo o resto, com um rótulo.",
+  "formato": "tela_cheia",
+  "duracao": {
+    "padrao": 5,
+    "min": 3,
+    "max": 10
+  },
+  "parametros": [
+    {
+      "id": "imagem",
+      "tipo": "imagem",
+      "rotulo": "Print (PNG)",
+      "padrao": ""
+    },
+    {
+      "id": "url",
+      "tipo": "texto",
+      "rotulo": "Endereço na barra da janela",
+      "padrao": ""
+    },
+    {
+      "id": "regiao",
+      "tipo": "lista",
+      "rotulo": "Região [x, y, largura, altura] de 0 a 1",
+      "padrao": [
+        0.55,
+        0.3,
+        0.35,
+        0.25
+      ]
+    },
+    {
+      "id": "rotulo",
+      "tipo": "texto",
+      "rotulo": "Rótulo do destaque",
+      "padrao": ""
+    },
+    {
+      "id": "zoom",
+      "tipo": "numero",
+      "rotulo": "Zoom na região",
+      "padrao": 1.6
+    }
+  ],
+  "exemplo": {
+    "url": "fabricante.com/datasheet",
+    "regiao": [
+      0.52,
+      0.34,
+      0.36,
+      0.22
+    ],
+    "rotulo": "tensão máxima aqui"
+  },
+  "eventos_som": [
+    {
+      "t": "0f",
+      "tipo": "janela_entra",
+      "forca": "media",
+      "descricao": "janela sobe e assenta"
+    },
+    {
+      "t": "30f",
+      "tipo": "zoom",
+      "forca": "media",
+      "descricao": "câmera acelera até a região e freia"
+    },
+    {
+      "t": "48f",
+      "tipo": "caixa_desenha",
+      "forca": "leve",
+      "descricao": "caixa de destaque se desenha"
+    }
+  ],
+  "bom_para": "mostrar onde clicar ou o que ler num site, datasheet, programa",
+  "evitar": "print com dado pessoal ou tela logada de terceiros; zoom num texto que fica ilegível",
+  "tags": [
+    "print",
+    "tela",
+    "destaque",
+    "tela cheia"
+  ]
+}

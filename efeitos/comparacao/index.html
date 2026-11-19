@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt-BR" data-composition-variables='[]'>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<link rel="stylesheet" href="../_comum/tema.css" />
+<style>
+#cena { display: grid; grid-template-columns: 1fr 1fr; align-items: stretch; align-content: center; padding: 0 7%; gap: 120px; }
+.vertical #cena { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; gap: 80px; padding: 14% 8%; }
+.col { padding: 52px 56px; }
+.col h2 { font-size: 60px; margin-bottom: 34px; }
+.vertical .col h2 { font-size: 70px; } .vertical .it { font-size: 50px; } .vertical .mk { width: 62px; height: 62px; }
+.col.b h2 { color: var(--t-destaque); }
+.it { display: flex; align-items: center; gap: 22px; font-size: 42px; margin: 18px 0; }
+.mk { flex: 0 0 auto; width: 54px; height: 54px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 30px; }
+.a .mk { background: #DC2626; color: #fff; }
+.b .mk { background: var(--t-destaque); color: var(--t-fundo); }
+#div { position: absolute; left: 50%; top: 15%; bottom: 15%; width: 4px; margin-left: -2px; border-radius: 2px; background: color-mix(in srgb, var(--t-texto) 25%, transparent); transform-origin: top center; }
+.vertical #div { left: 12%; right: 12%; top: 50%; bottom: auto; width: auto; height: 4px; margin: -2px 0 0 0; transform-origin: left center; }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="efeito" data-start="0" data-duration="6" data-width="1920" data-height="1080" data-fps="30" data-motion-blur="on" data-motion-blur-tier="filter">
+<div class="fundo clip" data-start="0" data-duration="6"></div>
+  <div id="cena" class="clip" data-start="0" data-duration="6">
+    <div class="col a superficie"><h2 class="titulo"></h2><div class="lista"></div></div>
+    <div class="col b superficie"><h2 class="titulo"></h2><div class="lista"></div></div>
+    <div id="div"></div>
+  </div>
+</div>
+<script src="../_comum/tema.js"></script>
+<script>
+const { v, df, D } = HF;
+const neutro = v.marcas === "neutro";
+const montar = (sel, titulo, itens, mk) => {
+  const c = document.querySelector(sel); c.querySelector("h2").textContent = titulo;
+  return itens.slice(0, 4).map((t) => {
+    const e = document.createElement("div"); e.className = "it texto";
+    e.innerHTML = '<div class="mk"></div><div></div>';
+    e.firstChild.textContent = neutro ? "•" : mk; e.lastChild.textContent = t;
+    c.querySelector(".lista").appendChild(e); return e;
+  });
+};
+const ia = montar(".col.a", v.titulo_a, HF.lista("itens_a"), "✕");
+const ib = montar(".col.b", v.titulo_b, HF.lista("itens_b"), "✓");
+const tl = HF.timeline();
+HF.camera(tl, "#cena", 0.03);
+HF.entrada(tl, "#div", HF.vertical ? { scaleX: 0 } : { scaleY: 0 }, 0, { duracao: df(14) });
+HF.entrada(tl, ".col.a", HF.vertical ? { y: -60, opacity: 0 } : { x: -80, opacity: 0 }, df(6));
+HF.entrada(tl, ".col.b", HF.vertical ? { y: 60, opacity: 0 } : { x: 80, opacity: 0 }, df(6));
+const n = Math.max(ia.length, ib.length);
+for (let i = 0; i < n; i++) {
+  if (ia[i]) HF.entrada(tl, ia[i], { y: 16, opacity: 0 }, df(18 + i * 8));
+  if (ib[i]) HF.entrada(tl, ib[i], { y: 16, opacity: 0 }, df(20 + i * 8));
+}
+HF.saida(tl, "#cena", { opacity: 0, scale: 0.96 }, D - HF.saidaD());
+HF.pronto(tl);
+</script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+{
+  "titulo": "Ênfase de frase",
+  "descricao": "A frase que está sendo dita aparece grande sobre a filmagem, com um marca-texto crescendo atrás da palavra-chave. Um degradê escurece só a parte de baixo, para ler sobre qualquer imagem.",
+  "formato": "enfase",
+  "duracao": {
+    "padrao": 3,
+    "min": 1.5,
+    "max": 6
+  },
+  "parametros": [
+    {
+      "id": "frase",
+      "tipo": "texto",
+      "rotulo": "Frase",
+      "padrao": "isso muda tudo",
+      "obrigatorio": true
+    },
+    {
+      "id": "destaque",
+      "tipo": "texto",
+      "rotulo": "Palavra(s) marcadas",
+      "padrao": ""
+    },
+    {
+      "id": "posicao",
+      "tipo": "opcao",
+      "rotulo": "Posição",
+      "opcoes": [
+        "baixo",
+        "centro"
+      ],
+      "padrao": "baixo"
+    }
+  ],
+  "exemplo": {
+    "frase": "o defeito estava na bobina",
+    "destaque": "bobina"
+  },
+  "eventos_som": [
+    {
+      "t": "0f",
+      "tipo": "texto_entra",
+      "forca": "leve",
+      "descricao": "frase sobe e assenta"
+    },
+    {
+      "t": "10f",
+      "tipo": "marca_texto",
+      "forca": "media",
+      "descricao": "marca-texto risca atrás da palavra, seco"
+    }
+  ],
+  "bom_para": "a frase-chave dita pelo apresentador; números e nomes que precisam ficar na cabeça",
+  "evitar": "repetir a mesma ênfase várias vezes no corpo (perde força)",
+  "tags": [
+    "texto",
+    "enfase",
+    "sobreposicao"
+  ]
+}

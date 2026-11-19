@@ -32,7 +32,7 @@ Depois, abra o Claude Code e rode `/edicao:montar`.
 | `narrado` | Só a voz sobre imagens e animações, sem câmera |
 | `so-cortes` | O começo mais rápido: só a transcrição e o primeiro corte |
 
-Depois ela cria o seu ambiente Python, roda os testes das ferramentas no seu computador e, se você quiser, analisa vídeos de que você gosta para montar o seu estilo.
+Depois você escolhe um estilo de partida (vendo a vitrine de cada um), ela cria o seu ambiente Python, roda os testes das ferramentas no seu computador e, se você quiser, analisa vídeos de que você gosta para afinar o estilo.
 
 ## Editar um vídeo
 Abra o Claude Code na pasta do vídeo e digite:
@@ -48,6 +48,11 @@ Outros comandos:
 - `/edicao:editar atualizar`: traz a versão nova do motor e mostra o que mudou;
 - `/edicao:editar config`: mostra e muda as suas escolhas;
 - `/edicao:montar`: muda o fluxo, troca de preset, cria um perfil ou uma etapa sua.
+
+## Efeitos e estilos prontos
+O motor traz uma **biblioteca de 13 efeitos** de animação (título de impacto, contador, gráfico de barras, comparação, lista de passos, card lateral, print com destaque, cursor, capítulo, transição, tarja de nome, logo, ênfase de frase), todos parametrizados e com prévia animada em [`efeitos/`](efeitos/README.md), e **4 estilos completos** para começar (limpo, tech-neon, editorial, impacto) em [`estilos/`](estilos/README.md). O plano de animação usa os efeitos como repertório, nunca como molde: o conteúdo decide.
+
+![Os quatro estilos](estilos/limpo/previa.png)
 
 ## O que é do motor e o que é seu
 O plugin é o **motor**: skills, guias e ferramentas. Ele se atualiza, e ninguém precisa editá-lo para personalizar. O que é seu fica em `~/.edicao/`, que nenhuma atualização toca (e que tem histórico git, para desfazer):
@@ -66,6 +71,8 @@ O plugin é o **motor**: skills, guias e ferramentas. Ele se atualiza, e ningué
 | `skills/` | A montagem, a `editar` (com as regras comuns) e uma skill por etapa |
 | `guias/` | O ofício: princípios do fluxo, decisões, referências, animação, HyperFrames, entrega no programa de edição e o de cada etapa |
 | `ferramentas/` | Os scripts prontos e testados: estado do vídeo, configuração, inventário, silêncios, transcrição, XML (ida e volta), tempo e timecode, folha de contato, índice de sons e rastreio de rosto. Veja o [README](ferramentas/README.md) |
+| `efeitos/` | A biblioteca de efeitos HyperFrames, com prévias |
+| `estilos/` | Os estilos prontos (perfis completos), com vitrines |
 | `presets/` | Os pontos de partida da montagem |
 | `modelos/` | O perfil inicial, o formato do perfil e do estado do vídeo |
 | `CHANGELOG.md` | As novidades de cada versão do motor |

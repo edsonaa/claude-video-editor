@@ -1,0 +1,33 @@
+{
+  "titulo": "Editorial",
+  "descricao": "Papel creme, títulos em serifa, terracota e verde-petróleo de apoio, sombras suaves. Movimento mais lento e assentado, como revista.",
+  "cores": {
+    "fundo": "#F4EFE6",
+    "superficie": "#FFFDF8",
+    "texto": "#2B2118",
+    "texto_suave": "#7A6A58",
+    "destaque": "#B4400B",
+    "apoio": "#0F766E"
+  },
+  "fontes": {
+    "titulo": "Lora",
+    "texto": "DM Sans",
+    "numeros": "Lora"
+  },
+  "pesos": {
+    "titulo": 700,
+    "texto": 500
+  },
+  "tracking_titulo": 0,
+  "raio": 6,
+  "material": "papel",
+  "movimento": {
+    "entrada_f": 20,
+    "saida_f": 10,
+    "ease_entrada": "power3.out",
+    "ease_saida": "power2.in",
+    "overshoot": 0,
+    "velocidade": 0.85
+  },
+  "para": "vídeo-ensaio, narrado, história, cultura, explicativos calmos"
+}

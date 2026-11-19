@@ -1,0 +1,33 @@
+{
+  "cores": {
+    "fundo": "#0F172A",
+    "superficie": "#1E293B",
+    "texto": "#F8FAFC",
+    "texto_suave": "#94A3B8",
+    "destaque": "#3B82F6",
+    "apoio": "#22D3EE"
+  },
+  "fontes": {
+    "titulo": "Inter",
+    "texto": "Inter",
+    "numeros": "Inter"
+  },
+  "pesos": {
+    "titulo": 800,
+    "texto": 500
+  },
+  "tracking_titulo": -0.02,
+  "caixa_titulo": "normal",
+  "raio": 18,
+  "material": "plano",
+  "movimento": {
+    "entrada_f": 15,
+    "saida_f": 8,
+    "ease_entrada": "expo.out",
+    "ease_saida": "power3.in",
+    "overshoot": 0,
+    "velocidade": 1
+  },
+  "titulo": "Padrão",
+  "descricao": "Tema neutro do perfil inicial: azul-marinho, Inter, destaque azul."
+}

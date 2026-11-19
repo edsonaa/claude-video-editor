@@ -3,12 +3,13 @@
 
 Uso:
   config.py presets                          os pontos de partida, com o que cada um faz
-  config.py criar --nome N --preset P [--perfil padrao] [--python caminho] [--json '{"video":{…}}']
+  config.py criar --nome N --preset P [--perfil padrao] [--estilo limpo] [--python caminho] [--json '{"video":{…}}']
                                              cria ~/.edicao (config, perfil inicial, pastas); nunca sobrescreve
   config.py mostrar [--json]                 resumo das escolhas + avisos de incoerência
   config.py set <caminho> <valor>            muda um campo (valor em JSON ou texto); valida antes de gravar
   config.py validar
-  config.py perfil-novo <nome> [--de <perfil existente>]
+  config.py perfil-novo <nome> [--de <perfil existente> | --estilo <estilo da biblioteca>]
+  config.py estilos                          os estilos prontos (veja estilos/<nome>/previa.png)
   config.py novidades [--marcar-lido]        o que mudou no motor desde a última vez
   config.py caminho                          onde fica a pasta da pessoa
   config.py motor                            onde fica o motor (para os comandos das skills)
@@ -29,12 +30,13 @@ def main(argv=None):
     sub.add_parser("presets")
     p = sub.add_parser("criar")
     p.add_argument("--nome", required=True); p.add_argument("--preset", required=True)
-    p.add_argument("--perfil", default="padrao"); p.add_argument("--python")
+    p.add_argument("--perfil", default="padrao"); p.add_argument("--python"); p.add_argument("--estilo")
     p.add_argument("--json", help="campos para mudar sobre o preset, em JSON")
     p = sub.add_parser("mostrar"); p.add_argument("--json", action="store_true")
     p = sub.add_parser("set"); p.add_argument("caminho"); p.add_argument("valor")
     sub.add_parser("validar")
-    p = sub.add_parser("perfil-novo"); p.add_argument("nome"); p.add_argument("--de")
+    p = sub.add_parser("perfil-novo"); p.add_argument("nome"); p.add_argument("--de"); p.add_argument("--estilo")
+    sub.add_parser("estilos")
     p = sub.add_parser("novidades"); p.add_argument("--marcar-lido", action="store_true")
     sub.add_parser("caminho")
     sub.add_parser("motor")
@@ -53,10 +55,10 @@ def main(argv=None):
                 print(f"{nome}: {p.get('titulo', '')}")
                 print(f"  {p.get('descricao', '')}")
                 print(f"  fluxo: {' → '.join(cfg['fluxo'])} · revisão: {cfg['revisao']['programa']}"
-                      f" · {cfg['video']['formato']}")
+                      f" · {cfg['video']['formato']} · estilo sugerido: {p.get('estilo_sugerido', '—')}")
         elif a.cmd == "criar":
             extra = json.loads(a.json) if a.json else None
-            cfg = C.criar(a.nome, a.preset, a.perfil, a.python, extra)
+            cfg = C.criar(a.nome, a.preset, a.perfil, a.python, extra, a.estilo)
             print(f"criado {C.arquivo()}")
             print("\n".join(C.resumo(cfg)))
             _, avisos = C.validar(cfg)
@@ -93,7 +95,12 @@ def main(argv=None):
                 return 1
             print("configuração válida" + (f" ({len(avisos)} avisos)" if avisos else ""))
         elif a.cmd == "perfil-novo":
-            print(f"perfil criado em {C.novo_perfil(a.nome, a.de)}")
+            print(f"perfil criado em {C.novo_perfil(a.nome, a.de, a.estilo)}")
+        elif a.cmd == "estilos":
+            for e in C.listar_estilos():
+                t = json.loads((C.ESTILOS / e / "tema.json").read_text(encoding="utf-8"))
+                print(f"{e:<12} {t.get('titulo', '')}: {t.get('descricao', '')}")
+                print(f"{'':<12} bom para: {t.get('para', '')} · prévia: {C.ESTILOS / e / 'previa.png'}")
         elif a.cmd == "novidades":
             cfg = C.carregar()
             nov = C.novidades(cfg.get("motor_versao_lida"))

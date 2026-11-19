@@ -115,7 +115,9 @@ def test_novidades():
     todas = C.novidades(None)
     assert todas and todas[0][0] == C.versao_motor()
     assert C.novidades(C.versao_motor()) == []
-    assert [v for v, _ in C.novidades("0.1.0")] == [C.versao_motor()] or C.versao_motor() == "0.1.0"
+    todas_v = [v for v, _ in todas]
+    assert [v for v, _ in C.novidades("0.1.0")] == [v for v in todas_v if v != "0.1.0"]
+    assert todas_v == sorted(todas_v, key=lambda v: tuple(map(int, v.split("."))), reverse=True)
 
 
 def test_estado_init_usa_o_fluxo_da_configuracao(casa, tmp_path):

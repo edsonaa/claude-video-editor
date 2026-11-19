@@ -1,0 +1,55 @@
+{
+  "titulo": "Revelação de logo",
+  "descricao": "Um logo (ou imagem) revelado por um círculo que se abre, com um anel de luz, e o nome entrando letra por letra embaixo. Sem a imagem, mostra o marcador de ASSET FALTANDO no lugar.",
+  "formato": "tela_cheia",
+  "duracao": {
+    "padrao": 3.5,
+    "min": 2,
+    "max": 6
+  },
+  "parametros": [
+    {
+      "id": "imagem",
+      "tipo": "imagem",
+      "rotulo": "Logo (SVG ou PNG)",
+      "padrao": ""
+    },
+    {
+      "id": "nome",
+      "tipo": "texto",
+      "rotulo": "Nome",
+      "padrao": "Nome da ferramenta"
+    },
+    {
+      "id": "apoio",
+      "tipo": "texto",
+      "rotulo": "Linha de apoio",
+      "padrao": ""
+    }
+  ],
+  "exemplo": {
+    "nome": "Multímetro",
+    "apoio": "a ferramenta número 1 da bancada"
+  },
+  "eventos_som": [
+    {
+      "t": "0f",
+      "tipo": "revela",
+      "forca": "media",
+      "descricao": "círculo de luz abre e revela o logo"
+    },
+    {
+      "t": "10f",
+      "tipo": "letras",
+      "forca": "leve",
+      "descricao": "letras do nome entram em sequência rápida"
+    }
+  ],
+  "bom_para": "apresentar uma ferramenta, marca ou produto citado",
+  "evitar": "logo redesenhado ou 'parecido' (use o oficial; sem ele, fica o marcador)",
+  "tags": [
+    "logo",
+    "marca",
+    "tela cheia"
+  ]
+}

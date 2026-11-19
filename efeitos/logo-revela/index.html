@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR" data-composition-variables='[]'>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<link rel="stylesheet" href="../_comum/tema.css" />
+<style>
+#cena { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+#palco { position: relative; width: 340px; height: 340px; }
+#logo { position: absolute; inset: 40px; }
+#anel { position: absolute; inset: 0; border-radius: 50%; border: 6px solid var(--t-destaque);
+  box-shadow: 0 0 60px color-mix(in srgb, var(--t-destaque) 50%, transparent), inset 0 0 60px color-mix(in srgb, var(--t-destaque) 30%, transparent); }
+#nome { margin-top: 56px; font-size: 96px; }
+#nome .letra { display: inline-block; }
+#apoio { margin-top: 20px; font-size: 42px; }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="efeito" data-start="0" data-duration="3.5" data-width="1920" data-height="1080" data-fps="30" data-motion-blur="on" data-motion-blur-tier="filter">
+<div class="fundo clip" data-start="0" data-duration="3.5"></div>
+  <div id="cena" class="clip" data-start="0" data-duration="3.5">
+    <div id="palco"><div id="anel"></div><div id="logo"></div></div>
+    <div id="nome" class="titulo brilho"></div>
+    <div id="apoio" class="texto suave"></div>
+  </div>
+</div>
+<script src="../_comum/tema.js"></script>
+<script>
+const { v, df, D } = HF;
+HF.imagem(document.getElementById("logo"), v.imagem, "logo de " + (v.nome || ""));
+const nome = document.getElementById("nome");
+const letras = Array.from(String(v.nome || "")).map((c) => {
+  const s = document.createElement("span"); s.className = "letra"; s.textContent = c === " " ? "\u00a0" : c; nome.appendChild(s); return s;
+});
+document.getElementById("apoio").textContent = v.apoio || "";
+const tl = HF.timeline();
+HF.camera(tl, "#cena", 0.05);
+tl.fromTo("#logo", { clipPath: "circle(0% at 50% 50%)" }, { clipPath: "circle(75% at 50% 50%)", duration: df(18), ease: "expo.out", lazy: false }, 0);
+HF.entrada(tl, "#anel", { scale: 0.3, opacity: 0 }, 0, { duracao: df(18) });
+tl.to("#anel", { scale: 1.25, opacity: 0, duration: df(22), ease: "power2.out", lazy: false }, df(16));
+letras.forEach((l, i) => HF.entrada(tl, l, { y: 50, opacity: 0 }, df(10 + i * 1.5), { duracao: df(12) }));
+if (v.apoio) HF.entrada(tl, "#apoio", { y: 20, opacity: 0 }, df(14 + letras.length * 1.5));
+HF.saida(tl, "#cena", { opacity: 0, scale: 1.08, filter: "blur(10px)" }, D - HF.saidaD());
+HF.pronto(tl);
+</script>
+</body>
+</html>

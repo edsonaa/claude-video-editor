@@ -1,0 +1,33 @@
+{
+  "titulo": "Limpo",
+  "descricao": "Claro, sóbrio e direto: fundo quase branco, texto escuro, um azul de destaque. Movimento firme, sem passar do ponto.",
+  "cores": {
+    "fundo": "#F7F8FA",
+    "superficie": "#FFFFFF",
+    "texto": "#0B1220",
+    "texto_suave": "#5B6475",
+    "destaque": "#2563EB",
+    "apoio": "#0EA5E9"
+  },
+  "fontes": {
+    "titulo": "Inter",
+    "texto": "Inter",
+    "numeros": "Inter"
+  },
+  "pesos": {
+    "titulo": 800,
+    "texto": 500
+  },
+  "tracking_titulo": -0.025,
+  "raio": 16,
+  "material": "plano",
+  "movimento": {
+    "entrada_f": 15,
+    "saida_f": 8,
+    "ease_entrada": "expo.out",
+    "ease_saida": "power3.in",
+    "overshoot": 0,
+    "velocidade": 1
+  },
+  "para": "tutoriais, aulas, conteúdo técnico e corporativo; quem quer clareza acima de tudo"
+}

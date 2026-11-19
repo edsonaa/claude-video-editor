@@ -187,7 +187,7 @@ def validar(cfg: dict) -> tuple[list[str], list[str]]:
 
 # --------------------------------------------------------------- montar a pasta
 def criar(nome: str, preset: str, perfil: str = "padrao", python: str | None = None,
-          extra: dict | None = None) -> dict:
+          extra: dict | None = None, estilo: str | None = None) -> dict:
     """Cria ~/.edicao com config, perfil inicial e pastas. Nunca sobrescreve."""
     if arquivo().exists():
         raise ErroConfig(f"{arquivo()} já existe: mude com 'config.py set' (nada foi sobrescrito)")
@@ -201,7 +201,7 @@ def criar(nome: str, preset: str, perfil: str = "padrao", python: str | None = N
     for sub in ("perfis", "ajustes", "etapas", "scripts"):
         (base / sub).mkdir(parents=True, exist_ok=True)
     if not (base / "perfis" / perfil).exists():
-        novo_perfil(perfil)
+        novo_perfil(perfil, estilo=estilo)
     leia = base / "ajustes" / "LEIA-ME.md"
     if not leia.exists():
         leia.write_text(
@@ -219,13 +219,25 @@ def criar(nome: str, preset: str, perfil: str = "padrao", python: str | None = N
     return cfg
 
 
-def novo_perfil(nome: str, de: str | None = None) -> Path:
+ESTILOS = MOTOR / "estilos"
+
+
+def listar_estilos() -> list[str]:
+    return sorted(d.name for d in ESTILOS.iterdir() if (d / "tema.json").exists()) if ESTILOS.exists() else []
+
+
+def novo_perfil(nome: str, de: str | None = None, estilo: str | None = None) -> Path:
+    """Perfil novo a partir do perfil inicial, de outro perfil da pessoa ou de um estilo da biblioteca."""
     if not re.fullmatch(r"[A-Za-z0-9_.-]+", nome):
         raise ErroConfig("nome de perfil: só letras, números, ponto, hífen e sublinhado")
     destino = pasta() / "perfis" / nome
     if destino.exists():
         raise ErroConfig(f"o perfil {destino} já existe")
-    origem = (pasta() / "perfis" / de) if de else PERFIL_INICIAL
+    if de and estilo:
+        raise ErroConfig("use --de ou --estilo, não os dois")
+    if estilo and estilo not in listar_estilos():
+        raise ErroConfig(f"estilo '{estilo}' não existe; há: {', '.join(listar_estilos())}")
+    origem = (pasta() / "perfis" / de) if de else (ESTILOS / estilo if estilo else PERFIL_INICIAL)
     if not origem.exists():
         raise ErroConfig(f"perfil de origem não encontrado: {origem}")
     shutil.copytree(origem, destino)
