@@ -9,7 +9,6 @@ os campos escritos à mão (licenca, tags, nota).
 """
 from __future__ import annotations
 
-import json
 import math
 from pathlib import Path
 

@@ -288,6 +288,39 @@
               },
               "texto": {
                 "type": "string"
+              },
+              "quadro": {
+                "type": "object",
+                "description": "Enquadramento no formato de saída (render, painel).",
+                "required": [
+                  "modo"
+                ],
+                "properties": {
+                  "modo": {
+                    "enum": [
+                      "inteiro",
+                      "cortar",
+                      "encaixar"
+                    ]
+                  },
+                  "x": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "y": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "zoom": {
+                    "type": "number",
+                    "minimum": 1
+                  },
+                  "pelo_rosto": {
+                    "type": "boolean"
+                  }
+                }
               }
             }
           }
@@ -543,6 +576,12 @@
           },
           "data": {
             "$ref": "#/$defs/data"
+          },
+          "tipo": {
+            "enum": [
+              "final",
+              "rascunho"
+            ]
           }
         }
       }
@@ -581,6 +620,137 @@
               "type": "number"
             }
           }
+        }
+      }
+    },
+    "video": {
+      "type": "object",
+      "description": "O que é deste vídeo e não do config (curtos: formato 9:16 e de onde vieram).",
+      "properties": {
+        "formato": {
+          "enum": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:5"
+          ]
+        },
+        "titulo": {
+          "type": "string"
+        },
+        "origem": {
+          "type": "object",
+          "description": "Curto: o projeto longo e o trecho (tempo da sequência do longo).",
+          "properties": {
+            "projeto": {
+              "type": "string"
+            },
+            "pasta": {
+              "type": "string"
+            },
+            "de": {
+              "$ref": "#/$defs/segundos"
+            },
+            "ate": {
+              "$ref": "#/$defs/segundos"
+            },
+            "frases": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "cortes_versao": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    },
+    "curtos": {
+      "type": "array",
+      "description": "Curtos tirados deste vídeo (curtos.py criar).",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "nome",
+          "pasta"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^c\\d+$"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "titulo": {
+            "type": "string"
+          },
+          "pasta": {
+            "type": "string"
+          },
+          "de": {
+            "$ref": "#/$defs/segundos"
+          },
+          "ate": {
+            "$ref": "#/$defs/segundos"
+          },
+          "frases": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "formato": {
+            "type": "string"
+          },
+          "criado_em": {
+            "$ref": "#/$defs/data"
+          }
+        }
+      }
+    },
+    "publicacao": {
+      "type": "object",
+      "description": "Textos por plataforma, capítulos, capa e o pacote (publicar.py).",
+      "properties": {
+        "youtube": {
+          "type": "object"
+        },
+        "shorts": {
+          "type": "object"
+        },
+        "instagram": {
+          "type": "object"
+        },
+        "tiktok": {
+          "type": "object"
+        },
+        "capitulos": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "tempo",
+              "titulo"
+            ],
+            "properties": {
+              "tempo": {
+                "$ref": "#/$defs/segundos"
+              },
+              "titulo": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "capa": {
+          "type": "string"
+        },
+        "pacote": {
+          "type": "object"
         }
       }
     }

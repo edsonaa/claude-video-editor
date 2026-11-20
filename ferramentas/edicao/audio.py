@@ -198,6 +198,34 @@ def tratar(entrada, saida, alvo: float = -14.0, pico: float = -1.0, ruido: str =
     }
 
 
+def normalizar(entrada, saida, alvo: float = -14.0, pico: float = -1.0, canais: int = 2) -> dict:
+    """Leva uma mixagem pronta ao alvo de loudness (duas passadas, linear quando o pico permite).
+
+    Diferente de `tratar`, não mexe no timbre: só o ganho (e o teto de pico real).
+    Grava WAV 48 kHz/24 bits com a mesma duração da entrada.
+    """
+    lra = 11
+    p1 = subprocess.run([ff.ffmpeg(), "-hide_banner", "-nostdin", "-i", str(entrada), "-vn", "-af",
+                         f"loudnorm=I={alvo}:TP={pico}:LRA={lra}:print_format=json", "-f", "null", "-"],
+                        capture_output=True, text=True)
+    if p1.returncode != 0:
+        raise ErroAudio(p1.stderr[-1500:])
+    m1 = _loudnorm_json(p1.stderr)
+    if m1["input_i"] in (float("-inf"),) or str(m1["input_i"]) == "-inf":
+        raise ErroAudio("a mixagem está em silêncio: nada para normalizar")
+    ln = (f"loudnorm=I={alvo}:TP={pico}:LRA={lra}:measured_I={m1['input_i']}:measured_TP={m1['input_tp']}"
+          f":measured_LRA={m1['input_lra']}:measured_thresh={m1['input_thresh']}:offset={m1['target_offset']}"
+          ":linear=true:print_format=json")
+    p2 = subprocess.run([ff.ffmpeg(), "-hide_banner", "-nostdin", "-y", "-i", str(entrada), "-vn", "-af",
+                         f"{ln},aresample=48000", "-ar", "48000", "-ac", str(canais), "-c:a", "pcm_s24le", str(saida)],
+                        capture_output=True, text=True)
+    if p2.returncode != 0:
+        raise ErroAudio(p2.stderr[-1500:])
+    m2 = _loudnorm_json(p2.stderr)
+    return {"antes_lufs": m1["input_i"], "antes_pico": m1["input_tp"], "depois_lufs": m2.get("output_i"),
+            "depois_pico": m2.get("output_tp"), "modo": m2.get("normalization_type")}
+
+
 def atraso(original, tratado, inicio: float | None = None, canal: int | None = None,
            janela: float = 20.0, max_atraso: float = 0.5) -> int:
     """Atraso do tratado em relação ao original, em amostras a 48 kHz (positivo = tratado atrasado).

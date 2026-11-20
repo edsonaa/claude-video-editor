@@ -400,6 +400,8 @@ def dados(pasta) -> dict:
         "cortes_versao": (d.get("cortes") or {}).get("versao"),
         "resolucao": midia.get("resolucao") or (arqs.get(midia.get("principal") or "") or {}).get("resolucao"),
         "desfazer": len(_historico(pasta)),
+        "formato": (d.get("video") or {}).get("formato"),
+        "origem_curto": (d.get("video") or {}).get("origem"),
     }
     if not out["resolucao"] and segs:
         out["resolucao"] = (arqs.get(segs[0]["video"]) or {}).get("resolucao")
@@ -425,7 +427,8 @@ def dados(pasta) -> dict:
         brutos = {s["id"]: s for s in segs}
         out["segmentos"] = [{"id": p.id, "video": p.video, "in": taxa.segundos(p.in_f), "out": taxa.segundos(p.out_f),
                              "seq_ini": taxa.segundos(p.seq_ini), "seq_fim": taxa.segundos(p.seq_fim),
-                             "in_f": p.in_f, "out_f": p.out_f, "texto": brutos[p.id].get("texto", "")}
+                             "in_f": p.in_f, "out_f": p.out_f, "texto": brutos[p.id].get("texto", ""),
+                             "quadro": brutos[p.id].get("quadro")}
                             for p in linha.pedacos]
         out["duracao"] = linha.duracao
     else:
@@ -696,6 +699,17 @@ def editar_cortes(pasta, revisao: int | None, acao: str, **kw) -> dict:
             raise ErroPainel("é o único segmento do corte")
         novos = [dict(s) for s in segs if s["id"] != kw["id"]]
         motivo = f"{kw['id']} removido"
+    elif acao == "quadro":
+        q = kw.get("quadro") or {}
+        if q.get("modo") not in ("inteiro", "cortar", "encaixar"):
+            raise ErroPainel("enquadramento: modo inteiro, cortar ou encaixar")
+        q = {"modo": q["modo"], **({"x": round(min(1.0, max(0.0, float(q.get("x", 0.5)))), 4),
+                                    "y": round(min(1.0, max(0.0, float(q.get("y", 0.5)))), 4)}
+                                   if q["modo"] == "cortar" else {})}
+        novos = [dict(s, quadro=q) if s["id"] == kw["id"] else dict(s) for s in segs]
+        if not any(s["id"] == kw["id"] for s in segs):
+            raise ErroPainel(f"segmento {kw['id']} não encontrado")
+        motivo = f"enquadramento de {kw['id']}"
     elif acao in ("cortar", "restaurar"):
         transc = _transcricoes(d, raiz(pasta)).get(kw["video"])
         if not transc:

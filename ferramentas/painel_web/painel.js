@@ -26,6 +26,25 @@ const NOME_ETAPA = {
 const nomeEtapa = (e) => NOME_ETAPA[e] || e.replace(/_/g, " ");
 const FORMATO = { tela_cheia: "tela cheia", sobreposicao: "sobreposição", sobreposicao_lateral: "lateral", enfase: "ênfase" };
 const CORES_CAM = ["--cam-1", "--cam-2", "--cam-3", "--cam-4"];
+const FORMATOS = { "16:9": [1920, 1080], "9:16": [1080, 1920], "1:1": [1080, 1080], "4:5": [1080, 1350] };
+// o tamanho do quadro: o formato do projeto (curto vertical) ou o do material
+const dimsQuadro = () => (D && D.formato && FORMATOS[D.formato]) || (D && D.resolucao) || [16, 9];
+
+// enquadramento de um segmento, igual ao do render: cortar (centro x/y), encaixar ou inteiro
+function aplicarQuadro(v, seg) {
+  if (!seg) return;
+  const q = seg.quadro, m = D.midias["v:" + seg.video] || {};
+  const [sw, sh] = m.resolucao || dimsQuadro();
+  const [qw, qh] = dimsQuadro();
+  const mesmaProporcao = Math.abs(sw / sh - qw / qh) < 0.01;
+  const modo = mesmaProporcao ? "inteiro" : (q && q.modo) || (m.tipo_midia === "tela" ? "encaixar" : "cortar");
+  if (modo !== "cortar") { v.style.objectFit = "contain"; v.style.objectPosition = "50% 50%"; return; }
+  const box = $("#quadro"), bw = box.clientWidth, bh = box.clientHeight;
+  const esc = Math.max(bw / sw, bh / sh), dw = sw * esc, dh = sh * esc;
+  const pos = (c, d, b) => (d - b < 1 ? 50 : Math.min(100, Math.max(0, ((c ?? 0.5) * d - b / 2) / (d - b) * 100)));
+  v.style.objectFit = "cover";
+  v.style.objectPosition = `${pos(q && q.x, dw, bw)}% ${pos(q && q.y, dh, bh)}%`;
+}
 const ROTULO_MARCA = {
   duvida_take: "dúvida de take", hesitacao: "hesitação", nota: "nota", sugestao: "sugestão", alerta: "alerta",
   asset_faltando: "material faltando", pos: "pós", pessoa: "sua marca", nota_falada: "nota falada",
@@ -120,6 +139,8 @@ const T = {
   fonte(seg) { const m = this.midia(seg); return m && m.url ? url(m.url) : null; },
   preparar(video, seg, tOrigem) {
     const src = this.fonte(seg);
+    video.dataset.seg = this.segs().indexOf(seg);
+    aplicarQuadro(video, seg);
     if (!src) { video.removeAttribute("src"); video.dataset.src = ""; video.load(); return false; }
     if (video.dataset.src !== src) { video.src = src; video.dataset.src = src; }
     const ir = () => { try { video.currentTime = tOrigem; } catch (_) { /* ainda sem metadados */ } };
@@ -318,7 +339,7 @@ const Legenda = {
   ultimo: null,
   montar() {
     const c = $("#camada-legenda"), op = D.tema.legendas || {};
-    const [w, h] = D.resolucao || [16, 9];
+    const [w, h] = dimsQuadro();
     c.className = "camada-legenda " + (op.posicao || "baixo") + (h > w ? " vertical" : "") + (op.caixa_alta ? " caixa" : "");
     document.documentElement.style.setProperty("--leg-destaque", D.tema.cores.destaque || "#FACC15");
     this.ultimo = null;
@@ -357,7 +378,8 @@ function aplicarDados(novo) {
   fps = D.fps_num || 30;
   document.title = `Revisão · ${D.projeto || ""}`;
   $("#projeto").textContent = D.projeto || "Revisão";
-  $("#versao-corte").textContent = D.cortes_versao ? `corte v${D.cortes_versao}` : "";
+  $("#versao-corte").textContent = (D.cortes_versao ? `corte v${D.cortes_versao}` : "") +
+    (D.origem_curto ? ` · curto de ${D.origem_curto.projeto} (${fmt(D.origem_curto.de)}–${fmt(D.origem_curto.ate)})` : "");
   $("#tc-total").textContent = fmt(D.duracao);
   desenharEtapas();
   desenharPrevias();
@@ -416,11 +438,12 @@ function desenharPrevias(fila) {
 
 function ajustarQuadro() {
   const palco = $("#palco"), q = $("#quadro");
-  const [w, h] = D && D.resolucao ? D.resolucao : [16, 9];
+  const [w, h] = dimsQuadro();
   const pw = palco.clientWidth - 24, ph = palco.clientHeight - 24;
   const esc = Math.min(pw / w, ph / h);
   const qw = Math.max(1, Math.floor(w * esc)), qh = Math.max(1, Math.floor(h * esc));
   Object.assign(q.style, { width: qw + "px", height: qh + "px", left: Math.floor((palco.clientWidth - qw) / 2) + "px", top: Math.floor((palco.clientHeight - qh) / 2) + "px" });
+  T.v.forEach((v) => aplicarQuadro(v, D.segmentos[+v.dataset.seg]));
 }
 
 function desenharTempo() {
@@ -644,6 +667,7 @@ function desenharInspetor() {
       el("span", { class: "grupo" }, el("span", {}, "Fim"), bt("−5", nud("dout", -5)), bt("−1", nud("dout", -1)), bt("+1", nud("dout", 1)), bt("+5", nud("dout", 5))),
       bt("Início no cursor", () => aparar("inicio"), { title: "[" }), bt("Fim no cursor", () => aparar("fim"), { title: "]" }),
       bt("Tirar do corte", () => acao("/api/cortes", { acao: "remover_segmento", id: s.id }, `${s.id} saiu do corte`), { class: "perigo" }),
+      D.formato ? controlesQuadro(s) : null,
       loc.din || loc.dout ? el("span", { class: "pendente-local" }, "aplicando…") : null,
       s.texto ? el("div", { class: "insp-texto" }, s.texto) : null);
   } else if (sel.tipo === "motion") {
@@ -677,6 +701,25 @@ function desenharInspetor() {
     repor(box, id, el("span", { class: "st" }, nomeEtapa(it.etapa)), el("span", {}, it.texto),
       !it.resolvida_em ? bt("Marcar como resolvido", () => acao("/api/pedido/resolver", { id: it.id }, `${it.id} resolvido`)) : el("span", { class: "discreto" }, "resolvido"));
   }
+}
+
+let quadroTimer = null;
+function controlesQuadro(s) {
+  const q = s.quadro || { modo: (D.midias["v:" + s.video] || {}).tipo_midia === "tela" ? "encaixar" : "cortar", x: 0.5, y: 0.5 };
+  const mudar = (novo) => {
+    s.quadro = novo;
+    T.v.forEach((v) => { if (+v.dataset.seg === D.segmentos.indexOf(s)) aplicarQuadro(v, s); });
+    clearTimeout(quadroTimer);
+    quadroTimer = setTimeout(() => acao("/api/cortes", { acao: "quadro", id: s.id, quadro: novo }), 500);
+    desenharInspetor();
+  };
+  const x = q.x ?? 0.5;
+  return el("span", { class: "grupo" }, el("span", {}, "Enquadrar"),
+    q.modo === "cortar" ? [bt("←", () => mudar({ ...q, x: Math.max(0, +(x - 0.05).toFixed(3)) }), { title: "mais para a esquerda" }),
+      bt(`${Math.round(x * 100)}%`, () => mudar({ ...q, x: 0.5 }), { title: "centralizar" }),
+      bt("→", () => mudar({ ...q, x: Math.min(1, +(x + 0.05).toFixed(3)) }), { title: "mais para a direita" }),
+      bt("Encaixar inteiro", () => mudar({ modo: "encaixar" }))]
+      : bt("Recortar", () => mudar({ modo: "cortar", x: 0.5, y: 0.5 })));
 }
 
 function ajustarLocal(id, campo, n) {

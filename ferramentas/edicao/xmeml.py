@@ -238,7 +238,7 @@ class Sequencia:
         rate = self._rate()
         dur_seq = max([c.end for c in self.clipes] + [0])
         o: list[str] = ['<?xml version="1.0" encoding="UTF-8"?>', "<!DOCTYPE xmeml>", '<xmeml version="4">',
-                        f'  <sequence id="sequence-1">',
+                        '  <sequence id="sequence-1">',
                         f"    <uuid>{_uuid.uuid5(_uuid.NAMESPACE_URL, self.nome)}</uuid>",
                         f"    <duration>{dur_seq}</duration>", f"    {rate}",
                         f"    <name>{escape(self.nome)}</name>", "    <media>", "      <video>",

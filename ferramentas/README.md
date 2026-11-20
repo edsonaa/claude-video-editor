@@ -18,6 +18,9 @@ As skills do plugin chamam os scripts direto daqui (`${CLAUDE_PLUGIN_ROOT}/ferra
 | `efeitos.py` | Biblioteca de efeitos HyperFrames e estilos: listar, mostrar, criar (com tema, conteúdo, duração exata e eventos de som), prévia GIF e vitrine | motion-mapa, motion-render, montar |
 | `legendas.py` | Legendas pela transcrição e pelos cortes: gerar blocos, revisar, corrigir por id, exportar SRT/VTT/ASS e os parâmetros da legenda animada | legendas |
 | `audio.py` | Medir (loudness, pico real, ruído), tratar a voz sem tirar de sincronia, música com ducking, conferir a mixagem final | preparar, sfx, render |
+| `render.py` | O vídeo pronto pelo FFmpeg: cortes com quadros exatos, enquadramento (vertical a partir do horizontal), animações por cima, legenda queimada, voz tratada, música, efeitos e loudness no alvo; `plano`, `rascunho`, `final` | render, revisão |
+| `curtos.py` | Cortes curtos do vídeo longo: frases com id, sugestões de trecho, cada curto como um projeto próprio (mesmos quadros, enquadramento vertical pelo rosto) | curtos |
+| `publicar.py` | Capítulos (regras do YouTube), candidatas a capa, textos conferidos contra os limites de cada plataforma, pasta `Publicar/` pronta para subir | publicar |
 | `painel.py` | Painel de revisão no navegador (servidor local): o corte tocando com animações, legenda e som, roteiro para cortar e devolver frases, pedidos no ponto exato, aprovação; `previas` gera o que o navegador não toca | revisão de qualquer etapa |
 | `contato.py` | Folha de contato (quadros lado a lado com tempo e frame) | referências, revisão |
 | `sons.py` | Índice da biblioteca de sons: duração, **tempo até o pico**, nível; busca | sfx |

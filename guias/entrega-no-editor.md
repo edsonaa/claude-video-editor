@@ -41,7 +41,7 @@ O formato que funcionou no fluxo de referência é o **FCP 7 XML (xmeml)**, impo
 - **Programas sem importação aberta:** siga o caminho C e entregue o vídeo pronto.
 
 ## Caminho C: sem programa (o Claude entrega o vídeo)
-- Uma etapa final de **render** monta tudo com FFmpeg: os cortes da câmera com a câmera em escala e posição, as animações por cima (tela cheia e sobreposição com transparência) e o áudio com os efeitos nos níveis certos. Exporta um MP4.
+- Uma etapa final de **render** monta tudo com FFmpeg: os cortes da câmera, o enquadramento de cada segmento (inteiro, recortado ou encaixado, para tirar vertical do horizontal), as animações por cima (tela cheia e sobreposição com transparência), a legenda queimada e o áudio (voz tratada, música, efeitos nos níveis certos, loudness no alvo). Exporta um MP4. **Pronto em `ferramentas/render.py`** (`plano`, `rascunho`, `final`); só os movimentos de câmera ficam por conta de cada fluxo.
 - **Revisão:** a pessoa assiste e pede pelo chat, citando o tempo ("em 01:12 tira essa frase") ou o número do item. O Claude converte o tempo do vídeo para o tempo do arquivo original pela lista de cortes.
 - **Rascunho rápido:** para revisar, renderize em resolução menor; o final sai na resolução cheia.
 - Cada ajuste é um render novo: agrupe vários pedidos antes de renderizar.

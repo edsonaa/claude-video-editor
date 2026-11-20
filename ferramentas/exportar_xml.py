@@ -17,7 +17,6 @@ cores.json: {"duvida_take": 4294741314, …} com os valores de <pproColor>
 copiados de um XML exportado pelo Premiere com marcadores daquela cor.
 """
 import argparse
-import datetime as dt
 import json
 from pathlib import Path
 import re

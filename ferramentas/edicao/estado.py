@@ -134,14 +134,13 @@ def _ajustar_versoes(antes: dict | None, depois: dict) -> None:
         if not isinstance(novo, dict):
             continue
         velho = (antes or {}).get(bloco) or {}
-        if bloco == "motions":
-            # Mudar só o status/render de um item não é mudar o plano.
-            def plano(itens):
-                return [{k: v for k, v in i.items() if k not in ("status", "render")}
-                        for i in itens or []]
-            mudou = plano(novo.get(campo)) != plano(velho.get(campo))
-        else:
-            mudou = novo.get(campo) != velho.get(campo)
+        # Mudar só o status/render de uma animação, ou o texto/enquadramento de um segmento,
+        # não muda os tempos: não é um corte (ou plano) novo.
+        fora = ("status", "render") if bloco == "motions" else ("texto", "quadro")
+
+        def plano(itens, fora=fora):
+            return [{k: v for k, v in i.items() if k not in fora} if isinstance(i, dict) else i for i in itens or []]
+        mudou = plano(novo.get(campo)) != plano(velho.get(campo))
         versao_velha = velho.get("versao", 0)
         if mudou and novo.get("versao", 0) <= versao_velha:
             novo["versao"] = versao_velha + 1

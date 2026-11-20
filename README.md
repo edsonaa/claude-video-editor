@@ -56,6 +56,10 @@ Roda só no seu computador (não sobe nada para a internet). O que o navegador n
 
 ![O painel de revisão](ferramentas/painel_web/painel.png)
 
+### Cortes curtos e publicação
+- `/edicao:curtos` lê a fala do vídeo pronto, propõe os trechos que se sustentam sozinhos e cria cada curto como um projeto próprio (os mesmos quadros do longo, recortado em vertical com o rosto no centro, a tela encaixada). Você revisa e ajusta o enquadramento no painel; a legenda queimada e o vídeo vertical saem prontos.
+- `/edicao:publicar` escreve com você título, descrição, capítulos, tags e legendas de post, confere tudo contra os limites de cada plataforma (YouTube, Shorts, Instagram, TikTok), sugere capas tiradas do próprio vídeo e monta a pasta `Publicar/` com o que subir em cada uma.
+
 Outros comandos:
 - `/edicao:editar aprendizados`: aplica o que você corrigiu nos vídeos ao seu estilo e aos seus ajustes;
 - `/edicao:editar atualizar`: traz a versão nova do motor e mostra o que mudou;
@@ -81,9 +85,9 @@ O plugin é o **motor**: skills, guias e ferramentas. Ele se atualiza, e ningué
 ## O que tem aqui
 | Pasta | O que tem |
 |---|---|
-| `skills/` | A montagem, a `editar` (com as regras comuns), o `painel` de revisão e uma skill por etapa |
+| `skills/` | A montagem, a `editar` (com as regras comuns), o `painel` de revisão, `curtos`, `publicar` e uma skill por etapa |
 | `guias/` | O ofício: princípios do fluxo, decisões, referências, animação, HyperFrames, entrega no programa de edição e o de cada etapa |
-| `ferramentas/` | Os scripts prontos e testados: estado do vídeo, configuração, inventário, silêncios, transcrição, XML (ida e volta), tempo e timecode, legendas, tratamento de áudio, painel de revisão, folha de contato, índice de sons e rastreio de rosto. Veja o [README](ferramentas/README.md) |
+| `ferramentas/` | Os scripts prontos e testados: estado do vídeo, configuração, inventário, silêncios, transcrição, XML (ida e volta), tempo e timecode, legendas, tratamento de áudio, painel de revisão, render, cortes curtos, publicação, folha de contato, índice de sons e rastreio de rosto. Veja o [README](ferramentas/README.md) |
 | `efeitos/` | A biblioteca de efeitos HyperFrames, com prévias |
 | `estilos/` | Os estilos prontos (perfis completos), com vitrines |
 | `presets/` | Os pontos de partida da montagem |

@@ -2,6 +2,24 @@
 
 Cada versão nova do motor (skills, guias e ferramentas) entra aqui, a mais nova em cima. A skill `/edicao:editar` mostra o que mudou desde a última vez que a pessoa viu. Ao lançar uma versão, suba o `version` em `.claude-plugin/plugin.json` para o mesmo número (um teste confere).
 
+## 0.6.0
+- **Render pronto** (`render.py plano|rascunho|final`): antes, a etapa de render pedia para escrever o script no primeiro vídeo.
+  - Cortes com quadros exatos (a mesma conversão da entrega em XML) e voz com amostras exatas, com fades curtos nas junções e a voz tratada quando houver.
+  - Enquadramento por segmento (inteiro, recortado com centro e zoom, ou encaixado sobre fundo desfocado), o que tira vídeo vertical do horizontal.
+  - Animações por cima (tela cheia e com transparência), legenda queimada (ASS ou a animada), música, efeitos com ganho e loudness final no alvo, em duas passadas (`edicao.audio.normalizar`).
+  - Recusa legenda feita sobre outro corte antes de gastar tempo. Confere duração, loudness e pico e registra a entrega (final ou rascunho).
+- **Cortes curtos** (`/edicao:curtos`, `curtos.py`):
+  - a fala do corte final em frases com id;
+  - sugestões de trecho com motivos (começo que se sustenta, fim fechado, gancho, pausa natural);
+  - cada curto vira um projeto em `Curtos/<nome>/`, com os mesmos quadros do longo, recortado em vertical centrado no rosto (pelo rastreio) e a tela encaixada, com fluxo cortes → legendas → render.
+- **Publicação** (`/edicao:publicar`, `publicar.py`):
+  - capítulos conferidos pelas regras do YouTube (0:00, pelo menos 3, 10 s cada), escritos por tempo, frase, segmento ou animação, ou tirados dos marcadores de capítulo do plano;
+  - candidatas a capa (nitidez, exposição, rosto) já no formato do vídeo;
+  - textos por plataforma conferidos contra os limites (título, descrição em bytes, tags com vírgulas e aspas, hashtags: 15 no YouTube, 5 no Instagram; duração e formato de Shorts, Reels e TikTok);
+  - pasta `Publicar/<plataforma>/` com o vídeo, o texto para colar, as legendas, a capa e a conferência.
+- **Painel:** mostra o curto em 9:16 com o enquadramento de cada segmento, que se ajusta ali (← →, encaixar). Enquadrar ou mudar o texto de um segmento não conta como corte novo (nada fica desatualizado à toa).
+- `guias/curtos-e-publicacao.md`: o ofício de curtos (gancho, uma ideia, áreas seguras do vertical) e de publicação (título, descrição, capítulos, capa), com a tabela de limites e a data em que foram conferidos.
+
 ## 0.5.0
 - **Painel de revisão** (`/edicao:painel`, `painel.py`): um servidor local (só desta máquina, com token) que abre o vídeo no navegador já cortado, a partir das mídias originais, com as animações (inclusive com transparência), a legenda palavra a palavra, a música e os efeitos por cima. Sem render.
   - **Roteiro:** a transcrição com o que saiu do corte riscado; selecionar palavras e cortar ou devolver ao vídeo (com respiro nas bordas e desfazer).
