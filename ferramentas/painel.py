@@ -43,6 +43,7 @@ from edicao import boas_vindas as BV  # noqa: E402
 from edicao import estado as E  # noqa: E402
 from edicao import galeria as G  # noqa: E402
 from edicao import mudancas as M  # noqa: E402
+from edicao import estoque as ES  # noqa: E402
 from edicao import painel as P  # noqa: E402
 
 WEB = Path(__file__).resolve().parent / "painel_web"
@@ -207,6 +208,11 @@ class Handler(http.server.BaseHTTPRequestHandler):
             return self._arquivo(arq)
         if caminho == "/api/galeria":
             return self._json(G.catalogo(self.painel.pasta))
+        if caminho == "/api/estoque":
+            return self._json(G.estoque())
+        if caminho == "/api/estoque/arquivo":
+            arq = G.arquivo_estoque(q.get("id", [""])[0], q.get("qual", [""])[0])
+            return self._arquivo(arq) if arq else self._erro(404, "arquivo do estoque não encontrado")
         if caminho == "/api/efeito":
             try:
                 params = json.loads(q.get("p", ["{}"])[0] or "{}")
@@ -246,6 +252,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self.painel.ultimo_acesso = time.monotonic()
         pasta = self.painel.pasta
         info = None
+        if u.path == "/api/estoque/envio":
+            return self._receber_envio()
         try:
             c = self._corpo()
             rev = c.get("revisao")
@@ -254,6 +262,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 info = self._galeria(acao[len("/api/galeria/"):], c, rev)
             elif acao == "/api/cortes":
                 P.editar_cortes(pasta, rev, c["acao"], **{k: v for k, v in c.items() if k not in ("acao", "revisao")})
+            elif acao.startswith("/api/estoque/"):
+                info = self._estoque(acao[len("/api/estoque/"):], c)
             elif acao in ("/api/desfazer", "/api/cortes/desfazer"):
                 info = {"desfeito": M.desfazer(pasta, rev)}
             elif acao == "/api/mover":
@@ -287,10 +297,72 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 return self._erro(404, "ação desconhecida")
         except E.Conflito as e:
             return self._erro(409, str(e), dados=P.dados(pasta))
-        except (E.ErroEstado, BV.C.ErroConfig, KeyError, ValueError, TypeError) as e:
+        except (E.ErroEstado, BV.C.ErroConfig, ES.ErroEstoque, KeyError, ValueError, TypeError) as e:
             msg = f"faltou o campo {e}" if isinstance(e, KeyError) else str(e)
             return self._erro(400, msg)
         return self._json({"ok": True, "dados": P.dados(pasta), **({"info": info} if info else {})})
+
+    ENVIO_MAX = 4 * 1024 ** 3
+    EXT_ENVIO = {".mp4", ".mov", ".m4v", ".webm", ".mkv", ".avi", ".gif", ".png", ".jpg", ".jpeg", ".webp"}
+
+    def _receber_envio(self):
+        """O arquivo de referência que vai para o estoque, gravado aos pedaços (pode ser grande)."""
+        n = int(self.headers.get("Content-Length") or 0)
+        ext = Path(unquote(self.headers.get("X-Nome-Arquivo") or "x.mp4")).suffix.lower()
+        if not n:
+            return self._erro(400, "arquivo vazio")
+        if n > self.ENVIO_MAX:
+            return self._erro(413, "arquivo grande demais (até 4 GB): corte antes só a parte que importa")
+        if ext not in self.EXT_ENVIO:
+            return self._erro(400, f"tipo de arquivo '{ext}' não serve como referência (vídeo, GIF ou imagem)")
+        ES.limpar_envios()
+        nome = secrets.token_hex(8) + ext
+        destino = ES.pasta_envios() / nome
+        faltam = n
+        with open(destino, "wb") as f:
+            while faltam > 0:
+                bloco = self.rfile.read(min(faltam, 1 << 20))
+                if not bloco:
+                    break
+                f.write(bloco)
+                faltam -= len(bloco)
+        if faltam:
+            destino.unlink(missing_ok=True)
+            return self._erro(400, "o envio parou no meio")
+        return self._json({"ok": True, "envio": nome})
+
+    def _estoque(self, qual: str, c: dict) -> dict:
+        if qual == "novo":
+            o = c.get("origem") or {}
+            args = (c.get("tipo"), c.get("nome"), c.get("gostei"))
+            if o.get("tipo") == "video":
+                it = ES.entrada_do_video(self.painel.pasta, *args, float(o["de"]), float(o["ate"]),
+                                         c.get("parecido"))
+            elif o.get("tipo") == "arquivo":
+                envio = ES.pasta_envios() / Path(str(o.get("envio") or "")).name
+                if not envio.is_file():
+                    raise ES.ErroEstoque("o arquivo enviado não chegou: mande de novo")
+                try:
+                    it = ES.nova_entrada(*args, envio, o.get("de"), o.get("ate"), c.get("parecido"), por="painel",
+                                         origem={"tipo": "arquivo", "nome": o.get("nome") or envio.name,
+                                                 "de": o.get("de"), "ate": o.get("ate")})
+                finally:
+                    envio.unlink(missing_ok=True)
+            else:
+                it = ES.nova_entrada(*args, None, None, None, c.get("parecido"), por="painel")
+            return {"id": it["id"], "nome": it["nome"]}
+        ident = c["id"]
+        if qual == "aprovar":
+            ES.aprovar(ident)
+        elif qual == "ajuste":
+            ES.pedir_ajuste(ident, c.get("texto"))
+        elif qual == "recusar":
+            ES.mudar_status(ident, "recusado", c.get("motivo"))
+        elif qual == "arquivar":
+            ES.mudar_status(ident, "arquivado")
+        else:
+            raise P.ErroPainel(f"estoque: '{qual}' não existe")
+        return {"id": ident}
 
     def _galeria(self, qual: str, c: dict, rev) -> dict:
         """O que vem da galeria entra pelo mesmo caminho das mudanças arrastadas: desfazer e registro."""

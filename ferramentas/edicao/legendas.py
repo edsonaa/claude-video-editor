@@ -225,15 +225,21 @@ ESTILOS_ARQ = Path(__file__).resolve().parents[2] / "legendas" / "estilos.json"
 POSICOES = {"baixo": 2, "centro": 5, "topo": 8}
 
 
-def estilos_legenda() -> dict:
-    """A biblioteca de estilos de legenda do motor (legendas/estilos.json), na ordem do arquivo."""
-    return json.loads(ESTILOS_ARQ.read_text(encoding="utf-8"))
+def estilos_legenda(estoque: bool = True, rascunhos: bool = False) -> dict:
+    """Os estilos de legenda do motor (legendas/estilos.json, na ordem do arquivo) e, depois, os do
+    estoque da pessoa (com `_estoque`)."""
+    est = json.loads(ESTILOS_ARQ.read_text(encoding="utf-8"))
+    if estoque:
+        from . import estoque as ES
+        for k, v in ES.pecas("legenda", rascunhos).items():
+            est.setdefault(k, v)
+    return est
 
 
 def estilo_legenda(ident: str) -> dict:
-    est = estilos_legenda()
+    est = estilos_legenda(rascunhos=True)
     if ident not in est:
-        raise ValueError(f"estilo de legenda '{ident}' não existe; há: {', '.join(est)}")
+        raise ValueError(f"estilo de legenda '{ident}' não existe; há: {', '.join(estilos_legenda())}")
     return {"id": ident, **est[ident]}
 
 

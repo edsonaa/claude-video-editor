@@ -140,14 +140,19 @@ def catalogo(pasta) -> dict:
         atual = L.opcoes_legenda(d, cfg)
     except ValueError:
         atual = L.opcoes_legenda(None, {})
-    legendas = [{"id": k, **e} for k, e in L.estilos_legenda().items()]
+    legendas = [{"id": k, **{c: v for c, v in e.items() if c != "_estoque"}, "estoque": _resumo_estoque(e.get("_estoque"))}
+                for k, e in L.estilos_legenda().items()]
     animacoes = []
     for nome, m in EF.listar().items():
+        es = m.get("_estoque")
         animacoes.append({"id": nome, "titulo": m["titulo"], "descricao": m["descricao"], "formato": m["formato"],
                           "duracao": m["duracao"], "parametros": m["parametros"], "exemplo": m.get("exemplo") or {},
-                          "bom_para": m.get("bom_para", ""), "evitar": m.get("evitar", ""), "tags": m.get("tags", [])})
+                          "bom_para": m.get("bom_para", ""), "evitar": m.get("evitar", ""), "tags": m.get("tags", []),
+                          "categoria": (es or {}).get("tipo") or ("motion" if "motion" in m.get("tags", []) else "efeito"),
+                          "estoque": _resumo_estoque(es)})
     transicoes = [{"id": k, "titulo": t["titulo"], "descricao": t["descricao"], "bom_para": t["bom_para"],
-                   "evitar": t["evitar"], "duracao": t["duracao"], "aproximada_xml": bool(t["xml"].get("aproximada"))}
+                   "evitar": t["evitar"], "duracao": t["duracao"], "aproximada_xml": bool(t["xml"].get("aproximada")),
+                   "previa": t.get("previa"), "estoque": _resumo_estoque(t.get("_estoque"))}
                   for k, t in TR.listar().items()]
     sons: dict = {"biblioteca": None, "categorias": {}, "erro": None}
     bib = biblioteca_sons(cfg)
@@ -171,6 +176,10 @@ def catalogo(pasta) -> dict:
                                                          "ativas": atual["ativas"], "queimar": atual["queimar"]},
             "legendas": legendas, "animacoes": animacoes, "transicoes": transicoes, "sons": sons,
             "imagens": imagens, "gsap_local": bool(_gsap_local())}
+
+
+def _resumo_estoque(es: dict | None) -> dict | None:
+    return {"nome": es["nome"], "gostei": es.get("gostei", ""), "status": es.get("status")} if es else None
 
 
 # ------------------------------------------------------------------ a página de um efeito
@@ -392,3 +401,42 @@ def criar_pacote_sons() -> dict:
         C.gravar(cfg)
     r["configurada"] = not atual
     return r
+
+
+# ------------------------------------------------------------------ o estoque da pessoa
+ARQUIVOS_ESTOQUE = {"trecho": ("trecho.mp4",), "previa": ("previa.gif", "previa.png"), "folha": ("folha.png",),
+                    "referencia": ("referencia.png", "referencia.jpg", "referencia.jpeg", "referencia.webp",
+                                   "referencia.gif")}
+
+
+def estoque() -> dict:
+    """O que o painel mostra do estoque: o que espera o Claude, o que espera aprovação e o que já
+    está valendo, com o que dá para usar de base ("parecido com")."""
+    from . import estoque as ES
+    lista = []
+    for it in ES.itens():
+        if it["status"] == "recusado":
+            continue
+        p = Path(it["pasta"])
+        arquivos = {k: next((n for n in ns if (p / n).exists()), None) for k, ns in ARQUIVOS_ESTOQUE.items()}
+        dd = ES.dados(it) if it["status"] in ("rascunho", "ativo", "arquivado") else None
+        lista.append({k: it.get(k) for k in ("id", "tipo", "nome", "gostei", "status", "parecido_com", "criado_em",
+                                             "ajustes", "analise", "por", "origem", "base")}
+                     | {"arquivos": {k: bool(v) for k, v in arquivos.items()}, "dados": dd})
+    bases = {"legenda": [{"id": k, "titulo": v["titulo"]} for k, v in L.estilos_legenda().items()],
+             "transicao": [{"id": k, "titulo": v["titulo"]} for k, v in TR.listar().items()],
+             "efeito": [{"id": k, "titulo": v["titulo"]} for k, v in EF.listar().items()]}
+    bases["motion"] = bases["efeito"]
+    return {"itens": lista, "resumo": ES.resumo(), "tipos": ES.NOME_TIPO, "bases": bases, "pasta": str(ES.raiz())}
+
+
+def arquivo_estoque(ident: str, qual: str) -> Path | None:
+    from . import estoque as ES
+    try:
+        it = ES.item(ident)
+    except ES.ErroEstoque:
+        return None
+    for n in ARQUIVOS_ESTOQUE.get(qual, ()):
+        if (Path(it["pasta"]) / n).is_file():
+            return Path(it["pasta"]) / n
+    return None

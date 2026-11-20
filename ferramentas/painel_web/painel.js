@@ -24,8 +24,12 @@ const NOME_ETAPA = {
   assets: "Materiais", motion_render: "Animações", camera: "Câmera", sfx: "Som", legendas: "Legendas", render: "Render",
 };
 const nomeEtapa = (e) => NOME_ETAPA[e] || e.replace(/_/g, " ");
-const NOME_TRANSICAO = { dissolver: "dissolver", fade_preto: "passar pelo preto", fade_branco: "clarão", zoom: "zoom", empurrar: "empurrar", chicote: "chicote" };
-const nomeTransicao = (t) => NOME_TRANSICAO[t] || String(t || "").replace(/_/g, " ");
+const nomeTransicao = (t) => ((D && D.transicoes && D.transicoes[t]) || {}).titulo || String(t || "").replace(/_/g, " ");
+// a prévia de uma transição: quadros-chave do JSON dela (motor ou estoque); sem eles, um dissolver
+const animTransicao = (t) => {
+  const p = (D && D.transicoes && D.transicoes[t] && D.transicoes[t].previa) || { b: [{ opacity: 0 }, { opacity: 1 }] };
+  return { fundo: p.fundo, a: p.a, b: p.b, aCima: !!p.a_cima };
+};
 const FORMATO = { tela_cheia: "tela cheia", sobreposicao: "sobreposição", sobreposicao_lateral: "lateral", enfase: "ênfase" };
 const CORES_CAM = ["--cam-1", "--cam-2", "--cam-3", "--cam-4"];
 const FORMATOS = { "16:9": [1920, 1080], "9:16": [1080, 1920], "1:1": [1080, 1080], "4:5": [1080, 1350] };
@@ -249,8 +253,8 @@ const T = {
 // prévia aproximada da transição de entrada (o render faz a exata, centrada no corte)
 const Transicao = {
   tocar(velho, novo, tr) {
-    const an = (Galeria.ANIM || {})[tr.tipo];
-    if (!an || !$("#ck-motion").checked) return;
+    const an = animTransicao(tr.tipo);
+    if (!$("#ck-motion").checked) return;
     this.limpar();
     const ms = Math.max(120, (tr.duracao || 0.5) * 1000 / 2);
     $("#quadro").style.background = an.fundo || "#000";

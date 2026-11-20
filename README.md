@@ -53,6 +53,7 @@ No caminho, o motor também trata a voz (ruído, compressão e loudness no alvo 
 - a **linha do tempo** mostra cada trilha, e cada segmento se ajusta quadro a quadro;
 - os **pedidos** ficam presos ao ponto do vídeo e voltam para o Claude como pendências; animações do plano se aprovam ou riscam ali; legendas se corrigem ali;
 - dá para **arrastar** como num programa de edição: animações, sons e legendas no tempo, a entrada, a saída e a ordem dos segmentos, e na tela a legenda, a posição e o tamanho das animações e o enquadramento; Ctrl+Z desfaz, e o Claude lê o que mudou;
+- o seu **estoque**: mande um trecho de uma legenda, transição, efeito ou motion de que gostou e diga o que gostou; o Claude (`/edicao:estoque`) analisa e constrói, você aprova na prévia, e a peça passa a valer em todos os vídeos;
 - a **galeria** (tecla G) mostra legendas, animações, transições e sons com prévia sobre o seu próprio quadro, e põe o escolhido no ponto do cursor (a animação já toca por cima do vídeo antes do render);
 - quando estiver bom, **Aprovar** fecha a etapa.
 
@@ -90,7 +91,7 @@ O plugin é o **motor**: skills, guias e ferramentas. Ele se atualiza, e ningué
 | Pasta | O que tem |
 |---|---|
 | `docs/` | A documentação: como funciona, pastas e arquivos, efeitos e estilos, assets, comandos |
-| `skills/` | A montagem, a `editar` (com as regras comuns), o `painel` de revisão, `curtos`, `publicar` e uma skill por etapa |
+| `skills/` | A montagem, a `editar` (com as regras comuns), o `painel` de revisão, o `estoque` de peças, `curtos`, `publicar` e uma skill por etapa |
 | `guias/` | O ofício: princípios do fluxo, decisões, referências, animação, HyperFrames, entrega no programa de edição e o de cada etapa |
 | `ferramentas/` | Os scripts prontos e testados: estado do vídeo, configuração, inventário, silêncios, transcrição, XML (ida e volta), tempo e timecode, legendas, tratamento de áudio, painel de revisão, render, cortes curtos, publicação, folha de contato, índice de sons e rastreio de rosto. Veja o [README](ferramentas/README.md) |
 | `efeitos/` | A biblioteca de efeitos HyperFrames, com prévias |

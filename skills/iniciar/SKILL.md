@@ -28,7 +28,7 @@ Abre o projeto e organiza o briefing. Não analisa mídia: isso é da `preparar`
    **Pelo painel:**
    1. Rode **em segundo plano** `<py> <f>/painel.py boas-vindas . --navegador` e passe à pessoa o endereço da primeira linha da saída (com o `?t=`), dizendo que é só seguir os passos e clicar em "Enviar para o Claude". Porta ocupada: `--porta 0`.
    2. Espere. Quando ela enviar, o comando termina sozinho (você é avisado pelo fim do processo em segundo plano) com uma linha `ENVIADO {…}` (o resumo em JSON). Código 3 = fechou sem enviar: pergunte se quer continuar pela conversa.
-   3. Leia `_CLAUDE/briefing_painel.md` e organize o `briefing.md` com as mesmas regras de cima (sem inventar; os termos na seção "Termos"). As escolhas já estão gravadas no estado (`estado.py . status` mostra o fluxo novo) e, se ela marcou "usar como padrão", na configuração.
+   3. Leia `_CLAUDE/briefing_painel.md` e organize o `briefing.md` com as mesmas regras de cima (sem inventar; os termos na seção "Termos"; as peças do estoque que ela marcou numa seção "Peças do estoque", com o id e o que ela gostou). As escolhas já estão gravadas no estado (`estado.py . status` mostra o fluxo novo) e, se ela marcou "usar como padrão", na configuração.
    4. Mostre o briefing organizado e as escolhas numa lista curta. Se o resumo trouxe observações (ex.: o tipo de vídeo costuma revisar sem programa e a configuração usa o Premiere), pergunte uma de cada vez.
    5. Faltaram subpastas na verificação? Pergunte se pode criar (vazias), como no passo 1.
 6. **Fechar:** `estado.py . --etapa iniciar=concluido` e diga o que falta para a próxima etapa (brutos na pasta, proxies, roteiro em `Docs/` se `cortes.usa_roteiro`). Sugira `/clear` e `/edicao:editar`.

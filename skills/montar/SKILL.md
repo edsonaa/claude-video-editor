@@ -54,7 +54,7 @@ Quer decidir tudo em detalhe (outro programa, outro formato, ordem das etapas)? 
 
 Para ele virar o estilo **dela**:
 - **identidade** (cores com código, fontes, logotipo, o que nunca usar): pergunte agora, leva 2 minutos, e grave em `identidade.md`. Sem animação no fluxo, pule;
-- **referências:** ofereça analisar 5–10 trechos de vídeos de que ela gosta (`${CLAUDE_PLUGIN_ROOT}/guias/referencias.md`). Recomendado antes do primeiro vídeo de verdade com animação, mas não trava: dá para fazer depois, com `/edicao:montar` de novo.
+- **referências:** ofereça analisar 5–10 trechos de vídeos de que ela gosta (`${CLAUDE_PLUGIN_ROOT}/guias/referencias.md`). Recomendado antes do primeiro vídeo de verdade com animação, mas não trava: dá para fazer depois, com `/edicao:montar` de novo. As referências medem o jeito geral (o perfil); uma peça específica que ela queira ter (um estilo de legenda, uma transição, um efeito, um motion) vai para o estoque (`/edicao:estoque`).
 
 ## 5. Teste num clipe curto
 Peça um vídeo de 1–3 minutos (pode ser gravado só para isso) e rode o fluxo inteiro com a pessoa pela `/edicao:editar`, etapa por etapa. A primeira entrega no programa é o arquivo de teste (regras comuns, §4). É aqui que nascem os scripts que ainda faltam e os primeiros aprendizados.

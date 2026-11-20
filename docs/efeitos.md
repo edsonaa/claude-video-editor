@@ -123,7 +123,7 @@ Mudar um número no `tema.json` muda todos os efeitos daquele perfil de uma vez.
 
 ## Criar um efeito novo
 
-Um efeito que ficou bom num vídeo pode virar peça do seu perfil (no `catalogo.md`) ou, se serve a qualquer pessoa, entrar na biblioteca do motor (issue ou PR). Para entrar na biblioteca:
+Um efeito que ficou bom num vídeo, ou um que você viu em outro vídeo, entra no **seu estoque** (`/edicao:estoque`, ou no painel: Galeria → Estoque): o Claude constrói a peça no mesmo formato abaixo, em `~/.edicao/estoque/efeitos/` ou `motions/`, e ela passa a valer como as do motor. Se serve a qualquer pessoa, pode entrar na biblioteca do motor (issue ou PR). Para entrar na biblioteca:
 
 1. **`efeitos/<nome>/index.html`**
    - um `#root` com `data-duration`, `data-width`, `data-height` e `data-fps` (o `criar` reescreve os quatro), e `data-composition-variables` no `<html>`;

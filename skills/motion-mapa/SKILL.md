@@ -15,6 +15,7 @@ A etapa que mais decide a qualidade do vídeo. Mudar aqui é barato; depois do r
 
 ## Passo a passo
 1. `<py> <f>/estado.py . status`: os cortes precisam estar `concluido`.
+   **O estoque da pessoa:** `<py> <f>/estoque.py listar --status ativo` (efeitos e motions dela, com o que ela gostou em cada um). As peças marcadas para este vídeo nas boas-vindas (`boas_vindas.estoque` no estado, e no briefing) entram no plano onde couberem; as outras do estoque valem antes das do motor quando servem igual. No item, `"efeito": "<id da peça>"` como qualquer efeito.
 2. **A fala no tempo da sequência:** `<py> <f>/transcrever.py fala . --saida _CLAUDE/fala_seq.txt`. Uma frase por linha, com o tempo exato de cada corte. Animação que começa ou termina junto com um corte usa o **tempo do corte**, não o da palavra.
 3. **Trechos:** fim do gancho, tipo de vídeo, começo do fechamento. Confirme numa mensagem curta, já com a proposta.
 4. **Gancho primeiro**, quase frase a frase, com storyboard (conceito, camadas, câmera, batidas, herói, vida, saída). Antes de mostrar, releia com as perguntas do guia (o conceito nasce desta fala? a energia combina? estou repetindo a fórmula?).

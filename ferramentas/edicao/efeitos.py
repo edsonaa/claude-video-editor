@@ -52,19 +52,61 @@ class ErroEfeito(Exception):
 
 
 # --------------------------------------------------------------- catálogo
-def listar() -> dict[str, dict]:
+def listar(estoque: bool = True, rascunhos: bool = False) -> dict[str, dict]:
+    """Os efeitos do motor e, depois, os do estoque da pessoa (efeitos e motions ativos), com
+    `_estoque` nos dela."""
     out = {}
     for d in sorted(EFEITOS.iterdir()):
         if d.is_dir() and not d.name.startswith(("_", ".")) and (d / "efeito.json").exists():
             out[d.name] = json.loads((d / "efeito.json").read_text(encoding="utf-8"))
+    if estoque:
+        from . import estoque as ES
+        for t in ("efeito", "motion"):
+            for k, v in ES.pecas(t, rascunhos).items():
+                out.setdefault(k, v)
     return out
 
 
 def carregar(nome: str) -> dict:
-    todos = listar()
+    todos = listar(rascunhos=True)
     if nome not in todos:
-        raise ErroEfeito(f"efeito '{nome}' não existe; há: {', '.join(todos)}")
+        raise ErroEfeito(f"efeito '{nome}' não existe; há: {', '.join(listar())}")
     return todos[nome]
+
+
+def pasta_efeito(nome: str) -> Path:
+    """A pasta do efeito: a do motor ou a do estoque da pessoa."""
+    if (EFEITOS / nome / "efeito.json").exists() and not nome.startswith(("_", ".")):
+        return EFEITOS / nome
+    from . import estoque as ES
+    p = ES.pasta_efeito(nome)
+    if p is None:
+        raise ErroEfeito(f"efeito '{nome}' não existe")
+    return p
+
+
+def validar_pasta(pasta: Path) -> None:
+    """A estrutura mínima de um efeito (a do motor e a do estoque)."""
+    pasta = Path(pasta)
+    if not (pasta / "index.html").exists() or not (pasta / "efeito.json").exists():
+        raise ErroEfeito("um efeito precisa de index.html e efeito.json")
+    meta = json.loads((pasta / "efeito.json").read_text(encoding="utf-8"))
+    falta = [k for k in ("titulo", "descricao", "formato", "duracao", "parametros", "exemplo") if k not in meta]
+    if falta:
+        raise ErroEfeito(f"efeito.json sem {', '.join(falta)}")
+    if meta["formato"] not in ("tela_cheia", "sobreposicao", "sobreposicao_lateral", "enfase"):
+        raise ErroEfeito(f"formato '{meta['formato']}' não existe")
+    d = meta["duracao"]
+    if not (isinstance(d, dict) and d.get("min", 0) <= d.get("padrao", 0) <= d.get("max", 0) and d["min"] > 0):
+        raise ErroEfeito("duracao precisa de min <= padrao <= max (segundos)")
+    for p in meta["parametros"]:
+        if not {"id", "tipo", "rotulo"} <= set(p):
+            raise ErroEfeito(f"parâmetro sem id, tipo ou rotulo: {p}")
+    html = (pasta / "index.html").read_text(encoding="utf-8")
+    if not re.search(r'id="root"[^>]*data-duration="[0-9.]+"', html):
+        raise ErroEfeito("index.html sem #root com data-duration")
+    if "HF.pronto(" not in html:
+        raise ErroEfeito("index.html não registra a linha do tempo (HF.pronto)")
 
 
 def listar_estilos() -> dict[str, dict]:
@@ -201,7 +243,7 @@ def criar(nome: str, destino, tema: dict | None = None, params: dict | None = No
                 x["default"] = params[k]
         valores[k] = params[k]
 
-    html = (EFEITOS / nome / "index.html").read_text(encoding="utf-8")
+    html = (pasta_efeito(nome) / "index.html").read_text(encoding="utf-8")
     m = re.search(r'id="root"[^>]*data-duration="([0-9.]+)"', html)
     if not m:
         raise ErroEfeito(f"{nome}: index.html sem #root com data-duration")
@@ -223,8 +265,9 @@ def criar(nome: str, destino, tema: dict | None = None, params: dict | None = No
     if gsap:
         shutil.copy2(gsap, destino / "gsap.min.js")
         html = html.replace(GSAP_CDN, "gsap.min.js")
-    for extra in (EFEITOS / nome).iterdir():
-        if extra.name not in ("index.html", "efeito.json", "previa.gif", "previa.png") and extra.is_file():
+    for extra in pasta_efeito(nome).iterdir():
+        if extra.name not in ("index.html", "efeito.json", "previa.gif", "previa.png", "item.json", "ficha.md",
+                              "trecho.mp4") and extra.is_file() and not extra.name.startswith("referencia"):
             shutil.copy2(extra, destino / extra.name)
     for pid, origem in imagens.items():
         (destino / "assets").mkdir(exist_ok=True)

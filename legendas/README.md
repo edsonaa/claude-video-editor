@@ -39,4 +39,4 @@ Configuração antiga, sem `legendas.estilo`, continua como era: o modo, a caixa
 | `escala_destaque` | quanto a palavra falada cresce (1 = nada) |
 | `posicao` | `baixo`, `centro` ou `topo` (o vídeo e a configuração podem trocar) |
 
-Um estilo novo é um bloco a mais no `estilos.json`, com outro id: aparece nas boas-vindas e passa na validação da configuração. A imagem acima foi feita com o mesmo ASS que o render queima.
+Os seus estilos ficam no estoque (`~/.edicao/estoque/legendas/<id>/estilo.json`, pela skill `/edicao:estoque` ou pelo painel), com os mesmos campos, e aparecem junto destes. Um estilo novo do motor é um bloco a mais no `estilos.json`, com outro id: aparece nas boas-vindas e passa na validação da configuração. A imagem acima foi feita com o mesmo ASS que o render queima.

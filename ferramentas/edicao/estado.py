@@ -528,6 +528,16 @@ def resumo_status(dados: dict) -> list[str]:
     novas = [m for m in p.get("mudancas", []) if m.get("n", 0) > int(p.get("lidas", 0))]
     if novas:
         linhas.append(f"mudanças pelo painel ainda não lidas: {len(novas)} (painel.py mudancas . --marcar-lidas)")
+    try:
+        from . import estoque as ES
+        r = ES.resumo()
+        if r["entrada"] or r["rascunho"]:
+            partes = ([f"{r['entrada']} esperando análise"] if r["entrada"] else []) + \
+                ([f"{r['rascunho']} para a pessoa aprovar" + (f" ({r['ajuste']} com ajuste pedido)" if r["ajuste"] else "")]
+                 if r["rascunho"] else [])
+            linhas.append(f"estoque: {', '.join(partes)} (estoque.py listar)")
+    except Exception:  # noqa: BLE001 (sem configuração ou estoque com problema: o status segue)
+        pass
     al = alertas(dados)
     if al:
         linhas.append(f"alertas ({len(al)}):")

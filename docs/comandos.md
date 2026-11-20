@@ -307,6 +307,31 @@ Para alinhar: um som com pico em P segundos entra em (tempo do evento − P).
 Confira sempre a licença de uso de cada som (campo "licenca", escrito à mão).
 ```
 
+### estoque.py
+O seu estoque de peças (estilos de legenda, transições, efeitos e motions), fora do motor.
+
+```text
+O seu estoque de peças: estilos de legenda, transições, efeitos e motions seus, fora do motor.
+
+Uso:
+  estoque.py novo --tipo legenda|transicao|efeito|motion --nome "…" --gostei "o que gostou"
+                  [--arquivo trecho.mp4 [--de S] [--ate S]] [--parecido <id>]
+      põe uma peça na entrada (com o trecho de referência, até 90 s) para o Claude analisar
+  estoque.py listar [--tipo T] [--status entrada|rascunho|ativo|recusado|arquivado] [--json]
+  estoque.py mostrar <id>                     a ficha, o item e os dados da peça
+  estoque.py folha <id> [--cada 2]            folha de contato do trecho (folha.png na pasta da peça)
+  estoque.py construir <id> [--base <id>]     tira da entrada e abre o rascunho, partindo de uma peça parecida
+  estoque.py analise <id> "texto"             grava a análise na ficha (o que mediu e como construiu)
+  estoque.py previa <id> [--perfil <pasta do perfil>]
+                                              PNG (legenda) ou GIF (transição, efeito, motion) na pasta da peça
+  estoque.py verificar <id>                   o que falta para a peça entrar no estoque
+  estoque.py aprovar <id>                     rascunho → ativo (aparece na galeria, nas boas-vindas e no plano)
+  estoque.py ajuste <id> "texto"              anota um ajuste pedido (a peça volta a rascunho)
+  estoque.py recusar <id> [--motivo "…"]      |  estoque.py arquivar <id>
+
+O estoque fica em <pessoa>/estoque/ (EDICAO_HOME, padrão ~/.edicao): sobrevive às atualizações do plugin.
+```
+
 ### legendas.py
 Legendas.
 

@@ -2,6 +2,16 @@
 
 Cada versão nova do motor (skills, guias e ferramentas) entra aqui, a mais nova em cima. A skill `/edicao:editar` mostra o que mudou desde a última vez que a pessoa viu. Ao lançar uma versão, suba o `version` em `.claude-plugin/plugin.json` para o mesmo número (um teste confere).
 
+## 0.10.0
+- **O seu estoque de peças** (`~/.edicao/estoque/`, fora do plugin): estilos de legenda, transições, efeitos e motions seus. Cada peça tem uma ficha (`ficha.md`) com o nome, o tipo e o que você gostou.
+  - **Mandar:** pelo painel (Galeria → Estoque → "Adicionar ao estoque": o tipo, o nome, o que gostou, a peça parecida e a referência, que pode ser um arquivo com início e fim marcados, um trecho do vídeo aberto ou só a descrição) ou pelo chat (`estoque.py novo`).
+  - **Analisar e construir:** a skill `/edicao:estoque` faz a folha de contato do trecho, mede e constrói a peça a partir da mais parecida (`estoque.py construir`), gera a prévia e anota a análise na ficha.
+  - **Aprovar:** no painel (prévia, Aprovar, Pedir ajuste, Recusar) ou no chat. Arquivar tira da galeria sem apagar.
+  - **Usar:** as peças ativas entram pelas mesmas portas do motor: galeria (selo "seu"; filtro "Do seu estoque" em Animações), boas-vindas (você marca as que quer no vídeo e elas vão para o briefing), plano de animação, render, ASS e XML.
+- **Sugerir nas revisões:** "Sugerir" nas animações e transições da galeria deixa um pedido no ponto do cursor com a peça.
+- **Transições:** a prévia (painel e tocador) vem do JSON de cada uma (`previa`); `"xfade": "custom"` com `expr` para as que nenhum tipo do FFmpeg cobre.
+- O status do vídeo avisa quando há peças esperando análise ou ajuste.
+
 ## 0.9.0
 - **Arrastar e soltar no painel**, como num programa de edição. Cada soltura grava na hora.
   - **Na linha do tempo:** mover animações e sons; esticar animações (ainda sem render, dentro do que o efeito aceita) e blocos de legenda pelas bordas; aparar a entrada e a saída dos segmentos pelas bordas, vendo o quadro do arquivo; mudar a ordem dos segmentos pelo meio. Ímã nos cortes, no cursor e nas bordas dos outros itens (Alt desliga), com a dica do tempo novo.

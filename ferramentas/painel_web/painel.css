@@ -337,7 +337,7 @@ input[type=checkbox] { accent-color: var(--texto); }
 .gsegmentado { display: inline-flex; border: 1px solid var(--linha); border-radius: 4px; overflow: hidden; }
 .gsegmentado button { background: none; border: 0; padding: 3px 10px; color: var(--texto-2); font-size: 12.5px; }
 .gsegmentado button + button { border-left: 1px solid var(--linha); }
-.gsegmentado button[aria-pressed=true] { background: var(--chrome-3); color: var(--texto); }
+.gsegmentado button[aria-pressed=true] { background: var(--gcor); color: #17181A; font-weight: 600; }
 .gform { display: grid; gap: 9px; margin-top: 12px; padding: 12px; background: var(--chrome); border-radius: 4px; }
 .gcampo { display: grid; gap: 3px; }
 .gcampo.linha { grid-template-columns: auto 1fr; align-items: center; }
@@ -387,3 +387,22 @@ body.arrastando-borda, body.arrastando-borda * { cursor: ew-resize !important; u
 .alca-rotulo { position: absolute; left: 0; bottom: 100%; margin-bottom: 4px; padding: 2px 6px; font-size: 11.5px; white-space: nowrap;
   color: #17181A; background: var(--anim); border-radius: 2px; }
 .alca-rotulo.dentro { bottom: auto; top: 100%; margin: 4px 0 0; }
+
+/* ---------- estoque da pessoa */
+.aba-galeria[data-secao=estoque] { --gcor: var(--foco); }
+.gal-secoes { overflow-x: auto; scrollbar-width: none; }
+.gal-secoes button { padding: 6px 7px 7px; white-space: nowrap; }
+.gseu { font-size: 11px; padding: 0 6px; border-radius: 999px; background: var(--foco); color: #17181A; font-weight: 600; cursor: help; }
+.gsub { margin: 0; padding: 14px 14px 4px; font-size: 13px; font-weight: 600; color: var(--texto); border-top: 1px solid var(--linha); }
+.gcard.compacto { padding-top: 10px; }
+.gcard.compacto .gcab { margin-top: 0; }
+.np-video { display: block; width: 100%; max-height: 220px; margin-top: 8px; background: #000; border-radius: 3px; }
+.gimg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.gimg-ref { display: block; max-width: 100%; max-height: 180px; margin-top: 8px; border-radius: 3px; }
+.gativo { padding: 8px 14px 10px; border-bottom: 1px solid rgba(58,60,64,.5); }
+.gativo-txt { display: grid; gap: 2px; }
+.gativo-txt span { font-size: 12px; }
+.gativo .gacoes { margin-top: 6px; }
+.garq { padding: 10px 14px; color: var(--texto-2); font-size: 12.5px; }
+.glinha-est { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 0; }
+.gform.np .gsegmentado { flex-wrap: wrap; }

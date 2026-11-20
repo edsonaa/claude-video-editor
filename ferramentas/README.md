@@ -23,6 +23,7 @@ As skills do plugin chamam os scripts direto daqui (`${CLAUDE_PLUGIN_ROOT}/ferra
 | `publicar.py` | Capítulos (regras do YouTube), candidatas a capa, textos conferidos contra os limites de cada plataforma, pasta `Publicar/` pronta para subir | publicar |
 | `painel.py` | Painel de revisão no navegador (servidor local): o corte tocando com animações, legenda e som, roteiro para cortar e devolver frases, pedidos no ponto exato, aprovação; `previas` gera o que o navegador não toca | revisão de qualquer etapa |
 | `contato.py` | Folha de contato (quadros lado a lado com tempo e frame) | referências, revisão |
+| `estoque.py` | O estoque de peças da pessoa (legendas, transições, efeitos, motions): entrada com o trecho de referência e a ficha, rascunho a partir de uma peça parecida, folha de contato, prévia, aprovação | estoque |
 | `sons.py` | Índice da biblioteca de sons: duração, **tempo até o pico**, nível; busca | sfx |
 | `rosto.py` | Rastreio de rosto (YuNet, local, sem GPU) para a câmera seguir o rosto | câmera |
 | `schema/projeto.schema.json`, `schema/config.schema.json` | O formato do estado do vídeo e da configuração | — |

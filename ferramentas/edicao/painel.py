@@ -386,6 +386,14 @@ def _seq_de(linha: Linha | None, video: str, t: float) -> tuple[float | None, bo
     return round(seq, 3), dentro
 
 
+def _transicoes_painel() -> dict:
+    from . import transicoes as TR
+    try:
+        return {k: {"titulo": t["titulo"], "previa": t.get("previa")} for k, t in TR.listar().items()}
+    except Exception:  # noqa: BLE001 (estoque com problema não derruba o painel)
+        return {}
+
+
 def dados(pasta) -> dict:
     """Tudo o que a interface precisa, a partir do estado (e dos arquivos que ele cita)."""
     d = E.ler(pasta)
@@ -408,6 +416,7 @@ def dados(pasta) -> dict:
         "mudancas_painel": len([m for m in (d.get("painel") or {}).get("mudancas", [])
                                 if m["n"] > int((d.get("painel") or {}).get("lidas", 0))]),
         "formato": (d.get("video") or {}).get("formato"),
+        "transicoes": _transicoes_painel(),
         "origem_curto": (d.get("video") or {}).get("origem"),
     }
     if not out["resolucao"] and segs:

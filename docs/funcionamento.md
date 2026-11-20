@@ -143,6 +143,27 @@ A aba **Galeria** (tecla G) mostra o que dá para pôr no vídeo, com prévia so
 | Transições | as seis de `transicoes/transicoes.json` com as duas imagens do corte mais perto do cursor; a duração por um controle | `transicao` no segmento que entra. O render faz a exata (xfade, centrada no corte, a duração do vídeo não muda); no XML entra a equivalente do programa |
 | Sons | a sua biblioteca por categoria, para ouvir; sem biblioteca, um botão cria o pacote inicial | um item de `sfx.itens` com o pico no cursor e o volume escolhido; o arquivo é copiado para `Assets/sons/` |
 
+## O seu estoque
+
+Além das peças do motor, você tem as suas: estilos de legenda, transições, efeitos e motions, em `~/.edicao/estoque/`, fora do plugin (não somem quando ele atualiza). Cada peça tem uma ficha com o nome, o tipo e **o que você gostou**, que é a régua da análise.
+
+```mermaid
+flowchart LR
+    A["você manda<br/>trecho + o que gostou<br/>(painel ou chat)"] --> B["entrada<br/>esperando o Claude"]
+    B --> C["/edicao:estoque<br/>olha, mede, constrói<br/>a partir de uma parecida"]
+    C --> D["rascunho<br/>prévia no painel"]
+    D -- "Aprovar" --> E["ativo<br/>galeria, boas-vindas,<br/>plano, render, XML"]
+    D -- "Pedir ajuste" --> C
+    E -- "Pedir ajuste" --> C
+```
+
+1. **Mandar:** no painel, Galeria → Estoque → "Adicionar ao estoque" (o tipo, o nome, o que gostou, se parece com uma peça que já existe, e a referência: um arquivo com início e fim marcados, um trecho do vídeo aberto ou só a descrição). Pelo chat, conte para o Claude e mande o caminho do arquivo.
+2. **Analisar:** `/edicao:estoque`. O Claude faz uma folha de contato do trecho, mede o que importa (duração em quadros, curva, se passa do ponto) e constrói a peça a partir da mais parecida: um `estilo.json`, um `transicao.json` (o xfade do render, o equivalente no XML e a prévia do painel) ou um efeito HyperFrames. As cores e as fontes vêm do seu perfil; da referência ele tira o jeito, não o desenho.
+3. **Aprovar:** a prévia aparece em Galeria → Estoque → "Para você aprovar". Aprovar põe a peça no estoque; "Pedir ajuste" volta para o Claude.
+4. **Usar:** a peça aparece com o selo "seu" na galeria (Animações tem o filtro "Do seu estoque"), nas boas-vindas (você marca as que quer naquele vídeo, e elas vão para o briefing), no plano de animação e nas revisões ("Sugerir" deixa um pedido no ponto do cursor com a peça). O render e o XML tratam igual às do motor.
+
+`estoque.py listar` mostra tudo; o status do vídeo avisa quando há peça esperando análise ou ajuste.
+
 ## Aprendizados
 
 O fluxo melhora vídeo a vídeo pelo caderno `_CLAUDE/aprendizados.md`. Durante a revisão, o Claude anota cada pedido que vale para outros vídeos ("zoom mais sutil"), mas não o que é só deste ("tira essa frase"). Quando você pede `/edicao:editar aprendizados`, cada linha ganha um destino que você aprova:

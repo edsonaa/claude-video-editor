@@ -72,6 +72,12 @@ Criada pelo `/edicao:montar` (`config.py criar`). Outro lugar: a variável `EDIC
 ├── etapas/                  etapas que você criou (registradas em etapas_proprias)
 ├── scripts/                 scripts escritos para o seu fluxo, sobre os módulos do motor
 ├── biblioteca/              assets fixos que voltam em vários vídeos (logos, por exemplo)
+├── estoque/                 as suas peças: estilos de legenda, transições, efeitos e motions
+│   ├── entrada/<id>/        o que você mandou e espera o Claude (ficha.md, item.json, trecho.mp4)
+│   ├── legendas/<id>/       estilo.json + ficha.md (+ o trecho de referência e a prévia)
+│   ├── transicoes/<id>/     transicao.json + ficha.md
+│   ├── efeitos/<id>/        index.html + efeito.json + ficha.md, como os efeitos do motor
+│   └── motions/<id>/        idem, para um jeito de mover
 ├── venv/                    o ambiente Python do fluxo (fora do git)
 └── .git/                    o histórico: toda mudança de perfil e de ajuste pode ser desfeita
 ```

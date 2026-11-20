@@ -188,7 +188,8 @@ def plano(pasta, rascunho: bool = False, de: float | None = None, ate: float | N
             avisos.append(f"{b['id']}: a transição passa da borda do trecho renderizado (ficou corte seco)")
             continue
         meta = TR.carregar(tr["tipo"])
-        transicoes.append({"id": b["id"], "tipo": tr["tipo"], "xfade": meta["xfade"], "quadros": n, "ini_f": ini,
+        transicoes.append({"id": b["id"], "tipo": tr["tipo"], "xfade": meta["xfade"], "expr": meta.get("expr"),
+                           "quadros": n, "ini_f": ini,
                            "de": {**a, "fonte_f": a["in_f"] + a["quadros"] - n // 2},
                            "para": {**b, "fonte_f": b["in_f"] - n // 2}})
     sobre = []
@@ -270,7 +271,8 @@ def _clipe_transicao(tr: dict, taxa: Taxa, tam: tuple[int, int], saida: Path, ra
         cadeias.append(f"[{k}:v]fps={taxa.fps},setpts=PTS-STARTPTS[{pfx}v0];{q};[{pfx}vq]{pad}"
                        f"tpad=stop_mode=clone:stop={n},trim=end_frame={n},setpts=PTS-STARTPTS,format=yuv420p[{pfx}]")
     dur = n / fps
-    filtro = ";".join(cadeias) + f";[a][b]xfade=transition={tr['xfade']}:duration={dur:.6f}:offset=0,format=yuv420p[vt]"
+    tipo = tr["xfade"] if tr["xfade"] != "custom" else "custom:expr='" + str(tr.get("expr") or "A").replace("'", "") + "'"
+    filtro = ";".join(cadeias) + f";[a][b]xfade=transition={tipo}:duration={dur:.6f}:offset=0,format=yuv420p[vt]"
     _rodar([ff.ffmpeg(), "-v", "error", "-y", "-nostdin", *entradas, "-filter_complex", filtro, "-map", "[vt]",
             "-frames:v", str(n), "-an", "-c:v", "libx264", "-preset", "ultrafast", "-crf", "18" if rascunho else "12",
             "-pix_fmt", "yuv420p", "-r", str(taxa.fps), str(saida)])

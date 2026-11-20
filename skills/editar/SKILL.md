@@ -24,6 +24,7 @@ Rode `python3 ${CLAUDE_PLUGIN_ROOT}/ferramentas/config.py mostrar` (no Windows, 
    - Etapa própria da pessoa (está em `etapas_proprias` no config): leia o arquivo indicado em `<pessoa>/` e siga-o, com as regras comuns.
    - Etapa `aguardando_aprovacao`: o próximo passo é continuar essa mesma etapa (a revisão), nunca pular. Ofereça revisar assistindo pelo `/edicao:painel`; pendências `pelo painel` no status são pedidos que a pessoa deixou lá.
    - Alerta de algo desatualizado (o corte mudou depois do plano de animação): mostre primeiro e espere a decisão.
+   - Linha `estoque:` no status (peças esperando análise ou ajuste): mencione numa linha e ofereça `/edicao:estoque` (não trava o vídeo).
    - A pessoa pediu outra etapa ou um trecho ("sim, até 3:00"): abra essa etapa e passe o trecho.
 4. **Depois da última etapa:** o vídeo está pronto. Ofereça, numa linha, `/edicao:publicar` (títulos, descrição, capítulos, capa, pacote por plataforma) e `/edicao:curtos` (cortes curtos verticais do vídeo).
 5. **Uma etapa por vez.** Não encadear etapas sozinho e não dar `/clear` (isso é sempre da pessoa).

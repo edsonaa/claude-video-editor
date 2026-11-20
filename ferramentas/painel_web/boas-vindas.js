@@ -32,7 +32,7 @@ const EXEMPLO = "Esse é o padrão de legenda que vai aparecer no seu vídeo enq
 
 let O = null;               // opções vindas do servidor
 let passo = 0;
-const E = { briefing: "", termos: [], preset: null, tema: null, legenda: null, padrao: false };
+const E = { briefing: "", termos: [], preset: null, tema: null, legenda: null, padrao: false, estoque: [] };
 let tocouTema = false, tocouLegenda = false;
 
 // ------------------------------------------------------------------ navegação
@@ -137,6 +137,17 @@ function desenharEstilos() {
   if (O.perfis.length) partes.push(el("p", { class: "subtitulo" }, "Seus perfis"), el("div", { class: "grade-estilos", role: "radiogroup", "aria-label": "Seus perfis" }, O.perfis.map(cardEstilo)));
   if (O.estilos.length) partes.push(el("p", { class: "subtitulo" }, O.perfis.length ? "Estilos do motor (viram um perfil seu ao escolher)" : "Estilos"),
     el("div", { class: "grade-estilos", role: "radiogroup", "aria-label": "Estilos do motor" }, O.estilos.map(cardEstilo)));
+  if ((O.estoque || []).length) {
+    const rot = { efeito: "efeito", motion: "motion", transicao: "transição" };
+    partes.push(el("p", { class: "subtitulo" }, "Do seu estoque: quais quer neste vídeo?"),
+      el("p", { class: "intro" }, "As marcadas entram no briefing, e o Claude planeja usando elas."),
+      el("div", { class: "chips-estoque", role: "group", "aria-label": "Peças do seu estoque" }, O.estoque.map((p) => {
+        const on = E.estoque.includes(p.id);
+        return el("button", { class: "chip-estoque", "aria-pressed": String(on), title: p.gostei,
+          onclick: () => { E.estoque = on ? E.estoque.filter((x) => x !== p.id) : [...E.estoque, p.id]; desenharEstilos(); } },
+          el("b", {}, p.nome), el("span", {}, rot[p.tipo]));
+      })));
+  }
   if (preset() && !preset().fluxo.includes("motion_render")) partes.unshift(el("p", { class: "intro" }, "Este tipo de vídeo não tem etapa de animação: o estilo vale para as cores da legenda e para quando você ligar animações."));
   $("#estilos").replaceChildren(...partes);
 }
@@ -151,7 +162,7 @@ function desenharOpcoesLegenda() {
   for (const l of O.legendas) {
     ops.push(el("button", { class: "opcao", role: "radio", "aria-checked": String(E.legenda.ativas && E.legenda.estilo === l.id),
       onclick: () => mudarLegenda({ ativas: true, estilo: l.id, queimar: l.modo === "palavra" ? true : E.legenda.queimar }) },
-    el("b", {}, l.titulo), el("span", { class: "modo" }, l.modo === "palavra" ? "palavra a palavra" : "frase"), el("span", { class: "desc" }, `${l.descricao} Bom para ${l.bom_para}.`)));
+    el("b", {}, l.titulo, l.seu ? el("span", { class: "seu" }, " seu") : null), el("span", { class: "modo" }, l.modo === "palavra" ? "palavra a palavra" : "frase"), el("span", { class: "desc" }, `${l.descricao} Bom para ${l.bom_para}.`)));
   }
   $("#estilos-legenda").replaceChildren(...ops);
   $$("#posicao input").forEach((i) => { i.checked = i.value === (E.legenda.posicao || "baixo"); i.disabled = !E.legenda.ativas; });
@@ -209,6 +220,7 @@ function desenharResumo() {
     ["Estilo", `${t.titulo || t.id}${t.tipo === "estilo" ? " (vira um perfil seu)" : ""}`],
     ["Legenda", leg],
   ];
+  if (E.estoque.length) linhas.push(["Do seu estoque", O.estoque.filter((p) => E.estoque.includes(p.id)).map((p) => p.nome).join(", ")]);
   $("#resumo").replaceChildren(...linhas.flatMap(([k, v, cls]) => [el("dt", {}, k), el("dd", { class: cls || "" }, v)]));
 }
 
@@ -220,7 +232,7 @@ async function enviar() {
   const corpo = {
     briefing: E.briefing, termos: E.termos, preset: E.preset, tema: E.tema || { tipo: temaEscolhido().tipo, id: temaEscolhido().id },
     legenda: { estilo: E.legenda.estilo, queimar: !!E.legenda.queimar, posicao: E.legenda.posicao || "baixo", ativas: !!E.legenda.ativas },
-    padrao: $("#padrao").checked,
+    padrao: $("#padrao").checked, estoque: E.estoque,
   };
   try {
     const r = await fetch("/api/boas-vindas", { method: "POST", headers: { "X-Painel-Token": TOKEN, "Content-Type": "application/json" }, body: JSON.stringify(corpo) });

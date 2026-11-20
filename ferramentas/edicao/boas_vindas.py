@@ -127,6 +127,16 @@ def _tema_resumo(t: dict) -> dict:
     return {"cores": t["cores"], "fontes": t["fontes"], "titulo": t.get("titulo"), "descricao": t.get("descricao")}
 
 
+def _estoque_ativo() -> list[dict]:
+    """Efeitos, motions e transições do estoque da pessoa, para ela marcar os que quer neste vídeo."""
+    from . import estoque as ES
+    try:
+        return [{"id": i["id"], "tipo": i["tipo"], "nome": i["nome"], "gostei": i.get("gostei", "")}
+                for i in ES.itens(status=("ativo",)) if i["tipo"] in ("efeito", "motion", "transicao")]
+    except Exception:  # noqa: BLE001 (estoque com problema não trava as boas-vindas)
+        return []
+
+
 def opcoes(pasta) -> dict:
     cfg = _cfg()
     d = E.ler(pasta)
@@ -167,7 +177,8 @@ def opcoes(pasta) -> dict:
         "projeto": d.get("projeto"), "nome": cfg.get("nome"),
         "verificacao": verificacao(pasta),
         "presets": presets, "perfis": perfis, "estilos": estilos,
-        "legendas": [{"id": k, **v} for k, v in leg.items()],
+        "legendas": [{"id": k, **{c: x for c, x in v.items() if c != "_estoque"}, "seu": "_estoque" in v} for k, v in leg.items()],
+        "estoque": _estoque_ativo(),
         "atual": {"preset": ((d.get("video") or {}).get("preset") or cfg.get("preset")),
                   "perfil": d.get("perfil") or cfg.get("perfil_padrao"),
                   "legenda": {"estilo": atual_leg["estilo"]["id"], "queimar": bool(atual_leg["queimar"]),
@@ -247,6 +258,12 @@ def salvar(pasta, dados: dict) -> dict:
     queimar = bool(leg.get("queimar")) or palavra  # palavra a palavra só existe queimada
     briefing = (dados.get("briefing") or "").strip()
     termos = [t.strip() for t in (dados.get("termos") or []) if str(t).strip()]
+    disponiveis = {i["id"]: i for i in _estoque_ativo()}
+    pecas = []
+    for pid in dados.get("estoque") or []:
+        if pid not in disponiveis:
+            raise ErroBoasVindas(f"a peça '{pid}' não está no seu estoque")
+        pecas.append(disponiveis[pid])
 
     # o perfil: um dos da pessoa, ou um estilo do motor que vira perfil dela agora
     criado = None
@@ -280,6 +297,7 @@ def salvar(pasta, dados: dict) -> dict:
                   "preset": preset, "legendas": vleg})
         d["boas_vindas"] = {"em": E.agora(), "preset": preset, "perfil": perfil, "perfil_criado": criado,
                             "legenda": vleg, "termos": termos, "padrao": bool(dados.get("padrao")),
+                            "estoque": [{"id": p["id"], "tipo": p["tipo"], "nome": p["nome"]} for p in pecas],
                             "briefing": "_CLAUDE/briefing_painel.md"}
 
     titulo_leg = L.estilo_legenda(estilo_leg)["titulo"]
@@ -293,6 +311,10 @@ def salvar(pasta, dados: dict) -> dict:
                f"- Legenda: {'sem legenda' if not ativas else titulo_leg + (' queimada' if queimar else ' em arquivo (SRT)') + f', posição {posicao}'}",
                f"- Usar como padrão nos próximos vídeos: {'sim' if dados.get('padrao') else 'não'}"]
     linhas += [f"- Observação: {o}" for o in observacoes]
+    if pecas:
+        from . import estoque as ES
+        linhas += ["", "## Peças do seu estoque para este vídeo",
+                   *[f"- {p['nome']} ({ES.NOME_TIPO[p['tipo']].lower()}, `{p['id']}`): {p['gostei']}" for p in pecas]]
     (E.caminho_estado(pasta).parent / "briefing_painel.md").write_text("\n".join(linhas) + "\n", encoding="utf-8")
 
     if dados.get("padrao"):

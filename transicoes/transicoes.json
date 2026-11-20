@@ -14,6 +14,16 @@
       "nome": "Cross Dissolve",
       "effectid": "Cross Dissolve",
       "categoria": "Dissolve"
+    },
+    "previa": {
+      "b": [
+        {
+          "opacity": 0
+        },
+        {
+          "opacity": 1
+        }
+      ]
     }
   },
   "fade_preto": {
@@ -35,6 +45,33 @@
         0,
         0,
         0
+      ]
+    },
+    "previa": {
+      "fundo": "#000",
+      "a": [
+        {
+          "opacity": 1
+        },
+        {
+          "opacity": 0,
+          "offset": 0.5
+        },
+        {
+          "opacity": 0
+        }
+      ],
+      "b": [
+        {
+          "opacity": 0
+        },
+        {
+          "opacity": 0,
+          "offset": 0.5
+        },
+        {
+          "opacity": 1
+        }
       ]
     }
   },
@@ -58,6 +95,33 @@
         255,
         255
       ]
+    },
+    "previa": {
+      "fundo": "#fff",
+      "a": [
+        {
+          "opacity": 1
+        },
+        {
+          "opacity": 0,
+          "offset": 0.5
+        },
+        {
+          "opacity": 0
+        }
+      ],
+      "b": [
+        {
+          "opacity": 0
+        },
+        {
+          "opacity": 0,
+          "offset": 0.5
+        },
+        {
+          "opacity": 1
+        }
+      ]
     }
   },
   "zoom": {
@@ -76,6 +140,29 @@
       "effectid": "Cross Dissolve",
       "categoria": "Dissolve",
       "aproximada": true
+    },
+    "previa": {
+      "a": [
+        {
+          "transform": "scale(1)",
+          "opacity": 1
+        },
+        {
+          "transform": "scale(2.2)",
+          "opacity": 0
+        }
+      ],
+      "b": [
+        {
+          "transform": "scale(1.04)",
+          "opacity": 1
+        },
+        {
+          "transform": "scale(1)",
+          "opacity": 1
+        }
+      ],
+      "a_cima": true
     }
   },
   "empurrar": {
@@ -94,6 +181,24 @@
       "effectid": "Cross Dissolve",
       "categoria": "Dissolve",
       "aproximada": true
+    },
+    "previa": {
+      "a": [
+        {
+          "transform": "translateX(0)"
+        },
+        {
+          "transform": "translateX(-100%)"
+        }
+      ],
+      "b": [
+        {
+          "transform": "translateX(100%)"
+        },
+        {
+          "transform": "translateX(0)"
+        }
+      ]
     }
   },
   "chicote": {
@@ -112,6 +217,32 @@
       "effectid": "Cross Dissolve",
       "categoria": "Dissolve",
       "aproximada": true
+    },
+    "previa": {
+      "a": [
+        {
+          "transform": "translateX(0)",
+          "filter": "blur(0)",
+          "opacity": 1
+        },
+        {
+          "transform": "translateX(-55%)",
+          "filter": "blur(14px)",
+          "opacity": 0
+        }
+      ],
+      "b": [
+        {
+          "transform": "translateX(55%)",
+          "filter": "blur(14px)",
+          "opacity": 0
+        },
+        {
+          "transform": "translateX(0)",
+          "filter": "blur(0)",
+          "opacity": 1
+        }
+      ]
     }
   }
 }
