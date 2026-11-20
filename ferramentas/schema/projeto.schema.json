@@ -468,6 +468,27 @@
               "params": {
                 "type": "object",
                 "description": "Conteúdo do efeito (os parâmetros do efeito.json)."
+              },
+              "posicao": {
+                "type": "object",
+                "description": "Arrastada no painel: deslocamento (frações do quadro) e tamanho, em volta do centro.",
+                "properties": {
+                  "x": {
+                    "type": "number",
+                    "minimum": -0.5,
+                    "maximum": 0.5
+                  },
+                  "y": {
+                    "type": "number",
+                    "minimum": -0.5,
+                    "maximum": 0.5
+                  },
+                  "escala": {
+                    "type": "number",
+                    "minimum": 0.25,
+                    "maximum": 2
+                  }
+                }
               }
             }
           }
@@ -722,6 +743,22 @@
             },
             "ativas": {
               "type": "boolean"
+            },
+            "deslocamento": {
+              "type": "object",
+              "description": "A legenda arrastada no painel (frações do quadro, a partir da posição do estilo).",
+              "properties": {
+                "x": {
+                  "type": "number",
+                  "minimum": -0.5,
+                  "maximum": 0.5
+                },
+                "y": {
+                  "type": "number",
+                  "minimum": -0.5,
+                  "maximum": 0.5
+                }
+              }
             }
           }
         }
@@ -847,6 +884,43 @@
         },
         "briefing": {
           "type": "string"
+        }
+      }
+    },
+    "painel": {
+      "type": "object",
+      "description": "Registro do que a pessoa mudou no painel (painel.py mudancas).",
+      "properties": {
+        "n": {
+          "type": "integer"
+        },
+        "lidas": {
+          "type": "integer"
+        },
+        "mudancas": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "n",
+              "em",
+              "texto"
+            ],
+            "properties": {
+              "n": {
+                "type": "integer"
+              },
+              "em": {
+                "type": "string"
+              },
+              "texto": {
+                "type": "string"
+              },
+              "item": {
+                "type": "string"
+              }
+            }
+          }
         }
       }
     }

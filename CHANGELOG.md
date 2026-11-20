@@ -2,6 +2,14 @@
 
 Cada versão nova do motor (skills, guias e ferramentas) entra aqui, a mais nova em cima. A skill `/edicao:editar` mostra o que mudou desde a última vez que a pessoa viu. Ao lançar uma versão, suba o `version` em `.claude-plugin/plugin.json` para o mesmo número (um teste confere).
 
+## 0.9.0
+- **Arrastar e soltar no painel**, como num programa de edição. Cada soltura grava na hora.
+  - **Na linha do tempo:** mover animações e sons; esticar animações (ainda sem render, dentro do que o efeito aceita) e blocos de legenda pelas bordas; aparar a entrada e a saída dos segmentos pelas bordas, vendo o quadro do arquivo; mudar a ordem dos segmentos pelo meio. Ímã nos cortes, no cursor e nas bordas dos outros itens (Alt desliga), com a dica do tempo novo.
+  - **No vídeo:** arrastar a legenda (`video.legendas.deslocamento`); mover e redimensionar a animação selecionada pelos cantos ou pela roda do mouse (`motions.itens[i].posicao`); enquadrar um segmento recortado arrastando a imagem. Duplo clique volta ao lugar.
+  - O render aplica a posição e o tamanho das animações e o lugar da legenda queimada; o ASS ganha `\pos`; o XML põe um Basic Motion no clipe da animação.
+- **Um desfazer só** (Ctrl+Z) para o corte, os arrastos e a galeria. Não desfaz por cima do que o Claude mudou depois.
+- **Registro para o Claude:** `painel.mudancas` no estado, em palavras. `painel.py mudancas .` mostra o que ainda não foi lido, o `estado.py status` avisa, e as skills levam isso em conta antes de regravar um bloco.
+
 ## 0.8.0
 - **Galeria no painel** (aba Galeria, tecla G): o que dá para pôr no vídeo, com prévia sobre o quadro do ponto do cursor, e um botão que põe ali.
   - **Legendas:** os seis estilos com o texto do ponto do cursor, nas medidas do render, e a posição. A escolha vale para o vídeo (`video.legendas`); se a divisão em blocos muda, fica um pedido para gerar de novo.

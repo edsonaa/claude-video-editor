@@ -14,6 +14,9 @@ Uso (a pasta do vídeo primeiro):
       o começo de um vídeo novo pelo navegador: verificação, briefing, tipo de vídeo, estilo e
       padrão de legenda (com prévia). Ao enviar, grava no estado e em _CLAUDE/briefing_painel.md,
       mostra o resumo em JSON e termina (código 0). Fechado sem enviar: código 3.
+  painel.py mudancas <pasta> [--todas] [--marcar-lidas] [--json]
+      o que a pessoa mudou no painel (arrastou no tempo ou na tela, inseriu pela galeria,
+      ajustou o corte, desfez), em palavras; por padrão só o que ainda não foi lido
 
 No painel: o vídeo toca já cortado, com as animações, a legenda e o som; o roteiro
 mostra o que saiu do corte (riscado) e deixa cortar ou devolver frases; os pedidos
@@ -39,6 +42,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from edicao import boas_vindas as BV  # noqa: E402
 from edicao import estado as E  # noqa: E402
 from edicao import galeria as G  # noqa: E402
+from edicao import mudancas as M  # noqa: E402
 from edicao import painel as P  # noqa: E402
 
 WEB = Path(__file__).resolve().parent / "painel_web"
@@ -250,8 +254,17 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 info = self._galeria(acao[len("/api/galeria/"):], c, rev)
             elif acao == "/api/cortes":
                 P.editar_cortes(pasta, rev, c["acao"], **{k: v for k, v in c.items() if k not in ("acao", "revisao")})
-            elif acao == "/api/cortes/desfazer":
-                P.desfazer_cortes(pasta, rev)
+            elif acao in ("/api/desfazer", "/api/cortes/desfazer"):
+                info = {"desfeito": M.desfazer(pasta, rev)}
+            elif acao == "/api/mover":
+                if c["tipo"] == "leg":
+                    info = M.tempo_legenda(pasta, rev, c["id"], float(c["inicio"]), float(c["fim"]))
+                else:
+                    info = M.aplicar(pasta, rev, lambda d: M.mover(d, c["tipo"], c["id"], float(c["inicio"]),
+                                                                  None if c.get("fim") is None else float(c["fim"])))
+            elif acao == "/api/posicionar":
+                info = M.aplicar(pasta, rev, lambda d: M.posicionar(d, c["tipo"], c.get("id"), c.get("x", 0),
+                                                                   c.get("y", 0), c.get("escala")))
             elif acao == "/api/pedido":
                 P.novo_pedido(pasta, rev, c.get("etapa"), c.get("texto"), c.get("item"), c.get("tempo_seq"),
                               bool(c.get("aprendizado")))
@@ -280,22 +293,33 @@ class Handler(http.server.BaseHTTPRequestHandler):
         return self._json({"ok": True, "dados": P.dados(pasta), **({"info": info} if info else {})})
 
     def _galeria(self, qual: str, c: dict, rev) -> dict:
+        """O que vem da galeria entra pelo mesmo caminho das mudanças arrastadas: desfazer e registro."""
         pasta = self.painel.pasta
         if qual == "pacote-sons":
             return G.criar_pacote_sons()
-        with P._editar(pasta, rev) as d:
+
+        def fn(d):
             if qual == "animacao":
-                return {"id": G.inserir_animacao(d, pasta, c["efeito"], c.get("params"), float(c["inicio_seq"]),
-                                                 c.get("duracao"))}
+                mid = G.inserir_animacao(d, pasta, c["efeito"], c.get("params"), float(c["inicio_seq"]), c.get("duracao"))
+                it = next(m for m in d["motions"]["itens"] if m["id"] == mid)
+                return {"id": mid, "item": mid, "texto": f"{mid} inserida pela galeria: {it['ideia']}, "
+                                                         f"em {M._f(it['inicio_seq'])}–{M._f(it['fim_seq'])}"}
             if qual == "transicao":
                 tr = G.mudar_transicao(d, c["id"], {"tipo": c.get("tipo"), "duracao": c.get("duracao")}
                                        if c.get("tipo") else None)
-                return {"id": c["id"], "transicao": tr}
+                txt = (f"transição {tr['tipo']} ({tr['duracao']:g} s) na entrada de {c['id']}" if tr
+                       else f"corte seco na entrada de {c['id']}")
+                return {"id": c["id"], "transicao": tr, "item": c["id"], "texto": txt}
             if qual == "som":
-                return {"id": G.inserir_som(d, pasta, c["id"], float(c["tempo_seq"]), float(c.get("ganho_db", -12)))}
+                sid = G.inserir_som(d, pasta, c["id"], float(c["tempo_seq"]), float(c.get("ganho_db", -12)))
+                return {"id": sid, "item": sid, "texto": f"{sid} inserido pela galeria: {c['id']} com o pico em "
+                                                         f"{M._f(float(c['tempo_seq']))}"}
             if qual == "legenda":
-                return G.escolher_legenda(d, c["estilo"], c.get("posicao"))
-        raise P.ErroPainel(f"galeria: '{qual}' não existe")
+                r = G.escolher_legenda(d, c["estilo"], c.get("posicao"))
+                return {**r, "item": "legendas", "texto": f"estilo de legenda: {r['titulo']}"
+                        + (f", posição {c['posicao']}" if c.get("posicao") else "")}
+            raise P.ErroPainel(f"galeria: '{qual}' não existe")
+        return M.aplicar(pasta, rev, fn)
 
 
 class Servidor(socketserver.ThreadingMixIn, http.server.HTTPServer):
@@ -356,6 +380,24 @@ def cmd_boas_vindas(a):
     return 3
 
 
+def cmd_mudancas(a):
+    d = E.ler(a.pasta)
+    todas = (d.get("painel") or {}).get("mudancas", [])
+    lista = todas if a.todas else M.nao_lidas(d)
+    if a.json:
+        print(json.dumps(lista, ensure_ascii=False, indent=2))
+    elif not lista:
+        print("nenhuma mudança nova pelo painel" if not a.todas else "nenhuma mudança registrada pelo painel")
+    else:
+        print(f"{len(lista)} mudança(s) pelo painel" + ("" if a.todas else " ainda não lida(s)") + ":")
+        for m in lista:
+            print(f"  {m['em'][:16].replace('T', ' ')}  {m['texto']}")
+    if a.marcar_lidas and lista:
+        M.marcar_lidas(a.pasta)
+        print("(marcadas como lidas)")
+    return 0
+
+
 def cmd_verificar(a):
     d = P.dados(a.pasta)
     for chave, m in d["midias"].items():
@@ -394,6 +436,9 @@ def main(argv=None):
     p = sub.add_parser("previas"); p.add_argument("pasta"); p.add_argument("--todas", action="store_true")
     p.set_defaults(f=cmd_previas)
     p = sub.add_parser("verificar"); p.add_argument("pasta"); p.set_defaults(f=cmd_verificar)
+    p = sub.add_parser("mudancas"); p.add_argument("pasta"); p.add_argument("--todas", action="store_true")
+    p.add_argument("--marcar-lidas", action="store_true"); p.add_argument("--json", action="store_true")
+    p.set_defaults(f=cmd_mudancas)
     p = sub.add_parser("boas-vindas"); p.add_argument("pasta"); p.add_argument("--porta", type=int, default=8765)
     p.add_argument("--navegador", action="store_true", help="abre o navegador padrão")
     p.add_argument("--ocioso", type=float, default=60, help="minutos sem a página aberta até fechar (0 = nunca)")

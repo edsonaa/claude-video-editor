@@ -199,6 +199,9 @@ Uso (a pasta do vídeo primeiro):
       o começo de um vídeo novo pelo navegador: verificação, briefing, tipo de vídeo, estilo e
       padrão de legenda (com prévia). Ao enviar, grava no estado e em _CLAUDE/briefing_painel.md,
       mostra o resumo em JSON e termina (código 0). Fechado sem enviar: código 3.
+  painel.py mudancas <pasta> [--todas] [--marcar-lidas] [--json]
+      o que a pessoa mudou no painel (arrastou no tempo ou na tela, inseriu pela galeria,
+      ajustou o corte, desfez), em palavras; por padrão só o que ainda não foi lido
 
 No painel: o vídeo toca já cortado, com as animações, a legenda e o som; o roteiro
 mostra o que saiu do corte (riscado) e deixa cortar ou devolver frases; os pedidos

@@ -364,3 +364,26 @@ input[type=checkbox] { accent-color: var(--texto); }
 .gvazio { padding: 22px 16px; }
 .gvazio h3 { margin: 0 0 8px; font-size: 15px; }
 .gvazio p { color: var(--texto-2); margin: 0 0 12px; }
+
+/* ---------- arrastar e soltar */
+.mo-caixa { position: absolute; inset: 0; pointer-events: none; transform-origin: 50% 50%; }
+#trilhas[data-pairar=mover], #trilhas[data-pairar=ordem] { cursor: grab; }
+#trilhas[data-pairar=ini], #trilhas[data-pairar=fim] { cursor: ew-resize; }
+body.arrastando-mover, body.arrastando-mover * { cursor: grabbing !important; user-select: none; }
+body.arrastando-borda, body.arrastando-borda * { cursor: ew-resize !important; user-select: none; }
+.arrastado { z-index: 6 !important; outline: 1.5px solid var(--foco); outline-offset: 0; opacity: .88; }
+.guia-ima { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--foco); z-index: 7; pointer-events: none; }
+.marca-ordem { position: absolute; top: 0; bottom: 0; width: 3px; margin-left: -1px; background: var(--foco); z-index: 7; pointer-events: none; }
+.dica-arrasto { position: fixed; z-index: 50; pointer-events: none; padding: 4px 8px; border-radius: 4px; background: var(--chrome-3);
+  border: 1px solid var(--linha); color: var(--texto); font-size: 12px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.quadro[data-pairar=legenda], .quadro[data-pairar=motion], .quadro[data-pairar=quadro] { cursor: move; }
+.quadro[data-pairar=canto] { cursor: nwse-resize; }
+.quadro.movendo, .quadro.movendo * { cursor: grabbing !important; user-select: none; }
+.quadro[data-pairar=legenda] .camada-legenda .txt { outline: 1px dashed rgba(245,245,242,.7); outline-offset: 4px; }
+.alca { position: absolute; z-index: 4; border: 1px dashed var(--anim); pointer-events: none; }
+.alca-canto { position: absolute; width: 12px; height: 12px; background: var(--anim); border: 2px solid #17181A; border-radius: 2px; pointer-events: auto; cursor: nwse-resize; }
+.alca-canto.no { left: -7px; top: -7px; } .alca-canto.ne { right: -7px; top: -7px; cursor: nesw-resize; }
+.alca-canto.so { left: -7px; bottom: -7px; cursor: nesw-resize; } .alca-canto.se { right: -7px; bottom: -7px; }
+.alca-rotulo { position: absolute; left: 0; bottom: 100%; margin-bottom: 4px; padding: 2px 6px; font-size: 11.5px; white-space: nowrap;
+  color: #17181A; background: var(--anim); border-radius: 2px; }
+.alca-rotulo.dentro { bottom: auto; top: 100%; margin: 4px 0 0; }

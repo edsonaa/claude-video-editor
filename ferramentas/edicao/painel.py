@@ -404,6 +404,9 @@ def dados(pasta) -> dict:
         "cortes_versao": (d.get("cortes") or {}).get("versao"),
         "resolucao": midia.get("resolucao") or (arqs.get(midia.get("principal") or "") or {}).get("resolucao"),
         "desfazer": len(_historico(pasta)),
+        "desfazer_o_que": (_historico(pasta) or [{}])[-1].get("motivo"),
+        "mudancas_painel": len([m for m in (d.get("painel") or {}).get("mudancas", [])
+                                if m["n"] > int((d.get("painel") or {}).get("lidas", 0))]),
         "formato": (d.get("video") or {}).get("formato"),
         "origem_curto": (d.get("video") or {}).get("origem"),
     }
@@ -472,6 +475,7 @@ def dados(pasta) -> dict:
     out["motions"] = [{"id": it["id"], "status": it.get("status"), "inicio_seq": it.get("inicio_seq"),
                        "fim_seq": it.get("fim_seq"), "formato": it.get("formato"), "ideia": it.get("ideia", ""),
                        "efeito": it.get("efeito"), "params": it.get("params") or {}, "origem": it.get("origem"),
+                       "posicao": it.get("posicao"),
                        "chave": f"mo:{it['id']}" if f"mo:{it['id']}" in fts else None}
                       for it in (d.get("motions") or {}).get("itens") or []]
     out["camera"] = [{k: v for k, v in it.items() if not isinstance(v, (list, dict)) or k in ("keyframes",)}
@@ -561,6 +565,8 @@ def gravar_cortes(pasta, novos: list[dict], revisao: int | None, motivo: str) ->
             s["texto"] = texto_do_trecho(transcs[s["video"]]["palavras"], s["inicio"], s["fim"])
     antes = copy.deepcopy((d.get("cortes") or {}))
     d.setdefault("cortes", {})["segmentos"] = novos
+    from . import mudancas as M
+    M.registrar(d, f"corte: {motivo}")
     gravado = E.gravar(pasta, d, revisao_lida=d.get("revisao"))
     h = _historico(pasta)
     h.append({"segmentos": antes.get("segmentos", []), "versao_antes": antes.get("versao"),
@@ -698,6 +704,17 @@ def editar_cortes(pasta, revisao: int | None, acao: str, **kw) -> dict:
             raise ErroPainel(f"segmento {kw['id']} não encontrado")
         novos = ajustar_segmento(segs, kw["id"], taxa, kw.get("inicio"), kw.get("fim"), duracoes.get(s["video"]))
         motivo = f"ajuste de {kw['id']}"
+    elif acao == "mover":
+        i = next((k for k, x in enumerate(segs) if x["id"] == kw["id"]), None)
+        if i is None:
+            raise ErroPainel(f"segmento {kw['id']} não encontrado")
+        para = max(0, min(len(segs) - 1, int(kw["para"])))
+        if para == i:
+            raise ErroPainel(f"{kw['id']} já está nessa posição")
+        novos = [dict(s) for s in segs]
+        novos.insert(para, novos.pop(i))
+        vizinho = f"antes de {novos[para + 1]['id']}" if para + 1 < len(novos) else "para o fim"
+        motivo = f"{kw['id']} levado {vizinho} (posição {para + 1} de {len(novos)})"
     elif acao == "remover_segmento":
         if not any(s["id"] == kw["id"] for s in segs):
             raise ErroPainel(f"segmento {kw['id']} não encontrado")
@@ -742,10 +759,11 @@ def desfazer_cortes(pasta, revisao: int | None) -> dict:
     if (d.get("cortes") or {}).get("versao") != ultimo["versao_depois"]:
         raise ErroPainel("o corte mudou fora do painel depois da última mudança daqui; desfazer só volta o que "
                          "foi feito aqui (peça pelo chat)")
-    gravado = gravar_cortes(pasta, ultimo["segmentos"], revisao, "desfazer")
+    gravado = gravar_cortes(pasta, ultimo["segmentos"], revisao, f"desfez: {ultimo.get('motivo') or 'mudança'}")
     h2 = _historico(pasta)[:-2]  # tira o 'desfazer' que acabou de entrar e a mudança desfeita
-    if h2:  # o corte agora é o que a mudança anterior deixou, numa versão nova
-        h2[-1]["versao_depois"] = gravado["cortes"]["versao"]
+    corte_ant = next((x for x in reversed(h2) if x.get("tipo") != "estado"), None)
+    if corte_ant:  # o corte agora é o que a mudança anterior deixou, numa versão nova
+        corte_ant["versao_depois"] = gravado["cortes"]["versao"]
     _gravar_historico(pasta, h2)
     return gravado
 

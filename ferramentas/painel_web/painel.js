@@ -312,18 +312,22 @@ const Som = {
 const Motion = {
   videos: new Map(),
   vivos: new Map(),            // animações da biblioteca ainda sem render: a página do efeito tocando
+  caixas: new Map(),           // id -> a caixa que se move e escala (arrastada no quadro)
   chaveVivos: "",
   montar() {
     const camada = $("#camada-motion");
     repor(camada);
     this.videos.clear();
+    this.caixas.clear();
     for (const m of D.motions) {
       const md = m.chave && D.midias[m.chave];
       if (!md || !md.url || m.inicio_seq === null || m.inicio_seq === undefined) continue;
       const v = el("video", { muted: true, playsinline: true, preload: "auto", src: url(md.url) });
       v.muted = true;
-      camada.append(v);
+      const cx = el("div", { class: "mo-caixa", dataset: { id: m.id } }, v);
+      camada.append(cx);
       this.videos.set(m.id, v);
+      this.caixas.set(m.id, cx);
     }
     this.chaveVivos = "";
     this.vivos.clear();
@@ -335,17 +339,20 @@ const Motion = {
     const chave = JSON.stringify(lista.map((m) => [m.id, m.efeito, m.params, m.inicio_seq, m.fim_seq]));
     if (chave === this.chaveVivos) return;
     this.chaveVivos = chave;
-    this.vivos.forEach((fr) => fr.remove());
+    this.vivos.forEach((fr, id) => { fr.parentElement.remove(); this.caixas.delete(id); });
     this.vivos.clear();
     const fmtEf = D.formato || (D.tema && D.tema.formato) || "16:9";
     const [w, h] = FORMATOS[fmtEf] || [1920, 1080];
     for (const m of lista) {
       const fr = el("iframe", { class: "efeito-vivo", title: `Prévia de ${m.id}`, tabindex: "-1", width: w, height: h, dataset: { w, h },
         src: Galeria.srcEfeitoPara(m.efeito, m.params, m.fim_seq !== null && m.fim_seq !== undefined ? +(m.fim_seq - m.inicio_seq).toFixed(3) : null) });
-      $("#camada-motion").append(fr);
+      const cx = el("div", { class: "mo-caixa", dataset: { id: m.id } }, fr);
+      $("#camada-motion").append(cx);
       this.vivos.set(m.id, fr);
+      this.caixas.set(m.id, cx);
     }
     Galeria.escalarIframes();
+    Arrastar.aplicarPosicoes();
   },
   atualizar(t, tocando) {
     const ligado = $("#ck-motion").checked;
@@ -440,10 +447,12 @@ function aplicarDados(novo) {
   desenharPedidos();
   desenharInspetor();
   $("#bt-desfazer").disabled = !D.desfazer;
+  $("#bt-desfazer").title = D.desfazer ? `Desfazer: ${D.desfazer_o_que || "a última mudança feita aqui"} (Ctrl+Z)` : "Nada feito aqui para desfazer";
   ajustarQuadro();
   const eraTocando = T.tocando;
   T.ir(primeira ? 0 : Math.min(tAntes, D.duracao), eraTocando);
   Galeria.aoMudarDados();
+  Arrastar.aplicarPosicoes();
 }
 
 function desenharEtapas() {
@@ -508,6 +517,7 @@ function desenharTempo() {
   $("#pedido-tempo-txt").textContent = `em ${fmt(T.t)}`;
   marcarPalavraAtual();
   Galeria.atualizarCursor();
+  Arrastar.desenharAlca();
 }
 
 // ------------------------------------------------------------------ linha do tempo
@@ -659,6 +669,7 @@ function zoom(fator) {
 
 // clique na linha: seleciona o que estiver embaixo e leva o cursor até lá
 $("#trilhas").addEventListener("mousedown", (ev) => {
+  if (Arrastar.naLinha(ev)) return;     // pegou um item: arrastar no tempo (ou clique, se não mexer)
   const r = $("#rolagem"), x = ev.clientX - r.getBoundingClientRect().left + r.scrollLeft;
   const alvo = ev.target.closest("[data-tipo]");
   if (alvo) selecionar(alvo.dataset.tipo, alvo.dataset.id, false);
@@ -683,6 +694,7 @@ function selecionar(tipo, id, ir = true) {
   }
   desenharLinha();
   desenharInspetor();
+  Arrastar.desenharAlca();
   desenharLegendas();
   desenharAnimacoes();
   desenharPedidos();
@@ -748,6 +760,10 @@ function desenharInspetor() {
       plano && m.status !== "riscado" ? bt("Riscar", () => acao("/api/motion", { id: m.id, status: "riscado" }, `${m.id} riscada`), { class: "perigo" }) : null,
       plano && m.status === "riscado" ? bt("Voltar a propor", () => acao("/api/motion", { id: m.id, status: "proposto" })) : null,
       bt("Pedir ajuste…", () => pedirAjuste("motion", m.id)),
+      ["sobreposicao", "sobreposicao_lateral", "enfase"].includes(m.formato)
+        ? (m.posicao ? el("span", { class: "grupo" }, el("span", {}, `Na tela: ${Math.round(m.posicao.x * 100)}%, ${Math.round(m.posicao.y * 100)}%, tamanho ${Math.round(m.posicao.escala * 100)}%`),
+          bt("Voltar ao lugar", () => acao("/api/posicionar", { tipo: "motion", id: m.id, x: 0, y: 0, escala: 1 }, `${m.id} voltou ao lugar original`)))
+          : el("span", { class: "discreto" }, "arraste no vídeo para mover; cantos mudam o tamanho")) : null,
       m.ideia ? el("div", { class: "insp-texto" }, m.ideia) : null);
   } else if (sel.tipo === "leg") {
     const b = it;
@@ -1065,7 +1081,10 @@ $("#bt-proximo").addEventListener("click", () => irCorte(1));
 $("#bt-mais").addEventListener("click", () => zoom(1.5));
 $("#bt-menos").addEventListener("click", () => zoom(1 / 1.5));
 $("#bt-encaixar").addEventListener("click", encaixar);
-$("#bt-desfazer").addEventListener("click", () => acao("/api/cortes/desfazer", {}, "Última mudança de corte desfeita"));
+$("#bt-desfazer").addEventListener("click", async () => {
+  const r = await acao("/api/desfazer", {});
+  if (r && r.info) avisar(`Desfeito: ${r.info.desfeito}`);
+});
 $("#bt-ajuda").addEventListener("click", () => $("#dlg-ajuda").showModal());
 $("#bt-alertas").addEventListener("click", () => {
   repor($("#lista-alertas"), ...D.alertas.map((a) => el("li", {}, a)));
@@ -1159,6 +1178,7 @@ async function vigiar() {
     return;
   }
   Galeria.iniciar();
+  Arrastar.iniciar();
   try {
     aplicarDados(await api("/api/dados"));
   } catch (e) {

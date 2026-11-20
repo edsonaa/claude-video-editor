@@ -102,7 +102,7 @@
 
   <section class="area-linha" aria-label="Linha do tempo">
     <div class="linha-ferramentas">
-      <button id="bt-desfazer" class="bt-fantasma" title="Desfazer a última mudança de corte feita aqui (Ctrl+Z)" disabled>Desfazer corte</button>
+      <button id="bt-desfazer" class="bt-fantasma" title="Desfazer a última mudança feita aqui (Ctrl+Z)" disabled>Desfazer</button>
       <span class="espaco"></span>
       <button id="bt-menos" class="bt-icone" title="Afastar (−)" aria-label="Afastar"><svg viewBox="0 0 20 20"><path d="M4 10h12"/></svg></button>
       <button id="bt-encaixar" class="bt-fantasma" title="Ver o vídeo inteiro">Inteiro</button>
@@ -130,7 +130,9 @@
     <dt>↑ ↓</dt><dd>corte anterior e próximo</dd>
     <dt>[ ]</dt><dd>início ou fim do segmento atual no cursor</dd>
     <dt>Delete</dt><dd>cortar as palavras selecionadas no roteiro</dd>
-    <dt>Ctrl+Z</dt><dd>desfazer a última mudança de corte</dd>
+    <dt>Ctrl+Z</dt><dd>desfazer a última mudança feita aqui (corte, arrasto, galeria)</dd>
+    <dt>Arrastar</dt><dd>na linha do tempo: animações e sons mudam de lugar; as bordas esticam animações e legendas e aparam os segmentos; o meio de um segmento muda a ordem. Alt desliga o ímã</dd>
+    <dt>No vídeo</dt><dd>arraste a legenda; com uma animação selecionada, arraste para mover e puxe os cantos para o tamanho; com um segmento recortado selecionado, arraste a imagem para enquadrar. Duplo clique volta ao lugar</dd>
     <dt>N</dt><dd>novo pedido neste ponto</dd>
     <dt>G</dt><dd>galeria: legendas, animações, transições e sons</dd>
     <dt>+ −</dt><dd>aproximar e afastar a linha do tempo</dd>
@@ -159,6 +161,7 @@
 
 <script src="/web/legenda-estilo.js"></script>
 <script src="/web/galeria.js"></script>
+<script src="/web/arrastar.js"></script>
 <script src="/web/painel.js"></script>
 </body>
 </html>

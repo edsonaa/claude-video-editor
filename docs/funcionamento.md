@@ -94,6 +94,7 @@ Os blocos, na ordem em que as etapas os preenchem:
 | `camera`, `sfx` | movimentos de câmera; efeitos sonoros (`sfx01`…) e a música |
 | `legendas` | a versão atual dos blocos (`l001`…) e as saídas exportadas |
 | `video` | o que é só deste vídeo: formato, tipo de vídeo escolhido, o estilo de legenda (`video.legendas`), de onde veio um curto |
+| `painel` | o registro do que você mudou no painel (arrastou, inseriu pela galeria, ajustou o corte, desfez), em palavras, para o Claude ler (`painel.py mudancas`) |
 | `boas_vindas` | o que você enviou pelas boas-vindas do painel (tipo, estilo, legenda, termos, se virou padrão) |
 | `curtos`, `publicacao` | os curtos tirados deste vídeo; os textos, capítulos, capa e o pacote |
 | `pendencias`, `entregas` | os pedidos ainda não aplicados (`p01`…) e cada arquivo entregue |
@@ -113,6 +114,23 @@ Como as entregas chegam até você depende de `revisao.programa` na configuraç�
 | `premiere` / `resolve` | um **FCP 7 XML** por entrega (`_CLAUDE/entregas/`): V1 câmera, V3 animações em tela cheia, V4 sobreposições, V5 legenda animada; A1 voz, A2 música, efeitos abaixo. A primeira entrega de todas é um arquivo de teste. Ajustou no programa? A **volta** (`exportar_xml.py volta`) lê o que você exportou, e os seus ajustes valem mais. |
 | `nenhum` | o **painel** e o **rascunho** (`render.py rascunho`); o final sai na etapa `render`. |
 | qualquer um | o **painel** (`/edicao:painel`): o vídeo já cortado no navegador, com animações, legenda e som, sem renderizar. O roteiro mostra o que saiu do corte e deixa cortar ou devolver frases, os pedidos ficam presos ao ponto do vídeo e a etapa se aprova ali. |
+
+### Arrastar e soltar
+
+O painel se mexe como um programa de edição. Cada soltura grava na hora, entra no registro para o Claude e se desfaz com Ctrl+Z (o mesmo desfazer vale para o corte, os arrastos e a galeria).
+
+| Onde | O que arrastar | O que muda |
+|---|---|---|
+| Linha do tempo | o meio de uma animação ou de um som | o tempo dele na sequência (uma animação já renderizada só se move; a duração dela muda pedindo ajuste) |
+| | a borda de uma animação ainda sem render | a duração, dentro do que o efeito aceita |
+| | a borda de um bloco de legenda | a entrada ou a saída do bloco, sem passar do vizinho (versão nova do arquivo de blocos) |
+| | a borda de um segmento | apara a entrada ou a saída, e o vídeo mostra o quadro do arquivo enquanto você arrasta |
+| | o meio de um segmento | a ordem: uma marca mostra onde ele vai entrar |
+| Vídeo | a legenda | o lugar dela em todos os blocos (`video.legendas.deslocamento`) |
+| | a animação selecionada (sobreposição, lateral, ênfase) | o lugar; os cantos ou a roda do mouse mudam o tamanho (`posicao`) |
+| | a imagem de um segmento recortado selecionado | o enquadramento |
+
+Na linha do tempo, o ímã gruda nos cortes, no cursor e nas bordas dos outros itens (segure Alt para soltar livre); no vídeo, no centro. Duplo clique no vídeo volta a legenda, a animação ou o enquadramento para o lugar original. O render e o XML aplicam a posição e o tamanho das animações e o lugar da legenda queimada.
 
 ### A galeria do painel
 

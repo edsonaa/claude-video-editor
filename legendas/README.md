@@ -19,7 +19,8 @@ Em camadas, a de baixo vale mais:
 
 1. `legendas` da configuração (`config.py set legendas.estilo impacto`): o padrão dos seus vídeos.
 2. `video.legendas` no estado do vídeo: a escolha só deste vídeo (as boas-vindas do painel gravam aqui; à mão, `estado.py . --set video.legendas.estilo caixa`).
-3. As opções da linha de comando (`legendas.py gerar --modo … --max-caracteres …`), só daquela vez.
+3. Arrastada no painel: `video.legendas.deslocamento` (`{x, y}`, frações do quadro a partir da posição do estilo). Vale na legenda queimada e no ASS, que ganha um `\pos` por evento; a legenda animada e o SRT seguem a posição do estilo.
+4. As opções da linha de comando (`legendas.py gerar --modo … --max-caracteres …`), só daquela vez.
 
 Configuração antiga, sem `legendas.estilo`, continua como era: o modo, a caixa alta e os caracteres dela valem, e a aparência segue a clássica (ou a palavra a palavra, no modo palavra).
 

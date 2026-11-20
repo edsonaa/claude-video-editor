@@ -52,6 +52,7 @@ No caminho, o motor também trata a voz (ruído, compressão e loudness no alvo 
 - o **roteiro** mostra a fala com o que saiu do corte riscado: selecione palavras para cortar ou devolver ao vídeo (Ctrl+Z desfaz);
 - a **linha do tempo** mostra cada trilha, e cada segmento se ajusta quadro a quadro;
 - os **pedidos** ficam presos ao ponto do vídeo e voltam para o Claude como pendências; animações do plano se aprovam ou riscam ali; legendas se corrigem ali;
+- dá para **arrastar** como num programa de edição: animações, sons e legendas no tempo, a entrada, a saída e a ordem dos segmentos, e na tela a legenda, a posição e o tamanho das animações e o enquadramento; Ctrl+Z desfaz, e o Claude lê o que mudou;
 - a **galeria** (tecla G) mostra legendas, animações, transições e sons com prévia sobre o seu próprio quadro, e põe o escolhido no ponto do cursor (a animação já toca por cima do vídeo antes do render);
 - quando estiver bom, **Aprovar** fecha a etapa.
 

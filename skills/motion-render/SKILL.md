@@ -16,6 +16,7 @@ A etapa mais longa e a que mais depende do ofício.
 ## Passo a passo
 1. `<py> <f>/estado.py . status`: o plano aprovado e o trecho pedido (só os itens que **começam** nele).
 2. **Versão da ferramenta fixa no vídeo:** na primeira animação, anote `--set ferramentas.hyperframes <versão>` (a mais nova); todo comando usa essa versão.
+- **Posição arrastada no painel** (`posicao` no item): não refaça a animação por causa dela. O render e o XML aplicam a posição e o tamanho por cima do arquivo que você renderiza no tamanho do quadro.
 3. **Item com efeito da biblioteca** (`"efeito"` no plano; os escolhidos na galeria do painel vêm com `origem: painel`, os `params` que a pessoa preencheu e a duração dela: use como estão): comece por ele em vez de uma página em branco:
    `<py> <f>/efeitos.py criar <efeito> _CLAUDE/motion/<id> --perfil <pessoa>/perfis/<perfil> --params <params.json> --duracao <fim_seq − inicio_seq> --fps <midia.fps> --formato <video.formato>`
    Ele copia a composição com o tema do perfil e o conteúdo nas variáveis, a duração exata em frames e o tamanho do formato, e grava os eventos de som em `eventos.json`. Daí em diante é um projeto HyperFrames comum: ajuste o que o item pedir (o storyboard manda), sem mexer na biblioteca. Imagens de parâmetros (`imagem`) são copiadas para `assets/`; sem o arquivo, o efeito mostra o marcador de ASSET FALTANDO no lugar.

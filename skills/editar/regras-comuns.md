@@ -53,6 +53,7 @@ Durante a revisão de qualquer etapa, anote na hora toda correção, elogio ou p
 - **Pendência:** pedido ainda não aplicado é anotado na hora (`--pendencia`) e aparece no status.
 - **Resumo no chat** ao entregar: curto, com o que precisa da atenção da pessoa e o caminho do arquivo. Status `aguardando_aprovacao`.
 - **Revisão:** pela citação de número (`mo04 mais lento`), pelo tempo da sequência (`estado.py` converte pela lista de cortes; `edicao.linha.Linha.seq_para_origem`), pelos pedidos do painel (pendências com o ponto) ou pela volta do programa. Ajustar só o que foi citado, versão nova, anotar aprendizados.
+- **O que a pessoa arrastou no painel vale mais.** Antes de regravar um bloco inteiro (`--gravar motions`, `--gravar sfx`, `--gravar cortes`, legendas novas), rode `<py> <f>/painel.py mudancas .`: tempos, posições na tela, ordem dos segmentos e o que entrou pela galeria já estão no estado. Leve tudo isso para o que for gravar; se o seu trabalho precisa mudar algo que ela mexeu, pergunte antes.
 - **Fechar a etapa** (aprovada inteira): `--etapa <etapa>=concluido`, dizer quantos aprendizados ficaram anotados, sugerir `/clear` e `/edicao:editar`. Nunca encadear a próxima etapa sozinho.
 
 ## 7. Aplicar os aprendizados (quando a pessoa pedir: `/edicao:editar aprendizados`)

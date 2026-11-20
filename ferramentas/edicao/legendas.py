@@ -266,6 +266,8 @@ def opcoes_legenda(d: dict | None = None, cfg: dict | None = None, vertical: boo
     for k in ("ativas", "queimar", "posicao"):
         if k in dv:
             op[k] = dv[k]
+    desl = dv.get("deslocamento") or {}
+    op["deslocamento"] = {"x": float(desl.get("x", 0)), "y": float(desl.get("y", 0))}
     op["estilo"] = est
     return op
 
@@ -278,11 +280,14 @@ def _cor_tema(valor: str, tema: dict) -> str:
 
 
 def ass(bls: list[dict], tema: dict, largura: int, altura: int, modo: str | None = None, posicao: str | None = None,
-        caixa_alta: bool | None = None, tamanho: int | None = None, estilo: dict | None = None) -> str:
+        caixa_alta: bool | None = None, tamanho: int | None = None, estilo: dict | None = None,
+        deslocamento: dict | None = None) -> str:
     """ASS para queimar com o FFmpeg (filtro `ass`), no estilo de legenda pedido.
 
     Sem `estilo`: o comportamento de antes (frase clássica, ou palavra a palavra na cor de
     destaque do tema). `modo`, `posicao` e `caixa_alta` passados aqui valem por cima do estilo.
+    `deslocamento` ({x, y}, frações do quadro) leva a legenda arrastada no painel: cada evento ganha
+    um \\pos no ponto de ancoragem da posição, somado ao deslocamento.
     """
     if estilo is None:
         estilo = estilo_legenda("karaoke" if modo == "palavra" else "classica")
@@ -318,6 +323,10 @@ def ass(bls: list[dict], tema: dict, largura: int, altura: int, modo: str | None
         cor_contorno = _cor_ass(_cor_tema(est.get("cor_contorno", "#000000"), tema), alfa)
         cor_fundo = _cor_ass("#000000", 0x80)
     efeito = ""
+    dx, dy = float((deslocamento or {}).get("x", 0)), float((deslocamento or {}).get("y", 0))
+    if abs(dx) > 1e-4 or abs(dy) > 1e-4:
+        ay = {2: altura - margem_v, 5: altura / 2, 8: margem_v}[alinh]
+        efeito = f"{{\\an{alinh}\\pos({largura / 2 + dx * largura:.0f},{ay + dy * altura:.0f})}}"
     # brilho: uma camada de trás com o contorno grosso, desfocado, na cor de destaque (e o
     # preenchimento transparente); a camada da frente é o texto nítido de sempre
     brilho = (f"{{\\1a&HFF&\\3c{_cor_ass(_cor_tema(est.get('cor_destaque', 'destaque'), tema))}\\3a&H50&"
@@ -342,7 +351,7 @@ def ass(bls: list[dict], tema: dict, largura: int, altura: int, modo: str | None
         if not palavra:
             texto_b = "\\N".join(_esc_ass(l) for l in ls)
             if brilho:
-                ev.append(f"Dialogue: 0,{_tc_ass(b['inicio'])},{_tc_ass(b['fim'])},Legenda,,0,0,0,,{brilho}{texto_b}")
+                ev.append(f"Dialogue: 0,{_tc_ass(b['inicio'])},{_tc_ass(b['fim'])},Legenda,,0,0,0,,{efeito}{brilho}{texto_b}")
             ev.append(f"Dialogue: 1,{_tc_ass(b['inicio'])},{_tc_ass(b['fim'])},Legenda,,0,0,0,,{efeito}{texto_b}")
             continue
         ws = b["palavras"]
@@ -364,7 +373,7 @@ def ass(bls: list[dict], tema: dict, largura: int, altura: int, modo: str | None
                 partes.append(f"{{\\c{destaque}\\fscx{escala}\\fscy{escala}}}{t}{{\\c{cor}\\fscx100\\fscy100}}"
                               if j == i else t)
             if brilho:
-                ev.append(f"Dialogue: 0,{_tc_ass(t0)},{_tc_ass(t1)},Legenda,,0,0,0,,{brilho}{''.join(partes)}")
+                ev.append(f"Dialogue: 0,{_tc_ass(t0)},{_tc_ass(t1)},Legenda,,0,0,0,,{efeito}{brilho}{''.join(partes)}")
             ev.append(f"Dialogue: 1,{_tc_ass(t0)},{_tc_ass(t1)},Legenda,,0,0,0,,{efeito}{''.join(partes)}")
     return "\n".join(cab + ev) + "\n"
 

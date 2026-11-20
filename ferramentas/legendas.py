@@ -114,7 +114,8 @@ def cmd_exportar(a):
             w, h = EF.FORMATOS[a.formato or (d.get("video") or {}).get("formato")
                                or (C.carregar(obrigatorio=False) or {}).get("video", {}).get("formato", "16:9")]
             p = destino / f"{nome}.ass"
-            p.write_text(L.ass(bls, tema, w, h, conteudo["opcoes"]["modo"], cfg["posicao"], caixa, estilo=cfg["estilo"]),
+            p.write_text(L.ass(bls, tema, w, h, conteudo["opcoes"]["modo"], cfg["posicao"], caixa, estilo=cfg["estilo"],
+                              deslocamento=cfg.get("deslocamento")),
                          encoding="utf-8")
         elif f == "hyperframes":
             de = a.de or 0.0

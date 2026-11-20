@@ -79,6 +79,7 @@ class Clipe:
     grupo: int | None = None       # clipes do mesmo take (vídeo + áudio) ficam ligados
     ganho_db: float | None = None
     nome: str | None = None
+    posicao: dict | None = None    # vídeo: {x, y, escala} arrastados no painel (Basic Motion)
     # preenchidos na montagem
     ids: list[str] = field(default_factory=list)
 
@@ -333,6 +334,8 @@ class Sequencia:
         if tipo == "video":
             o.append(f"            <alphatype>{'straight' if m.alpha else 'none'}</alphatype>")
         o += self._file(m, fid, declarados)
+        if tipo == "video" and c.posicao:
+            o += self._movimento(c.posicao)
         if tipo == "audio":
             fonte = 1 if m.canais < 2 else canal
             o += ["            <sourcetrack>", "              <mediatype>audio</mediatype>",
@@ -358,6 +361,23 @@ class Sequencia:
                 o.append("            </link>")
         o.append("          </clipitem>")
         return o
+
+    @staticmethod
+    def _movimento(p: dict) -> list[str]:
+        """Basic Motion: a escala em % e o centro em frações do tamanho da imagem (a animação tem o
+        tamanho do quadro, então é a mesma fração do quadro; vertical positivo para baixo)."""
+        return ["            <filter>", "              <effect>", "                <name>Basic Motion</name>",
+                "                <effectid>basic</effectid>", "                <effectcategory>motion</effectcategory>",
+                "                <effecttype>motion</effecttype>", "                <mediatype>video</mediatype>",
+                "                <parameter>", "                  <parameterid>scale</parameterid>",
+                "                  <name>Scale</name>", "                  <valuemin>0</valuemin>",
+                "                  <valuemax>1000</valuemax>",
+                f"                  <value>{p.get('escala', 1) * 100:.4g}</value>", "                </parameter>",
+                "                <parameter>", "                  <parameterid>center</parameterid>",
+                "                  <name>Center</name>", "                  <value>",
+                f"                    <horiz>{p.get('x', 0):.6g}</horiz>", f"                    <vert>{p.get('y', 0):.6g}</vert>",
+                "                  </value>", "                </parameter>",
+                "              </effect>", "            </filter>"]
 
     def _com_transicoes(self, itens: list[dict]) -> list[dict]:
         """V1 com as transições de vídeo entre clipes colados, quando há mídia sobrando dos dois lados."""
@@ -526,7 +546,9 @@ def montar(dados: dict, nome: str | None = None, teste: bool = False, sondar=Non
         m = _midia_do_estado(info, sondar)
         n = seq.f(it["fim_seq"]) - seq.f(it["inicio_seq"])
         n = min(n, seq.f(m.duracao))
-        _colocar(seq, Clipe(m, 0, n, seq.f(it["inicio_seq"]), "video", trilha, nome=it["id"]), "video")
+        pos = it.get("posicao") if trilha == TRILHA_SOBREPOSICAO else None
+        _colocar(seq, Clipe(m, 0, n, seq.f(it["inicio_seq"]), "video", trilha, nome=it["id"],
+                            posicao=pos or None), "video")
 
     leg = (dados.get("legendas") or {}).get("render")
     if leg and leg.get("arquivo") and not teste:

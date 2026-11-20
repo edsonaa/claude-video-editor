@@ -205,8 +205,11 @@ def plano(pasta, rascunho: bool = False, de: float | None = None, ate: float | N
         if abs(mw / mh - W / H) > 0.02:
             avisos.append(f"{it['id']}: a animação é {mw}x{mh}, não cabe no formato {formato} (ficou de fora)")
             continue
+        pos = it.get("posicao") or {}
         sobre.append({"id": it["id"], "arquivo": str(arq), "ini": round(ini - t0, 6),
-                      "fim": round((fim if fim is not None else t1) - t0, 6)})
+                      "fim": round((fim if fim is not None else t1) - t0, 6),
+                      "posicao": {"x": float(pos.get("x", 0)), "y": float(pos.get("y", 0)),
+                                  "escala": float(pos.get("escala", 1))} if pos else None})
     if (d.get("camera") or {}).get("movimentos"):
         avisos.append("movimentos de câmera não são aplicados por este render (o formato deles é de cada fluxo)")
     sfx = d.get("sfx") or {}
@@ -316,7 +319,7 @@ def ass_do_projeto(pasta, tam: tuple[int, int], de: float, ate: float, perfil_di
     op = L.opcoes_legenda(d, _config(), vertical=tam[1] > tam[0])
     tema = EF.tema_de(perfil_dir=perfil_dir) if perfil_dir else EF.mesclar_tema()
     return L.ass(bls, tema, tam[0], tam[1], conteudo.get("opcoes", {}).get("modo", "frase"),
-                 op["posicao"], bool(op["caixa_alta"]), estilo=op["estilo"])
+                 op["posicao"], bool(op["caixa_alta"]), estilo=op["estilo"], deslocamento=op.get("deslocamento"))
 
 
 def _config() -> dict:
@@ -452,8 +455,14 @@ def renderizar(pasta, rascunho: bool = False, de: float | None = None, ate: floa
             k += 1
         for s in pl["sobreposicoes"]:
             entradas += ["-i", s["arquivo"]]
-            filtros.append(f"[{k}:v]scale={W}:{H},format=yuva420p,setpts=PTS-STARTPTS+{s['ini']:.6f}/TB[o{k}]")
-            filtros.append(f"{atual}[o{k}]overlay=eof_action=pass:enable='between(t,{s['ini']:.4f},{s['fim']:.4f})'[c{k}]")
+            p = s.get("posicao")
+            # arrastada no painel: o tamanho em volta do centro e o deslocamento em frações do quadro
+            sw, sh = (W, H) if not p else (max(2, round(W * p["escala"] / 2) * 2), max(2, round(H * p["escala"] / 2) * 2))
+            ox = 0 if not p else round((W - sw) / 2 + p["x"] * W)
+            oy = 0 if not p else round((H - sh) / 2 + p["y"] * H)
+            filtros.append(f"[{k}:v]scale={sw}:{sh},format=yuva420p,setpts=PTS-STARTPTS+{s['ini']:.6f}/TB[o{k}]")
+            filtros.append(f"{atual}[o{k}]overlay=x={ox}:y={oy}:eof_action=pass:"
+                           f"enable='between(t,{s['ini']:.4f},{s['fim']:.4f})'[c{k}]")
             atual = f"[c{k}]"
             k += 1
         if modo_leg == "ass" and texto_ass is not None:
@@ -517,7 +526,9 @@ def resumo_plano(pl: dict) -> str:
     for t in pl.get("transicoes", []):
         linhas.append(f"  transição {t['tipo']} na entrada de {t['id']} ({t['quadros']} quadros, centrada no corte)")
     for s in pl["sobreposicoes"]:
-        linhas.append(f"  animação {s['id']} {s['ini']:.2f}–{s['fim']:.2f}")
+        p = s.get("posicao")
+        onde = f" (arrastada: {p['x'] * 100:+.0f}%, {p['y'] * 100:+.0f}%, {p['escala'] * 100:.0f}%)" if p else ""
+        linhas.append(f"  animação {s['id']} {s['ini']:.2f}–{s['fim']:.2f}{onde}")
     if pl["musica"]:
         linhas.append(f"  música a partir de {pl['musica']['ini']:.2f} s ({pl['musica']['ganho_db']} dB)")
     for e in pl["efeitos"]:
