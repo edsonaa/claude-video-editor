@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Revisão</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='1' y='3' width='14' height='10' rx='2' fill='%2326282B'/%3E%3Cpath d='M6 5.5v5l4.5-2.5z' fill='%23F0A43A'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/web/painel.css">
+</head>
+<body>
+<header class="topo">
+  <div class="projeto">
+    <h1 id="projeto">Revisão</h1>
+    <span id="versao-corte" class="discreto"></span>
+  </div>
+  <ol id="etapas" class="etapas" aria-label="Etapas do vídeo"></ol>
+  <div class="topo-acoes">
+    <button id="bt-alertas" class="bt-fantasma" hidden aria-haspopup="dialog"></button>
+    <button id="bt-aprovar" class="bt-aprovar" hidden></button>
+    <button id="bt-ajuda" class="bt-fantasma" title="Atalhos de teclado (?)" aria-label="Atalhos de teclado">?</button>
+  </div>
+</header>
+
+<div id="faixa-previas" class="faixa" hidden>
+  <p id="previas-texto"></p>
+  <button id="bt-previas">Gerar prévias</button>
+</div>
+
+<main class="mesa">
+  <section class="area-video" aria-label="Vídeo">
+    <div id="palco" class="palco">
+      <div id="quadro" class="quadro">
+        <video id="va" class="camada-video ativo" playsinline preload="auto"></video>
+        <video id="vb" class="camada-video" playsinline preload="auto" muted></video>
+        <div id="sem-midia" class="sem-midia" hidden></div>
+        <div id="camada-motion" class="camada-motion"></div>
+        <div id="camada-legenda" class="camada-legenda" aria-live="off"></div>
+        <div id="etiquetas" class="etiquetas"></div>
+      </div>
+    </div>
+
+    <div class="transporte">
+      <button id="bt-anterior" class="bt-icone" title="Corte anterior (↑)" aria-label="Corte anterior">
+        <svg viewBox="0 0 20 20"><path d="M5 4v12M16 4 8 10l8 6z"/></svg></button>
+      <button id="bt-tocar" class="bt-tocar" title="Tocar ou pausar (espaço)" aria-label="Tocar">
+        <svg class="ic-tocar" viewBox="0 0 20 20"><path d="M6 3.5v13l11-6.5z"/></svg>
+        <svg class="ic-pausa" viewBox="0 0 20 20"><path d="M5 3.5h3.5v13H5zM11.5 3.5H15v13h-3.5z"/></svg></button>
+      <button id="bt-proximo" class="bt-icone" title="Próximo corte (↓)" aria-label="Próximo corte">
+        <svg viewBox="0 0 20 20"><path d="M15 4v12M4 4l8 6-8 6z"/></svg></button>
+      <div class="tempo">
+        <span id="tc" class="tc">0:00.00</span><span class="discreto"> / </span><span id="tc-total" class="discreto">0:00.00</span>
+      </div>
+      <div id="origem" class="origem discreto"></div>
+      <div class="camadas" role="group" aria-label="O que tocar">
+        <label><input type="checkbox" id="ck-voz" checked> Voz</label>
+        <label><input type="checkbox" id="ck-musica" checked> Música</label>
+        <label><input type="checkbox" id="ck-sfx" checked> Efeitos</label>
+        <label><input type="checkbox" id="ck-legenda" checked> Legenda</label>
+        <label><input type="checkbox" id="ck-motion" checked> Animações</label>
+      </div>
+    </div>
+
+    <div id="inspetor" class="inspetor" aria-live="polite"></div>
+  </section>
+
+  <aside class="lateral" aria-label="Revisão">
+    <div class="abas" role="tablist">
+      <button role="tab" data-aba="roteiro" aria-selected="true">Roteiro</button>
+      <button role="tab" data-aba="legendas">Legendas</button>
+      <button role="tab" data-aba="animacoes">Animações</button>
+      <button role="tab" data-aba="pedidos">Pedidos <span id="n-pedidos" class="contagem"></span></button>
+    </div>
+    <div id="aba-roteiro" class="aba" role="tabpanel">
+      <div id="barra-selecao" class="barra-selecao" hidden></div>
+      <div id="roteiro" class="roteiro"></div>
+    </div>
+    <div id="aba-legendas" class="aba" role="tabpanel" hidden></div>
+    <div id="aba-animacoes" class="aba" role="tabpanel" hidden></div>
+    <div id="aba-pedidos" class="aba" role="tabpanel" hidden>
+      <form id="form-pedido" class="form-pedido">
+        <label for="pedido-texto">O que mudar</label>
+        <textarea id="pedido-texto" rows="3" placeholder="Ex.: esse zoom está rápido demais; tira a frase repetida"></textarea>
+        <div class="pedido-onde">
+          <label class="chip-check"><input type="checkbox" id="pedido-tempo" checked> <span id="pedido-tempo-txt">neste ponto</span></label>
+          <label class="chip-check" id="pedido-item-rotulo" hidden><input type="checkbox" id="pedido-item" checked> <span id="pedido-item-txt"></span></label>
+        </div>
+        <div class="pedido-linha">
+          <label for="pedido-etapa">Etapa</label>
+          <select id="pedido-etapa"></select>
+        </div>
+        <label class="chip-check"><input type="checkbox" id="pedido-aprendizado"> Vale para os próximos vídeos também</label>
+        <button type="submit" class="bt-primario">Enviar pedido</button>
+      </form>
+      <div id="lista-pedidos"></div>
+    </div>
+  </aside>
+
+  <section class="area-linha" aria-label="Linha do tempo">
+    <div class="linha-ferramentas">
+      <button id="bt-desfazer" class="bt-fantasma" title="Desfazer a última mudança de corte feita aqui (Ctrl+Z)" disabled>Desfazer corte</button>
+      <span class="espaco"></span>
+      <button id="bt-menos" class="bt-icone" title="Afastar (−)" aria-label="Afastar"><svg viewBox="0 0 20 20"><path d="M4 10h12"/></svg></button>
+      <button id="bt-encaixar" class="bt-fantasma" title="Ver o vídeo inteiro">Inteiro</button>
+      <button id="bt-mais" class="bt-icone" title="Aproximar (+)" aria-label="Aproximar"><svg viewBox="0 0 20 20"><path d="M4 10h12M10 4v12"/></svg></button>
+    </div>
+    <div class="linha">
+      <div id="nomes-trilhas" class="nomes-trilhas"></div>
+      <div id="rolagem" class="rolagem">
+        <div id="trilhas" class="trilhas">
+          <div id="regua" class="regua"></div>
+          <div id="cursor" class="cursor"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="avisos" class="avisos" role="status" aria-live="polite"></div>
+
+<dialog id="dlg-ajuda" class="dialogo">
+  <h2>Atalhos</h2>
+  <dl class="atalhos">
+    <dt>Espaço</dt><dd>tocar e pausar</dd>
+    <dt>← →</dt><dd>um quadro (com Shift, um segundo)</dd>
+    <dt>↑ ↓</dt><dd>corte anterior e próximo</dd>
+    <dt>[ ]</dt><dd>início ou fim do segmento atual no cursor</dd>
+    <dt>Delete</dt><dd>cortar as palavras selecionadas no roteiro</dd>
+    <dt>Ctrl+Z</dt><dd>desfazer a última mudança de corte</dd>
+    <dt>N</dt><dd>novo pedido neste ponto</dd>
+    <dt>+ −</dt><dd>aproximar e afastar a linha do tempo</dd>
+  </dl>
+  <p class="discreto">No roteiro, clique numa palavra para ir até ela; com Shift, estende a seleção. O que está riscado saiu do corte.</p>
+  <form method="dialog"><button class="bt-primario">Fechar</button></form>
+</dialog>
+
+<dialog id="dlg-alertas" class="dialogo">
+  <h2>O que ficou desatualizado</h2>
+  <ul id="lista-alertas"></ul>
+  <form method="dialog"><button class="bt-primario">Fechar</button></form>
+</dialog>
+
+<dialog id="dlg-ajuste" class="dialogo">
+  <form id="form-ajuste" method="dialog">
+    <h2 id="ajuste-titulo">Pedir ajuste</h2>
+    <textarea id="ajuste-texto" rows="3" required></textarea>
+    <label class="chip-check"><input type="checkbox" id="ajuste-aprendizado"> Vale para os próximos vídeos também</label>
+    <div class="dialogo-acoes">
+      <button value="cancelar" class="bt-fantasma" formnovalidate>Cancelar</button>
+      <button value="ok" class="bt-primario">Enviar pedido</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="/web/painel.js"></script>
+</body>
+</html>

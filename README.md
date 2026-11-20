@@ -45,6 +45,17 @@ As etapas também podem ser chamadas direto: `/edicao:iniciar`, `/edicao:prepara
 
 No caminho, o motor também trata a voz (ruído, compressão e loudness no alvo da plataforma, sem tirar de sincronia), monta a música de fundo abaixando sob a fala e faz as legendas: arquivo SRT/VTT ou queimadas, palavra a palavra no estilo de vídeo curto.
 
+### Revisar assistindo
+`/edicao:painel` abre o vídeo no navegador já cortado, com as animações, a legenda e o som por cima, sem renderizar nada:
+- o **roteiro** mostra a fala com o que saiu do corte riscado: selecione palavras para cortar ou devolver ao vídeo (Ctrl+Z desfaz);
+- a **linha do tempo** mostra cada trilha, e cada segmento se ajusta quadro a quadro;
+- os **pedidos** ficam presos ao ponto do vídeo e voltam para o Claude como pendências; animações do plano se aprovam ou riscam ali; legendas se corrigem ali;
+- quando estiver bom, **Aprovar** fecha a etapa.
+
+Roda só no seu computador (não sobe nada para a internet). O que o navegador não toca (ProRes, HEVC 10 bits, áudio PCM em MOV, animações com transparência) ganha uma prévia leve com um clique.
+
+![O painel de revisão](ferramentas/painel_web/painel.png)
+
 Outros comandos:
 - `/edicao:editar aprendizados`: aplica o que você corrigiu nos vídeos ao seu estilo e aos seus ajustes;
 - `/edicao:editar atualizar`: traz a versão nova do motor e mostra o que mudou;
@@ -70,9 +81,9 @@ O plugin é o **motor**: skills, guias e ferramentas. Ele se atualiza, e ningué
 ## O que tem aqui
 | Pasta | O que tem |
 |---|---|
-| `skills/` | A montagem, a `editar` (com as regras comuns) e uma skill por etapa |
+| `skills/` | A montagem, a `editar` (com as regras comuns), o `painel` de revisão e uma skill por etapa |
 | `guias/` | O ofício: princípios do fluxo, decisões, referências, animação, HyperFrames, entrega no programa de edição e o de cada etapa |
-| `ferramentas/` | Os scripts prontos e testados: estado do vídeo, configuração, inventário, silêncios, transcrição, XML (ida e volta), tempo e timecode, folha de contato, índice de sons e rastreio de rosto. Veja o [README](ferramentas/README.md) |
+| `ferramentas/` | Os scripts prontos e testados: estado do vídeo, configuração, inventário, silêncios, transcrição, XML (ida e volta), tempo e timecode, legendas, tratamento de áudio, painel de revisão, folha de contato, índice de sons e rastreio de rosto. Veja o [README](ferramentas/README.md) |
 | `efeitos/` | A biblioteca de efeitos HyperFrames, com prévias |
 | `estilos/` | Os estilos prontos (perfis completos), com vitrines |
 | `presets/` | Os pontos de partida da montagem |

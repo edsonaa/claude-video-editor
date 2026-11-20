@@ -475,6 +475,27 @@ def _curto(v, n=90):
     return str(v)
 
 
+def _onde_pendencia(dados: dict, p: dict) -> str:
+    """' (sobre mo04 · em 1:12.40 da sequência = cam01 3:05.20 · pelo painel)', o que houver."""
+    partes = []
+    if p.get("item"):
+        partes.append(f"sobre {p['item']}")
+    if p.get("video") and p.get("tempo") is not None:
+        seq = None
+        segs = obter(dados, "cortes.segmentos") or []
+        fps = obter(dados, "midia.fps")
+        if segs and fps:
+            from .linha import Linha
+            seq, _p = Linha(segs, fps).origem_para_seq(p["video"], p["tempo"])
+        onde = f"{p['video']} {_hms(p['tempo'])}"
+        partes.append(f"em {_hms(seq)} da sequência = {onde}" if seq is not None else f"em {onde} (fora do corte atual)")
+    elif p.get("tempo_seq") is not None:
+        partes.append(f"em {_hms(p['tempo_seq'])} da sequência")
+    if p.get("origem") == "painel":
+        partes.append("pelo painel")
+    return f"  ({' · '.join(partes)})" if partes else ""
+
+
 def resumo_status(dados: dict) -> list[str]:
     etapas = dados.get("etapas", {})
     marcas = {"concluido": "✓", "nao_precisa": "–", "em_andamento": "…",
@@ -503,7 +524,7 @@ def resumo_status(dados: dict) -> list[str]:
     abertas = pendencias_abertas(dados)
     if abertas:
         linhas.append(f"pendências ({len(abertas)}):")
-        linhas += [f"  {p['id']}  {p['etapa']}: {p['texto']}" for p in abertas]
+        linhas += [f"  {p['id']}  {p['etapa']}: {p['texto']}{_onde_pendencia(dados, p)}" for p in abertas]
     al = alertas(dados)
     if al:
         linhas.append(f"alertas ({len(al)}):")

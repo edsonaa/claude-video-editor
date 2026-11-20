@@ -44,7 +44,7 @@ def test_versao_bate_com_o_changelog():
 
 def test_uma_skill_por_etapa_do_motor_mais_montar_e_editar():
     nomes = {p.parent.name for p in SKILLS}
-    esperadas = {C.etapa_skill(e) for e in C.ETAPAS} | {"montar", "editar"}
+    esperadas = {C.etapa_skill(e) for e in C.ETAPAS} | {"montar", "editar", "painel"}
     assert nomes == esperadas
     assert not (RAIZ / "SKILL.md").exists(), "SKILL.md na raiz faria o plugin carregar como uma skill só"
 

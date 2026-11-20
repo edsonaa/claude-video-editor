@@ -22,7 +22,7 @@ Rode `python3 ${CLAUDE_PLUGIN_ROOT}/ferramentas/config.py mostrar` (no Windows, 
 2. **Status:** `<py> <f>/estado.py . status`. Mostre de forma curta: etapas, trechos feitos, pendências, alertas e aprendizados anotados.
 3. **Próximo passo:** diga qual é e pergunte se segue. Com o "sim", abra a skill da etapa (`/edicao:<etapa>`, com `-` no lugar de `_`: `motion_mapa` → `/edicao:motion-mapa`) e siga as instruções dela.
    - Etapa própria da pessoa (está em `etapas_proprias` no config): leia o arquivo indicado em `<pessoa>/` e siga-o, com as regras comuns.
-   - Etapa `aguardando_aprovacao`: o próximo passo é continuar essa mesma etapa (a revisão), nunca pular.
+   - Etapa `aguardando_aprovacao`: o próximo passo é continuar essa mesma etapa (a revisão), nunca pular. Ofereça revisar assistindo pelo `/edicao:painel`; pendências `pelo painel` no status são pedidos que a pessoa deixou lá.
    - Alerta de algo desatualizado (o corte mudou depois do plano de animação): mostre primeiro e espere a decisão.
    - A pessoa pediu outra etapa ou um trecho ("sim, até 3:00"): abra essa etapa e passe o trecho.
 4. **Uma etapa por vez.** Não encadear etapas sozinho e não dar `/clear` (isso é sempre da pessoa).

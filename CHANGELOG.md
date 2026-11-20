@@ -2,6 +2,16 @@
 
 Cada versão nova do motor (skills, guias e ferramentas) entra aqui, a mais nova em cima. A skill `/edicao:editar` mostra o que mudou desde a última vez que a pessoa viu. Ao lançar uma versão, suba o `version` em `.claude-plugin/plugin.json` para o mesmo número (um teste confere).
 
+## 0.5.0
+- **Painel de revisão** (`/edicao:painel`, `painel.py`): um servidor local (só desta máquina, com token) que abre o vídeo no navegador já cortado, a partir das mídias originais, com as animações (inclusive com transparência), a legenda palavra a palavra, a música e os efeitos por cima. Sem render.
+  - **Roteiro:** a transcrição com o que saiu do corte riscado; selecionar palavras e cortar ou devolver ao vídeo (com respiro nas bordas e desfazer).
+  - **Linha do tempo** com trilhas (corte com miniaturas, animações, legendas, câmera, som, pedidos) e ajuste fino de cada segmento quadro a quadro.
+  - **Pedidos** presos ao ponto do vídeo (guardam o tempo da origem, então sobrevivem a mudanças no corte), com opção de anotar no caderno de aprendizados; aprovar ou riscar animações do plano; corrigir legendas; aprovar a etapa.
+  - **Prévias** leves para o que o navegador não toca (ProRes, HEVC 10 bits, áudio PCM em MOV, a voz tratada e animações com transparência em WebM), geradas pelo próprio painel com progresso.
+  - Toda gravação passa pelo estado com a revisão lida: se o Claude gravou no meio, a mudança é recusada e a tela se atualiza, sem apagar a dele. O painel acompanha as mudanças do Claude sozinho.
+- `estado.py status` mostra, em cada pendência, o item, o ponto na sequência e na origem e se veio do painel.
+- `edicao.legendas`: ler, gravar versão e corrigir bloco viraram funções do módulo (o script e o painel usam as mesmas).
+
 ## 0.4.0
 - **Legendas** (etapa nova `legendas`, `legendas.py`): blocos pela transcrição e pelos cortes, no tempo da sequência, com as regras de leitura (até 2 linhas, ~42 caracteres, ~17 caracteres por segundo, sem terminar linha em artigo ou preposição), correções de grafia e revisão por id (`l014`). Saídas: SRT e VTT (programa, YouTube, plataformas de curso), ASS para queimar no render (no modo palavra, a palavra falada acende) e o efeito novo `legenda-animada` (HyperFrames), que entra no XML em V5.
 - **Áudio** (`audio.py`): medição (loudness, pico real, ruído de fundo, fala/ruído, clipping) com recomendações; tratamento da voz (passa-alta, redução de ruído pelo piso medido, compressão leve, loudness em duas passadas) com **a mesma duração e o mesmo início do original** (o atraso dos filtros é medido e compensado), e a voz tratada entra no XML no lugar do áudio da câmera; música de fundo com ducking sob a fala e fades, numa trilha própria; conferência da mixagem final.

@@ -19,7 +19,6 @@ correcoes.json: {"palavra errada": "palavra certa", …} (palavras inteiras, sem
 import argparse
 import json
 from pathlib import Path
-import re
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -39,34 +38,9 @@ def _cfg():
     return {**PADRAO, **(c.get("legendas") or {})}
 
 
-def _pasta_legendas(pasta) -> Path:
-    p = E.caminho_estado(pasta).parent / "legendas"
-    p.mkdir(parents=True, exist_ok=True)
-    return p
-
-
-def _atual(pasta) -> tuple[dict, Path]:
-    d = E.ler(pasta)
-    arq = (d.get("legendas") or {}).get("arquivo")
-    if not arq:
-        raise E.ErroEstado("ainda não há legendas: rode 'legendas.py gerar' antes")
-    caminho = Path(arq) if Path(arq).is_absolute() else E.caminho_estado(pasta).parent.parent / arq
-    return json.loads(caminho.read_text(encoding="utf-8")), caminho
-
-
-def _gravar_versao(pasta, conteudo: dict) -> Path:
-    dest = _pasta_legendas(pasta)
-    versoes = [int(m.group(1)) for f in dest.glob("blocos_v*.json") if (m := re.fullmatch(r"blocos_v(\d+)\.json", f.name))]
-    n = max(versoes, default=0) + 1
-    conteudo["versao"] = n
-    arq = dest / f"blocos_v{n:02d}.json"
-    arq.write_text(json.dumps(conteudo, ensure_ascii=False, indent=1), encoding="utf-8")
-    (dest / "revisao.txt").write_text(L.texto_revisao(conteudo["blocos"]), encoding="utf-8")
-    with E.editar(pasta) as d:
-        bloco = d.setdefault("legendas", {})
-        bloco.update({"versao": n, "arquivo": str(arq.relative_to(E.caminho_estado(pasta).parent.parent)),
-                      "base_cortes_versao": conteudo["base_cortes_versao"]})
-    return arq
+_pasta_legendas = L.pasta_legendas
+_atual = L.ler_atual
+_gravar_versao = L.gravar_versao
 
 
 def cmd_gerar(a):
@@ -110,17 +84,7 @@ def cmd_ver(a):
 
 
 def cmd_corrigir(a):
-    conteudo, _ = _atual(a.pasta)
-    op = conteudo["opcoes"]
-    achou = False
-    for i, b in enumerate(conteudo["blocos"]):
-        if b["id"] == a.id:
-            conteudo["blocos"][i] = L.retexto(b, a.texto, op["max_caracteres"], op["linhas"])
-            achou = True
-    if not achou:
-        raise E.ErroEstado(f"bloco {a.id} não encontrado")
-    arq = _gravar_versao(a.pasta, conteudo)
-    b = next(x for x in conteudo["blocos"] if x["id"] == a.id)
+    b, arq = L.corrigir_bloco(a.pasta, a.id, a.texto)
     print(f"{a.id} → {' / '.join(b['linhas'])} ({arq.name})")
 
 

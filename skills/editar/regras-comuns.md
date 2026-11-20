@@ -36,7 +36,8 @@ Estado inválido não é gravado: leia o erro e corrija. Conflito de revisão: o
 ## 4. Entrega, conforme `revisao.programa` do config
 - **premiere / resolve:** `<py> <f>/exportar_xml.py exportar . --etapa <etapa>`. **Na primeira entrega de todas** (sem registro em `<pessoa>/ajustes/geral.md` de que o formato foi validado), gere antes `--teste`, peça para a pessoa abrir no programa e conferir clipes, áudio, marcadores e tempos, e anote o resultado em `ajustes/geral.md` ("XML validado no Premiere 2026 em dd/mm; fades OK"). O que não funcionou vira opção anotada ali (ex.: `--menos-um`, `--cores cores.json`).
 - **finalcut / outro:** o motor ainda não gera esse formato: escreva o exportador na primeira entrega (regra 3), começando por um arquivo de teste e copiando o que o próprio programa exporta (`guias/entrega-no-editor.md`).
-- **nenhum:** a pessoa revisa assistindo. Cada etapa que muda a imagem ou o som entrega um **rascunho** em resolução baixa (o script de render da etapa `render`, com `--rascunho`; se ainda não existir, escreva-o agora seguindo `guias/entrega-no-editor.md`, caminho C). O final sai na etapa `render`.
+- **painel (qualquer programa):** ao entregar cortes, plano de animação, animações, som ou legendas para revisão, ofereça `/edicao:painel`: a pessoa assiste já cortado, com animações, legenda e som, corta ou devolve frases pelo roteiro e deixa pedidos no ponto exato. Os pedidos voltam como pendências (`pelo painel`) no status.
+- **nenhum:** a pessoa revisa assistindo. No painel, cortes, animações, som e legendas já dão para revisar sem render; o **rascunho** em resolução baixa fica para o que o painel não mostra (movimentos de câmera, o vídeo inteiro montado). Rascunho: (o script de render da etapa `render`, com `--rascunho`; se ainda não existir, escreva-o agora seguindo `guias/entrega-no-editor.md`, caminho C). O final sai na etapa `render`.
 - A volta pelo programa: `exportar_xml.py volta . <exportado.xml>` (sem `--aplicar` mostra a diferença; os ajustes da pessoa valem mais).
 - Trilhas da entrega: V1 câmera, V3 animações em tela cheia, V4 sobreposições, V5 legenda animada; A1 voz (a tratada, quando houver), A2 música (quando houver), efeitos sonoros abaixo.
 - O vídeo final exportado do programa: confira a loudness com `<py> <f>/audio.py final <arquivo>` (alvo do config).
@@ -51,7 +52,7 @@ Durante a revisão de qualquer etapa, anote na hora toda correção, elogio ou p
 - **Ponto salvo:** trecho ou etapa terminado, revisões aplicadas, entrega gerada. Só aí sugerir `/clear` e `/edicao:editar`.
 - **Pendência:** pedido ainda não aplicado é anotado na hora (`--pendencia`) e aparece no status.
 - **Resumo no chat** ao entregar: curto, com o que precisa da atenção da pessoa e o caminho do arquivo. Status `aguardando_aprovacao`.
-- **Revisão:** pela citação de número (`mo04 mais lento`), pelo tempo da sequência (`estado.py` converte pela lista de cortes; `edicao.linha.Linha.seq_para_origem`) ou pela volta do programa. Ajustar só o que foi citado, versão nova, anotar aprendizados.
+- **Revisão:** pela citação de número (`mo04 mais lento`), pelo tempo da sequência (`estado.py` converte pela lista de cortes; `edicao.linha.Linha.seq_para_origem`), pelos pedidos do painel (pendências com o ponto) ou pela volta do programa. Ajustar só o que foi citado, versão nova, anotar aprendizados.
 - **Fechar a etapa** (aprovada inteira): `--etapa <etapa>=concluido`, dizer quantos aprendizados ficaram anotados, sugerir `/clear` e `/edicao:editar`. Nunca encadear a próxima etapa sozinho.
 
 ## 7. Aplicar os aprendizados (quando a pessoa pedir: `/edicao:editar aprendizados`)

@@ -9,6 +9,7 @@ bloco e exportar de novo não refaz a divisão.
 from __future__ import annotations
 
 import json
+from pathlib import Path
 import re
 
 from .linha import Linha
@@ -288,3 +289,55 @@ def texto_revisao(bls: list[dict]) -> str:
     for b in bls:
         linhas.append(f"{b['id']}  {hms(b['inicio'])}–{hms(b['fim'])}  {b['cps']:>4} cps  {' / '.join(b['linhas'])}")
     return "\n".join(linhas) + "\n"
+
+
+# ------------------------------------------------------------------ versões no estado do vídeo
+def pasta_legendas(pasta) -> Path:
+    from . import estado as E
+    p = E.caminho_estado(pasta).parent / "legendas"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
+def ler_atual(pasta) -> tuple[dict, Path]:
+    """Os blocos da versão atual (o JSON de _CLAUDE/legendas) e o caminho dele."""
+    from . import estado as E
+    d = E.ler(pasta)
+    arq = (d.get("legendas") or {}).get("arquivo")
+    if not arq:
+        raise E.ErroEstado("ainda não há legendas: rode 'legendas.py gerar' antes")
+    caminho = Path(arq) if Path(arq).is_absolute() else E.caminho_estado(pasta).parent.parent / arq
+    return json.loads(caminho.read_text(encoding="utf-8")), caminho
+
+
+def gravar_versao(pasta, conteudo: dict) -> Path:
+    """Grava blocos_vNN.json (versão nova), o revisao.txt e aponta o estado para ela."""
+    from . import estado as E
+    dest = pasta_legendas(pasta)
+    versoes = [int(m.group(1)) for f in dest.glob("blocos_v*.json") if (m := re.fullmatch(r"blocos_v(\d+)\.json", f.name))]
+    n = max(versoes, default=0) + 1
+    conteudo["versao"] = n
+    arq = dest / f"blocos_v{n:02d}.json"
+    arq.write_text(json.dumps(conteudo, ensure_ascii=False, indent=1), encoding="utf-8")
+    (dest / "revisao.txt").write_text(texto_revisao(conteudo["blocos"]), encoding="utf-8")
+    with E.editar(pasta) as d:
+        bloco = d.setdefault("legendas", {})
+        bloco.update({"versao": n, "arquivo": str(arq.relative_to(E.caminho_estado(pasta).parent.parent).as_posix()),
+                      "base_cortes_versao": conteudo["base_cortes_versao"]})
+    return arq
+
+
+def corrigir_bloco(pasta, ident: str, texto: str) -> tuple[dict, Path]:
+    """Troca o texto de um bloco (mantém os tempos) e grava uma versão nova."""
+    from . import estado as E
+    texto = " ".join(texto.split())
+    if not texto:
+        raise E.ErroEstado("o texto da legenda não pode ficar vazio")
+    conteudo, _ = ler_atual(pasta)
+    op = conteudo["opcoes"]
+    for i, b in enumerate(conteudo["blocos"]):
+        if b["id"] == ident:
+            conteudo["blocos"][i] = retexto(b, texto, op["max_caracteres"], op["linhas"])
+            arq = gravar_versao(pasta, conteudo)
+            return conteudo["blocos"][i], arq
+    raise E.ErroEstado(f"bloco {ident} não encontrado")

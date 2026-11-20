@@ -18,6 +18,7 @@ As skills do plugin chamam os scripts direto daqui (`${CLAUDE_PLUGIN_ROOT}/ferra
 | `efeitos.py` | Biblioteca de efeitos HyperFrames e estilos: listar, mostrar, criar (com tema, conteúdo, duração exata e eventos de som), prévia GIF e vitrine | motion-mapa, motion-render, montar |
 | `legendas.py` | Legendas pela transcrição e pelos cortes: gerar blocos, revisar, corrigir por id, exportar SRT/VTT/ASS e os parâmetros da legenda animada | legendas |
 | `audio.py` | Medir (loudness, pico real, ruído), tratar a voz sem tirar de sincronia, música com ducking, conferir a mixagem final | preparar, sfx, render |
+| `painel.py` | Painel de revisão no navegador (servidor local): o corte tocando com animações, legenda e som, roteiro para cortar e devolver frases, pedidos no ponto exato, aprovação; `previas` gera o que o navegador não toca | revisão de qualquer etapa |
 | `contato.py` | Folha de contato (quadros lado a lado com tempo e frame) | referências, revisão |
 | `sons.py` | Índice da biblioteca de sons: duração, **tempo até o pico**, nível; busca | sfx |
 | `rosto.py` | Rastreio de rosto (YuNet, local, sem GPU) para a câmera seguir o rosto | câmera |
