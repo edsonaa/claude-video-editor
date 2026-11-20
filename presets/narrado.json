@@ -20,7 +20,8 @@
       "motion_mapa",
       "assets",
       "motion_render",
-      "sfx"
+      "sfx",
+      "legendas"
     ],
     "revisao": {
       "programa": "premiere",
@@ -43,6 +44,12 @@
     },
     "som": {
       "ativo": true
+    },
+    "legendas": {
+      "ativas": true,
+      "saidas": [
+        "srt"
+      ]
     }
   },
   "estilo_sugerido": "editorial"

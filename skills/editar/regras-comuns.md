@@ -38,6 +38,8 @@ Estado inválido não é gravado: leia o erro e corrija. Conflito de revisão: o
 - **finalcut / outro:** o motor ainda não gera esse formato: escreva o exportador na primeira entrega (regra 3), começando por um arquivo de teste e copiando o que o próprio programa exporta (`guias/entrega-no-editor.md`).
 - **nenhum:** a pessoa revisa assistindo. Cada etapa que muda a imagem ou o som entrega um **rascunho** em resolução baixa (o script de render da etapa `render`, com `--rascunho`; se ainda não existir, escreva-o agora seguindo `guias/entrega-no-editor.md`, caminho C). O final sai na etapa `render`.
 - A volta pelo programa: `exportar_xml.py volta . <exportado.xml>` (sem `--aplicar` mostra a diferença; os ajustes da pessoa valem mais).
+- Trilhas da entrega: V1 câmera, V3 animações em tela cheia, V4 sobreposições, V5 legenda animada; A1 voz (a tratada, quando houver), A2 música (quando houver), efeitos sonoros abaixo.
+- O vídeo final exportado do programa: confira a loudness com `<py> <f>/audio.py final <arquivo>` (alvo do config).
 
 ## 5. Caderno de aprendizados (`_CLAUDE/aprendizados.md`)
 Durante a revisão de qualquer etapa, anote na hora toda correção, elogio ou preferência que vale **para outros vídeos**:
@@ -64,4 +66,4 @@ Durante a revisão de qualquer etapa, anote na hora toda correção, elogio ou p
 
 ## 8. Economia de limite
 - `/clear` entre etapas; ler resumos (frases, `estado.py`), não arquivos inteiros; um quadro só quando há dúvida real; render em segundo plano.
-- Modelo sugerido: o mais leve para `editar`, `iniciar` e `assets`; intermediário para `preparar`; o mais capaz para `cortes`, `motion-mapa`, `motion-render`, `camera`, `sfx` e `render`. Trocar logo depois do `/clear` não custa nada.
+- Modelo sugerido: o mais leve para `editar`, `iniciar` e `assets`; intermediário para `preparar` e `legendas`; o mais capaz para `cortes`, `motion-mapa`, `motion-render`, `camera`, `sfx` e `render`. Trocar logo depois do `/clear` não custa nada.

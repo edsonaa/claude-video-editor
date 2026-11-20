@@ -4,54 +4,141 @@
   "title": "Estado de um vídeo (_CLAUDE/projeto.json)",
   "description": "A memória do fluxo de edição. Os blocos são gravados pelos scripts de cada etapa; itens aceitam campos extras para cada fluxo se adaptar, mas os campos listados aqui têm sempre este formato. Tempos de corte, marcadores e notas ficam no tempo do arquivo de origem, em segundos.",
   "type": "object",
-  "required": ["schema", "revisao", "projeto", "fluxo", "etapas"],
+  "required": [
+    "schema",
+    "revisao",
+    "projeto",
+    "fluxo",
+    "etapas"
+  ],
   "properties": {
-    "schema": { "const": 1, "description": "Versão deste schema." },
-    "revisao": { "type": "integer", "minimum": 0, "description": "Sobe a cada gravação. Quem grava confere que ninguém gravou no meio (o painel e o Claude podem gravar no mesmo arquivo)." },
-    "projeto": { "type": "string", "minLength": 1 },
-    "perfil": { "type": ["string", "null"] },
-    "criado_em": { "$ref": "#/$defs/data" },
-    "atualizado_em": { "$ref": "#/$defs/data" },
+    "schema": {
+      "const": 1,
+      "description": "Versão deste schema."
+    },
+    "revisao": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Sobe a cada gravação. Quem grava confere que ninguém gravou no meio (o painel e o Claude podem gravar no mesmo arquivo)."
+    },
+    "projeto": {
+      "type": "string",
+      "minLength": 1
+    },
+    "perfil": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "criado_em": {
+      "$ref": "#/$defs/data"
+    },
+    "atualizado_em": {
+      "$ref": "#/$defs/data"
+    },
     "fluxo": {
       "type": "array",
       "description": "As etapas deste fluxo, na ordem.",
-      "items": { "$ref": "#/$defs/nome_etapa" },
+      "items": {
+        "$ref": "#/$defs/nome_etapa"
+      },
       "uniqueItems": true,
       "minItems": 1
     },
     "etapas": {
       "type": "object",
-      "propertyNames": { "$ref": "#/$defs/nome_etapa" },
-      "additionalProperties": { "$ref": "#/$defs/status_etapa" }
+      "propertyNames": {
+        "$ref": "#/$defs/nome_etapa"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/status_etapa"
+      }
     },
     "ferramentas": {
       "type": "object",
       "description": "Versões fixas deste vídeo (ex.: hyperframes).",
-      "additionalProperties": { "type": "string" }
+      "additionalProperties": {
+        "type": "string"
+      }
     },
     "midia": {
       "type": "object",
       "properties": {
-        "fps": { "$ref": "#/$defs/fps" },
-        "resolucao": { "$ref": "#/$defs/resolucao" },
-        "principal": { "$ref": "#/$defs/id_midia", "description": "Câmera de referência: todos os tempos do projeto são no tempo dela." },
-        "audio_principal": { "$ref": "#/$defs/id_midia" },
+        "fps": {
+          "$ref": "#/$defs/fps"
+        },
+        "resolucao": {
+          "$ref": "#/$defs/resolucao"
+        },
+        "principal": {
+          "$ref": "#/$defs/id_midia",
+          "description": "Câmera de referência: todos os tempos do projeto são no tempo dela."
+        },
+        "audio_principal": {
+          "$ref": "#/$defs/id_midia"
+        },
         "arquivos": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["id", "caminho", "tipo"],
+            "required": [
+              "id",
+              "caminho",
+              "tipo"
+            ],
             "properties": {
-              "id": { "$ref": "#/$defs/id_midia" },
-              "caminho": { "type": "string", "description": "Caminho absoluto do original." },
-              "proxy": { "type": ["string", "null"] },
-              "tipo": { "enum": ["camera", "tela", "audio", "outro"] },
-              "duracao": { "type": "number", "minimum": 0 },
-              "fps": { "$ref": "#/$defs/fps" },
-              "vfr": { "type": "boolean" },
-              "resolucao": { "$ref": "#/$defs/resolucao" },
-              "canais_audio": { "type": "integer", "minimum": 0 },
-              "gravado_em": { "type": ["string", "null"] }
+              "id": {
+                "$ref": "#/$defs/id_midia"
+              },
+              "caminho": {
+                "type": "string",
+                "description": "Caminho absoluto do original."
+              },
+              "proxy": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "tipo": {
+                "enum": [
+                  "camera",
+                  "tela",
+                  "audio",
+                  "outro"
+                ]
+              },
+              "duracao": {
+                "type": "number",
+                "minimum": 0
+              },
+              "fps": {
+                "$ref": "#/$defs/fps"
+              },
+              "vfr": {
+                "type": "boolean"
+              },
+              "resolucao": {
+                "$ref": "#/$defs/resolucao"
+              },
+              "canais_audio": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "gravado_em": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "audio_tratado": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "WAV da voz tratada (audio.py tratar), com a mesma duração do original: entra na sequência no lugar do áudio da câmera."
+              }
             }
           }
         },
@@ -60,12 +147,26 @@
           "description": "tempo_na_referencia = tempo_no_arquivo + offset",
           "items": {
             "type": "object",
-            "required": ["id", "referencia", "offset"],
+            "required": [
+              "id",
+              "referencia",
+              "offset"
+            ],
             "properties": {
-              "id": { "$ref": "#/$defs/id_midia" },
-              "referencia": { "$ref": "#/$defs/id_midia" },
-              "offset": { "type": "number" },
-              "confianca": { "type": "number", "minimum": 0, "maximum": 1 }
+              "id": {
+                "$ref": "#/$defs/id_midia"
+              },
+              "referencia": {
+                "$ref": "#/$defs/id_midia"
+              },
+              "offset": {
+                "type": "number"
+              },
+              "confianca": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
             }
           }
         }
@@ -74,14 +175,34 @@
     "transcricao": {
       "type": "object",
       "properties": {
-        "motor": { "type": "string" },
-        "palavras": { "type": "object", "description": "id da mídia → caminho do JSON normalizado.", "additionalProperties": { "type": "string" } },
-        "frases": { "type": "object", "additionalProperties": { "type": "string" } },
-        "silencios": { "type": "object", "additionalProperties": { "type": "string" } },
+        "motor": {
+          "type": "string"
+        },
+        "palavras": {
+          "type": "object",
+          "description": "id da mídia → caminho do JSON normalizado.",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "frases": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "silencios": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "lacunas": {
           "type": "array",
           "description": "Trechos com som e sem palavra (podem ser takes engolidos).",
-          "items": { "$ref": "#/$defs/trecho_origem" }
+          "items": {
+            "$ref": "#/$defs/trecho_origem"
+          }
         }
       }
     },
@@ -89,35 +210,85 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "video", "inicio", "fim", "texto"],
+        "required": [
+          "id",
+          "video",
+          "inicio",
+          "fim",
+          "texto"
+        ],
         "properties": {
-          "id": { "type": "string", "pattern": "^n\\d+$" },
-          "video": { "$ref": "#/$defs/id_midia" },
-          "inicio": { "$ref": "#/$defs/segundos" },
-          "fim": { "$ref": "#/$defs/segundos" },
-          "texto": { "type": "string" },
-          "interpretacao": { "type": "string" },
-          "etapa": { "$ref": "#/$defs/nome_etapa" },
-          "confianca": { "enum": ["alta", "media", "baixa"] }
+          "id": {
+            "type": "string",
+            "pattern": "^n\\d+$"
+          },
+          "video": {
+            "$ref": "#/$defs/id_midia"
+          },
+          "inicio": {
+            "$ref": "#/$defs/segundos"
+          },
+          "fim": {
+            "$ref": "#/$defs/segundos"
+          },
+          "texto": {
+            "type": "string"
+          },
+          "interpretacao": {
+            "type": "string"
+          },
+          "etapa": {
+            "$ref": "#/$defs/nome_etapa"
+          },
+          "confianca": {
+            "enum": [
+              "alta",
+              "media",
+              "baixa"
+            ]
+          }
         }
       }
     },
     "cortes": {
       "type": "object",
-      "required": ["versao", "segmentos"],
+      "required": [
+        "versao",
+        "segmentos"
+      ],
       "properties": {
-        "versao": { "type": "integer", "minimum": 1, "description": "Sobe sozinha quando os segmentos mudam." },
+        "versao": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Sobe sozinha quando os segmentos mudam."
+        },
         "segmentos": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["id", "video", "inicio", "fim"],
+            "required": [
+              "id",
+              "video",
+              "inicio",
+              "fim"
+            ],
             "properties": {
-              "id": { "type": "string", "pattern": "^s\\d+$" },
-              "video": { "$ref": "#/$defs/id_midia" },
-              "inicio": { "$ref": "#/$defs/segundos" },
-              "fim": { "$ref": "#/$defs/segundos" },
-              "texto": { "type": "string" }
+              "id": {
+                "type": "string",
+                "pattern": "^s\\d+$"
+              },
+              "video": {
+                "$ref": "#/$defs/id_midia"
+              },
+              "inicio": {
+                "$ref": "#/$defs/segundos"
+              },
+              "fim": {
+                "$ref": "#/$defs/segundos"
+              },
+              "texto": {
+                "type": "string"
+              }
             }
           }
         }
@@ -127,41 +298,114 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "video", "tempo", "tipo", "texto"],
+        "required": [
+          "id",
+          "video",
+          "tempo",
+          "tipo",
+          "texto"
+        ],
         "properties": {
-          "id": { "type": "string", "pattern": "^m\\d+$" },
-          "video": { "$ref": "#/$defs/id_midia" },
-          "tempo": { "$ref": "#/$defs/segundos" },
-          "duracao": { "type": "number", "minimum": 0 },
-          "tipo": { "enum": ["duvida_take", "hesitacao", "nota", "sugestao", "alerta", "asset_faltando", "pos", "pessoa"] },
-          "texto": { "type": "string" },
-          "etapa": { "$ref": "#/$defs/nome_etapa" }
+          "id": {
+            "type": "string",
+            "pattern": "^m\\d+$"
+          },
+          "video": {
+            "$ref": "#/$defs/id_midia"
+          },
+          "tempo": {
+            "$ref": "#/$defs/segundos"
+          },
+          "duracao": {
+            "type": "number",
+            "minimum": 0
+          },
+          "tipo": {
+            "enum": [
+              "duvida_take",
+              "hesitacao",
+              "nota",
+              "sugestao",
+              "alerta",
+              "asset_faltando",
+              "pos",
+              "pessoa"
+            ]
+          },
+          "texto": {
+            "type": "string"
+          },
+          "etapa": {
+            "$ref": "#/$defs/nome_etapa"
+          }
         }
       }
     },
     "motions": {
       "type": "object",
       "properties": {
-        "versao": { "type": "integer", "minimum": 1 },
-        "base_cortes_versao": { "type": "integer", "description": "Versão do corte sobre a qual o plano foi feito." },
-        "trechos": { "type": "object" },
+        "versao": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "base_cortes_versao": {
+          "type": "integer",
+          "description": "Versão do corte sobre a qual o plano foi feito."
+        },
+        "trechos": {
+          "type": "object"
+        },
         "itens": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["id", "status"],
+            "required": [
+              "id",
+              "status"
+            ],
             "properties": {
-              "id": { "type": "string", "pattern": "^mo\\d+$" },
-              "status": { "enum": ["proposto", "aprovado", "ajustar", "riscado", "construido", "renderizado", "entregue"] },
-              "inicio_seq": { "$ref": "#/$defs/segundos" },
-              "fim_seq": { "$ref": "#/$defs/segundos" },
-              "formato": { "enum": ["tela_cheia", "sobreposicao", "sobreposicao_lateral", "enfase"] },
-              "ideia": { "type": "string" },
+              "id": {
+                "type": "string",
+                "pattern": "^mo\\d+$"
+              },
+              "status": {
+                "enum": [
+                  "proposto",
+                  "aprovado",
+                  "ajustar",
+                  "riscado",
+                  "construido",
+                  "renderizado",
+                  "entregue"
+                ]
+              },
+              "inicio_seq": {
+                "$ref": "#/$defs/segundos"
+              },
+              "fim_seq": {
+                "$ref": "#/$defs/segundos"
+              },
+              "formato": {
+                "enum": [
+                  "tela_cheia",
+                  "sobreposicao",
+                  "sobreposicao_lateral",
+                  "enfase"
+                ]
+              },
+              "ideia": {
+                "type": "string"
+              },
               "render": {
                 "type": "object",
                 "properties": {
-                  "arquivo": { "type": "string" },
-                  "versao": { "type": "integer", "minimum": 1 }
+                  "arquivo": {
+                    "type": "string"
+                  },
+                  "versao": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
                 }
               }
             }
@@ -172,39 +416,109 @@
     "camera": {
       "type": "object",
       "properties": {
-        "base_cortes_versao": { "type": "integer" },
-        "base_motions_versao": { "type": "integer" },
+        "base_cortes_versao": {
+          "type": "integer"
+        },
+        "base_motions_versao": {
+          "type": "integer"
+        },
         "movimentos": {
           "type": "array",
-          "items": { "type": "object", "required": ["id"], "properties": { "id": { "type": "string", "pattern": "^cam\\d+$" } } }
+          "items": {
+            "type": "object",
+            "required": [
+              "id"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^cam\\d+$"
+              }
+            }
+          }
         },
-        "recortes": { "type": "array" }
+        "recortes": {
+          "type": "array"
+        }
       }
     },
     "sfx": {
       "type": "object",
       "properties": {
-        "base_cortes_versao": { "type": "integer" },
-        "base_motions_versao": { "type": "integer" },
+        "base_cortes_versao": {
+          "type": "integer"
+        },
+        "base_motions_versao": {
+          "type": "integer"
+        },
         "itens": {
           "type": "array",
-          "items": { "type": "object", "required": ["id"], "properties": { "id": { "type": "string", "pattern": "^sfx\\d+$" } } }
+          "items": {
+            "type": "object",
+            "required": [
+              "id"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^sfx\\d+$"
+              }
+            }
+          }
         },
-        "recortes": { "type": "array" }
+        "recortes": {
+          "type": "array"
+        },
+        "musica": {
+          "type": "object",
+          "description": "Faixa de música já com o ducking aplicado (audio.py musica).",
+          "properties": {
+            "arquivo": {
+              "type": "string"
+            },
+            "inicio_seq": {
+              "$ref": "#/$defs/segundos"
+            },
+            "duracao": {
+              "type": "number"
+            },
+            "ganho_db": {
+              "type": "number"
+            }
+          }
+        }
       }
     },
     "pendencias": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "etapa", "texto"],
+        "required": [
+          "id",
+          "etapa",
+          "texto"
+        ],
         "properties": {
-          "id": { "type": "string", "pattern": "^p\\d+$" },
-          "etapa": { "$ref": "#/$defs/nome_etapa" },
-          "texto": { "type": "string", "minLength": 1 },
-          "item": { "type": "string" },
-          "criada_em": { "$ref": "#/$defs/data" },
-          "resolvida_em": { "$ref": "#/$defs/data" }
+          "id": {
+            "type": "string",
+            "pattern": "^p\\d+$"
+          },
+          "etapa": {
+            "$ref": "#/$defs/nome_etapa"
+          },
+          "texto": {
+            "type": "string",
+            "minLength": 1
+          },
+          "item": {
+            "type": "string"
+          },
+          "criada_em": {
+            "$ref": "#/$defs/data"
+          },
+          "resolvida_em": {
+            "$ref": "#/$defs/data"
+          }
         }
       }
     },
@@ -212,36 +526,129 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["etapa", "arquivo"],
+        "required": [
+          "etapa",
+          "arquivo"
+        ],
         "properties": {
-          "etapa": { "$ref": "#/$defs/nome_etapa" },
-          "arquivo": { "type": "string" },
-          "versao": { "type": "integer", "minimum": 1 },
-          "data": { "$ref": "#/$defs/data" }
+          "etapa": {
+            "$ref": "#/$defs/nome_etapa"
+          },
+          "arquivo": {
+            "type": "string"
+          },
+          "versao": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "data": {
+            "$ref": "#/$defs/data"
+          }
+        }
+      }
+    },
+    "legendas": {
+      "type": "object",
+      "properties": {
+        "versao": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "arquivo": {
+          "type": "string",
+          "description": "JSON dos blocos (legendas.py gerar)."
+        },
+        "base_cortes_versao": {
+          "type": "integer"
+        },
+        "saidas": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "render": {
+          "type": "object",
+          "description": "Legenda animada renderizada (MOV com alpha) que entra numa trilha de vídeo.",
+          "properties": {
+            "arquivo": {
+              "type": "string"
+            },
+            "inicio_seq": {
+              "$ref": "#/$defs/segundos"
+            },
+            "duracao": {
+              "type": "number"
+            }
+          }
         }
       }
     }
   },
   "$defs": {
-    "nome_etapa": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+    "nome_etapa": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
     "status_etapa": {
       "anyOf": [
-        { "enum": ["pendente", "em_andamento", "aguardando_aprovacao", "concluido", "nao_precisa"] },
-        { "type": "string", "pattern": "^aguardando_[a-z0-9_]+$" }
+        {
+          "enum": [
+            "pendente",
+            "em_andamento",
+            "aguardando_aprovacao",
+            "concluido",
+            "nao_precisa"
+          ]
+        },
+        {
+          "type": "string",
+          "pattern": "^aguardando_[a-z0-9_]+$"
+        }
       ]
     },
-    "id_midia": { "type": "string", "pattern": "^[A-Za-z0-9_.-]+$" },
-    "fps": { "type": "string", "pattern": "^\\d+(/\\d+)?$", "description": "Fração exata, ex.: 30000/1001." },
-    "resolucao": { "type": "array", "items": { "type": "integer", "minimum": 1 }, "minItems": 2, "maxItems": 2 },
-    "segundos": { "type": "number", "minimum": 0 },
-    "data": { "type": "string" },
+    "id_midia": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.-]+$"
+    },
+    "fps": {
+      "type": "string",
+      "pattern": "^\\d+(/\\d+)?$",
+      "description": "Fração exata, ex.: 30000/1001."
+    },
+    "resolucao": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "segundos": {
+      "type": "number",
+      "minimum": 0
+    },
+    "data": {
+      "type": "string"
+    },
     "trecho_origem": {
       "type": "object",
-      "required": ["video", "inicio", "fim"],
+      "required": [
+        "video",
+        "inicio",
+        "fim"
+      ],
       "properties": {
-        "video": { "$ref": "#/$defs/id_midia" },
-        "inicio": { "$ref": "#/$defs/segundos" },
-        "fim": { "$ref": "#/$defs/segundos" }
+        "video": {
+          "$ref": "#/$defs/id_midia"
+        },
+        "inicio": {
+          "$ref": "#/$defs/segundos"
+        },
+        "fim": {
+          "$ref": "#/$defs/segundos"
+        }
       }
     }
   }

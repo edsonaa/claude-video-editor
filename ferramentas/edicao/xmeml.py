@@ -28,6 +28,7 @@ from .tempo import Taxa
 CROSSFADE = {"name": "Cross Fade (+3dB)", "effectid": "KGAudioTransCrossFade3dB"}
 TRILHA_TELA_CHEIA = 3
 TRILHA_SOBREPOSICAO = 4
+TRILHA_LEGENDA = 5
 
 
 class ErroXML(Exception):
@@ -416,12 +417,25 @@ def montar(dados: dict, nome: str | None = None, teste: bool = False, sondar=Non
                 seq.avisos.append(f"{ident} está em {fps_arq} fps e a sequência em {seq.taxa}: confira a sincronia")
         return cache[ident]
 
+    voz_cache: dict[str, Midia] = {}
+
+    def voz_de(ident: str, m: Midia) -> Midia:
+        """A voz tratada (mesma duração e início do original), se houver; senão o áudio da própria câmera."""
+        tratado = arquivos[ident].get("audio_tratado")
+        if not tratado:
+            return m
+        if ident not in voz_cache:
+            voz_cache[ident] = Midia(id=f"{ident}_voz", caminho=tratado, duracao=m.duracao, canais=1, tem_video=False)
+        return voz_cache[ident]
+
     for p in linha.pedacos:
         m = m_de(p.video)
         g = seq.novo_grupo()
         seq.adicionar(Clipe(m, p.in_f, p.out_f, p.seq_ini, "video", 1, g))
-        if m.canais:
-            seq.adicionar(Clipe(m, p.in_f, p.out_f, p.seq_ini, "audio", 1, g))
+        voz = voz_de(p.video, m)
+        if voz.canais:
+            seq.adicionar(Clipe(voz, p.in_f, p.out_f, p.seq_ini, "audio", 1, g,
+                                nome=f"{p.video} (voz tratada)" if voz is not m else None))
 
     marcs = dados.get("marcadores") or []
     for mk in (marcs[:1] if teste else marcs):
@@ -451,6 +465,26 @@ def montar(dados: dict, nome: str | None = None, teste: bool = False, sondar=Non
         n = min(n, seq.f(m.duracao))
         _colocar(seq, Clipe(m, 0, n, seq.f(it["inicio_seq"]), "video", trilha, nome=it["id"]), "video")
 
+    leg = (dados.get("legendas") or {}).get("render")
+    if leg and leg.get("arquivo") and not teste:
+        m = _midia_do_estado({"id": "legendas", "caminho": leg["arquivo"], "tipo": "video", "canais_audio": 0,
+                              "alpha": True, "duracao": leg.get("duracao")}, sondar)
+        ini = seq.f(leg.get("inicio_seq", 0.0))
+        n = min(seq.f(m.duracao), linha.duracao_frames - ini)
+        if n > 0:
+            _colocar(seq, Clipe(m, 0, n, ini, "video", TRILHA_LEGENDA, nome="legendas"), "video")
+
+    trilha_sfx = 2
+    mus = (dados.get("sfx") or {}).get("musica")
+    if mus and mus.get("arquivo") and not teste:
+        m = _midia_do_estado({"id": "musica", "caminho": mus["arquivo"], "tipo": "audio", "canais_audio": 2,
+                              "duracao": mus.get("duracao")}, sondar)
+        ini = seq.f(mus.get("inicio_seq", 0.0))
+        n = min(seq.f(m.duracao), linha.duracao_frames - ini)
+        if n > 0:
+            seq.adicionar(Clipe(m, 0, n, ini, "audio", 2, ganho_db=mus.get("ganho_db"), nome="musica"))
+            trilha_sfx = 3
+
     sfx = (dados.get("sfx") or {}).get("itens", [])
     for it in (sfx[:1] if teste else sfx):
         if not it.get("arquivo") or it.get("status") == "riscado" or it["inicio_seq"] >= fim_seq:
@@ -459,7 +493,7 @@ def montar(dados: dict, nome: str | None = None, teste: bool = False, sondar=Non
                               "canais_audio": it.get("canais", 2), "duracao": it.get("duracao")}, sondar)
         in_f = seq.f(it.get("inicio_arquivo", 0.0))
         out_f = seq.f(it["fim_arquivo"]) if it.get("fim_arquivo") else seq.f(m.duracao)
-        _colocar(seq, Clipe(m, in_f, out_f, seq.f(it["inicio_seq"]), "audio", 2, ganho_db=it.get("ganho_db"),
+        _colocar(seq, Clipe(m, in_f, out_f, seq.f(it["inicio_seq"]), "audio", trilha_sfx, ganho_db=it.get("ganho_db"),
                             nome=it["id"]), "audio")
     return seq
 

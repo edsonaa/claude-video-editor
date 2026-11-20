@@ -4,98 +4,377 @@
   "title": "Configuração do fluxo de edição (~/.edicao/config.json)",
   "description": "As escolhas da pessoa: o que o motor (as skills e os scripts) lê para se adaptar. O gosto fica nos perfis; o ofício pessoal, nos ajustes.",
   "type": "object",
-  "required": ["schema", "nome", "fluxo", "revisao", "video"],
+  "required": [
+    "schema",
+    "nome",
+    "fluxo",
+    "revisao",
+    "video"
+  ],
   "properties": {
-    "schema": { "const": 1 },
-    "nome": { "type": "string", "minLength": 1, "description": "Como as skills chamam a pessoa." },
-    "preset": { "type": ["string", "null"], "description": "De qual preset a configuração partiu." },
-    "motor_versao_lida": { "type": ["string", "null"], "description": "Última versão do motor cujas novidades a pessoa já viu." },
-    "python": { "type": ["string", "null"], "description": "Python que roda as ferramentas (de preferência o do ambiente em ~/.edicao/venv)." },
+    "schema": {
+      "const": 1
+    },
+    "nome": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Como as skills chamam a pessoa."
+    },
+    "preset": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "De qual preset a configuração partiu."
+    },
+    "motor_versao_lida": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Última versão do motor cujas novidades a pessoa já viu."
+    },
+    "python": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Python que roda as ferramentas (de preferência o do ambiente em ~/.edicao/venv)."
+    },
     "fluxo": {
-      "type": "array", "minItems": 1, "uniqueItems": true,
-      "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]*$"
+      },
       "description": "As etapas, na ordem. Etapas do motor ou etapas próprias declaradas em etapas_proprias."
     },
     "etapas_proprias": {
       "type": "object",
       "description": "Etapa criada pela pessoa → arquivo .md com as instruções (em ~/.edicao/etapas/).",
-      "additionalProperties": { "type": "string" }
+      "additionalProperties": {
+        "type": "string"
+      }
     },
     "revisao": {
       "type": "object",
-      "required": ["programa"],
+      "required": [
+        "programa"
+      ],
       "properties": {
-        "programa": { "enum": ["premiere", "resolve", "finalcut", "nenhum", "outro"] },
-        "etapas_no_programa": { "type": "array", "items": { "type": "string" } },
-        "correcoes": { "enum": ["chat", "marcadores", "ambos"] }
+        "programa": {
+          "enum": [
+            "premiere",
+            "resolve",
+            "finalcut",
+            "nenhum",
+            "outro"
+          ]
+        },
+        "etapas_no_programa": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "correcoes": {
+          "enum": [
+            "chat",
+            "marcadores",
+            "ambos"
+          ]
+        }
       }
     },
     "video": {
       "type": "object",
-      "required": ["tipo", "formato"],
+      "required": [
+        "tipo",
+        "formato"
+      ],
       "properties": {
-        "tipo": { "enum": ["apresentador", "tutorial", "narrado", "reels", "aula", "podcast", "outro"] },
-        "formato": { "enum": ["16:9", "9:16", "1:1", "4:5"] },
-        "fps": { "type": ["string", "null"], "description": "Null: usar a taxa real do material." },
-        "duracao_tipica_min": { "type": ["number", "null"], "minimum": 0 }
+        "tipo": {
+          "enum": [
+            "apresentador",
+            "tutorial",
+            "narrado",
+            "reels",
+            "aula",
+            "podcast",
+            "outro"
+          ]
+        },
+        "formato": {
+          "enum": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:5"
+          ]
+        },
+        "fps": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Null: usar a taxa real do material."
+        },
+        "duracao_tipica_min": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        }
       }
     },
     "pastas": {
       "type": "object",
       "properties": {
-        "padrao_projeto": { "type": "string" },
-        "brutos": { "type": "string" },
-        "assets": { "type": "string" },
-        "docs": { "type": "string" },
-        "renders": { "type": "string" },
-        "proxies": { "type": ["string", "null"] }
+        "padrao_projeto": {
+          "type": "string"
+        },
+        "brutos": {
+          "type": "string"
+        },
+        "assets": {
+          "type": "string"
+        },
+        "docs": {
+          "type": "string"
+        },
+        "renders": {
+          "type": "string"
+        },
+        "proxies": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
       }
     },
     "transcricao": {
       "type": "object",
       "properties": {
-        "motor": { "enum": ["whisperx", "scribe", "outro"] },
-        "idioma": { "type": "string" },
-        "modelo": { "type": ["string", "null"] },
-        "dispositivo": { "enum": ["cuda", "cpu", "mps", null] },
-        "termos": { "type": "array", "items": { "type": "string" }, "description": "Nomes e termos que sempre aparecem (passados como contexto)." }
+        "motor": {
+          "enum": [
+            "whisperx",
+            "scribe",
+            "outro"
+          ]
+        },
+        "idioma": {
+          "type": "string"
+        },
+        "modelo": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dispositivo": {
+          "enum": [
+            "cuda",
+            "cpu",
+            "mps",
+            null
+          ]
+        },
+        "termos": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Nomes e termos que sempre aparecem (passados como contexto)."
+        }
       }
     },
     "notas_faladas": {
       "type": "object",
       "properties": {
-        "ativas": { "type": "boolean" },
-        "abertura": { "type": "string" },
-        "fechamento": { "type": "string" }
+        "ativas": {
+          "type": "boolean"
+        },
+        "abertura": {
+          "type": "string"
+        },
+        "fechamento": {
+          "type": "string"
+        }
       }
     },
     "cortes": {
       "type": "object",
-      "properties": { "usa_roteiro": { "type": "boolean" } }
+      "properties": {
+        "usa_roteiro": {
+          "type": "boolean"
+        }
+      }
     },
     "motion": {
       "type": "object",
       "properties": {
-        "ativo": { "type": "boolean" },
-        "ferramenta": { "enum": ["hyperframes", "remotion", "after_effects", "outro"] },
-        "densidade": { "enum": ["leve", "media", "forte"] }
+        "ativo": {
+          "type": "boolean"
+        },
+        "ferramenta": {
+          "enum": [
+            "hyperframes",
+            "remotion",
+            "after_effects",
+            "outro"
+          ]
+        },
+        "densidade": {
+          "enum": [
+            "leve",
+            "media",
+            "forte"
+          ]
+        }
       }
     },
     "camera": {
       "type": "object",
       "properties": {
-        "ativa": { "type": "boolean" },
-        "seguir_rosto": { "type": "boolean" }
+        "ativa": {
+          "type": "boolean"
+        },
+        "seguir_rosto": {
+          "type": "boolean"
+        }
       }
     },
     "som": {
       "type": "object",
       "properties": {
-        "ativo": { "type": "boolean" },
-        "biblioteca": { "type": ["string", "null"] },
-        "musica": { "enum": ["manual", "fluxo", "nenhuma"] }
+        "ativo": {
+          "type": "boolean"
+        },
+        "biblioteca": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "musica": {
+          "enum": [
+            "manual",
+            "fluxo",
+            "nenhuma"
+          ]
+        }
       }
     },
-    "perfil_padrao": { "type": "string", "pattern": "^[A-Za-z0-9_.-]+$" }
+    "perfil_padrao": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.-]+$"
+    },
+    "legendas": {
+      "type": "object",
+      "properties": {
+        "ativas": {
+          "type": "boolean"
+        },
+        "modo": {
+          "enum": [
+            "frase",
+            "palavra"
+          ]
+        },
+        "saidas": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "srt",
+              "vtt",
+              "ass",
+              "hyperframes"
+            ]
+          }
+        },
+        "queimar": {
+          "type": "boolean",
+          "description": "Legenda dentro da imagem (ASS no render, ou o efeito legenda-animada numa trilha)."
+        },
+        "max_caracteres": {
+          "type": "integer",
+          "minimum": 10,
+          "maximum": 60
+        },
+        "linhas": {
+          "enum": [
+            1,
+            2
+          ]
+        },
+        "remover_hesitacoes": {
+          "type": "boolean"
+        },
+        "caixa_alta": {
+          "type": "boolean"
+        },
+        "posicao": {
+          "enum": [
+            "baixo",
+            "centro"
+          ]
+        },
+        "quebrar_no_corte": {
+          "type": "boolean"
+        }
+      }
+    },
+    "audio": {
+      "type": "object",
+      "properties": {
+        "tratar": {
+          "type": "boolean"
+        },
+        "alvo_lufs": {
+          "type": "number",
+          "minimum": -30,
+          "maximum": -8
+        },
+        "pico_dbtp": {
+          "type": "number",
+          "minimum": -6,
+          "maximum": 0
+        },
+        "reducao_ruido": {
+          "enum": [
+            "auto",
+            "nenhuma",
+            "leve",
+            "media",
+            "forte"
+          ]
+        },
+        "passa_alta_hz": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 200
+        },
+        "compressao": {
+          "enum": [
+            "nenhuma",
+            "leve",
+            "media"
+          ]
+        },
+        "musica_nivel_livre": {
+          "type": "number"
+        },
+        "musica_nivel_fala": {
+          "type": "number"
+        }
+      }
+    }
   }
 }

@@ -22,6 +22,7 @@
       "motion_render",
       "camera",
       "sfx",
+      "legendas",
       "render"
     ],
     "revisao": {
@@ -39,6 +40,18 @@
     },
     "som": {
       "ativo": true
+    },
+    "legendas": {
+      "ativas": true,
+      "modo": "palavra",
+      "queimar": true,
+      "saidas": [
+        "ass",
+        "hyperframes"
+      ],
+      "max_caracteres": 20,
+      "linhas": 2,
+      "caixa_alta": true
     }
   },
   "estilo_sugerido": "impacto"

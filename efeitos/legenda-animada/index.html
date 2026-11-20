@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt-BR" data-composition-variables='[]'>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<link rel="stylesheet" href="../_comum/tema.css" />
+<style>
+#area { position: absolute; left: 6%; right: 6%; bottom: 11%; display: flex; justify-content: center; }
+.vertical #area { bottom: 27%; }
+.pos-centro #area { bottom: auto; top: 50%; }
+.bloco { position: absolute; bottom: 0; width: 100%; text-align: center; visibility: hidden; }
+.pos-centro .bloco { bottom: auto; top: 0; }
+.bloco .ln { display: block; }
+.w { display: inline-block; margin: 0 .2em; color: #fff; font-family: var(--t-fonte-titulo), sans-serif; font-weight: 800;
+  text-transform: var(--t-caixa); font-size: 76px; line-height: 1.12;
+  text-shadow: 0 3px 0 #000, 0 -3px 0 #000, 3px 0 0 #000, -3px 0 0 #000, 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0 8px 22px rgba(0,0,0,.55); }
+.vertical .w { font-size: 100px; }
+.frase .w { font-family: var(--t-fonte-texto), sans-serif; font-weight: 700; font-size: 60px; }
+.vertical.frase .w { font-size: 64px; }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="efeito" data-start="0" data-duration="6" data-width="1920" data-height="1080" data-fps="30" data-motion-blur="on" data-motion-blur-tier="filter">
+<div class="clip" data-start="0" data-duration="6"><div id="area"></div></div>
+</div>
+<script src="../_comum/tema.js"></script>
+<script>
+const { v, df, D } = HF;
+HF.raiz.classList.add("pos-" + v.posicao, v.modo === "frase" ? "frase" : "palavra");
+const area = document.getElementById("area");
+const destaque = getComputedStyle(document.documentElement).getPropertyValue("--t-destaque").trim() || "#FACC15";
+const blocos = HF.lista("blocos");
+const tl = HF.timeline();
+blocos.forEach((b) => {
+  const el = document.createElement("div"); el.className = "bloco";
+  let ln = document.createElement("span"); ln.className = "ln"; el.appendChild(ln);
+  const ws = b.p.map(([t], j) => {
+    if (b.l && j === b.l) { ln = document.createElement("span"); ln.className = "ln"; el.appendChild(ln); }
+    const s = document.createElement("span"); s.className = "w"; s.textContent = t; ln.appendChild(s); return s;
+  });
+  area.appendChild(el);
+  const ini = Math.max(0, b.i), fim = Math.min(D, b.f);
+  tl.set(el, { visibility: "visible" }, ini);
+  tl.fromTo(el, { y: 26, scale: 0.94, opacity: 0 }, { y: 0, scale: 1, opacity: 1, duration: df(6), ease: HF.easeEntrada(), lazy: false }, ini);
+  if (v.modo !== "frase") {
+    ws.forEach((w, j) => {
+      const t = Math.max(ini, b.p[j][1]);
+      const tFim = j + 1 < ws.length ? Math.max(t + df(2), b.p[j + 1][1]) : fim;
+      tl.fromTo(w, { color: "#ffffff", scale: 1 }, { color: destaque, scale: 1.14, duration: df(3), ease: "power2.out", lazy: false, immediateRender: false }, t);
+      tl.to(w, { scale: 1.06, duration: df(4), ease: "power2.inOut", lazy: false }, t + df(3));
+      if (tFim < fim) tl.to(w, { color: "#ffffff", scale: 1, duration: df(3), ease: "power1.out", lazy: false }, tFim);
+    });
+  }
+  tl.to(el, { opacity: 0, duration: df(3), ease: "power1.in", lazy: false }, Math.max(ini + df(6), fim - df(3)));
+  tl.set(el, { visibility: "hidden" }, fim);
+});
+HF.pronto(tl);
+</script>
+</body>
+</html>

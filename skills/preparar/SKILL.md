@@ -7,8 +7,8 @@ description: "Transforma os brutos de um vídeo em algo que o Claude lê: invent
 
 Motor: `${CLAUDE_PLUGIN_ROOT}`. Ferramentas: `<f>` = `${CLAUDE_PLUGIN_ROOT}/ferramentas`. Uma vez por sessão: leia `${CLAUDE_PLUGIN_ROOT}/skills/editar/regras-comuns.md` e rode `<py> <f>/config.py mostrar`.
 
-- **Lê:** os brutos, `_CLAUDE/briefing.md` (termos), a configuração (`transcricao`, `notas_faladas`, `pastas`), `<pessoa>/ajustes/preparar.md` e `geral.md`.
-- **Escreve:** blocos `midia`, `transcricao` e `notas_edicao` no estado; em `_CLAUDE/`: `palavras_<id>.json`, `silencios_<id>.json`, `frases_<id>.txt`.
+- **Lê:** os brutos, `_CLAUDE/briefing.md` (termos), a configuração (`transcricao`, `notas_faladas`, `pastas`, `audio`), `<pessoa>/ajustes/preparar.md` e `geral.md`.
+- **Escreve:** blocos `midia`, `transcricao` e `notas_edicao` no estado; em `_CLAUDE/`: `palavras_<id>.json`, `silencios_<id>.json`, `frases_<id>.txt`; com `audio.tratar`, a voz tratada em `_CLAUDE/audio/`.
 - **Ofício:** `${CLAUDE_PLUGIN_ROOT}/guias/etapa-iniciar-preparar.md`, parte "Preparar". Leia antes.
 
 ## Passo a passo
@@ -20,5 +20,10 @@ Motor: `${CLAUDE_PLUGIN_ROOT}`. Ferramentas: `<f>` = `${CLAUDE_PLUGIN_ROOT}/ferr
 5. **Takes engolidos:** `<py> <f>/transcrever.py lacunas _CLAUDE/palavras_<id>.json _CLAUDE/silencios_<id>.json`. Para cada trecho: extraia com o FFmpeg, transcreva **sem** `--termos` e com `--offset <início do trecho>`, e junte as palavras novas no `palavras_<id>.json` em ordem de início. Grave os que continuarem sem palavra em `transcricao.lacunas` (a `cortes` procura takes ali).
 6. **Frases para ler:** `<py> <f>/transcrever.py frases _CLAUDE/palavras_<id>.json --silencios _CLAUDE/silencios_<id>.json --video <id> --saida _CLAUDE/frases_<id>.txt`. Confira a grafia dos termos pelo roteiro, se houver, sem trocar o que foi falado.
 7. **Notas faladas** (se `notas_faladas.ativas`): `<py> <f>/transcrever.py notas _CLAUDE/palavras_<id>.json --abertura "<abertura>" --fechamento "<fechamento>" --json`. Para cada uma, escreva uma interpretação curta e a etapa a que se refere, e grave em `notas_edicao` (ids `n01`…). Confiança baixa vira pergunta para a pessoa.
-8. **Estado:** `--set transcricao '{"motor": …, "palavras": {"cam01": "_CLAUDE/palavras_cam01.json"}, "frases": {…}, "silencios": {…}, "lacunas": […]}'`.
-9. **Resumo** curto: arquivos, duração total, alertas, lacunas, notas encontradas. Não há o que revisar no programa: com a pessoa de acordo, `--etapa preparar=concluido`, sugerir `/clear` e `/edicao:editar`.
+8. **Voz** (se `audio.tratar`), para cada arquivo com a fala principal:
+   - `<py> <f>/audio.py medir <arquivo>` (ou o áudio externo): loudness, ruído de fundo, fala/ruído, clipping e as recomendações. Clipping não tem conserto: avise.
+   - Um trecho de 20–30 s primeiro, para a pessoa ouvir: `audio.py tratar <arquivo> _CLAUDE/audio/<id>_teste.wav --inicio <s> --duracao 25`. Mostre o antes e o depois (os números e os dois arquivos). Ficou metálico ou "embaixo d'água"? Menos redução de ruído (`--ruido leve`); ficou ruidoso? mais (`--ruido media`/`forte`).
+   - Aprovado: `audio.py tratar <arquivo> --estado . --id <id>` com as mesmas opções. A voz tratada tem a mesma duração e o mesmo início do original (o atraso dos filtros é compensado) e passa a entrar no XML no lugar do áudio da câmera. O original nunca é alterado.
+   - Anote em `<pessoa>/ajustes/preparar.md` o que funcionou para aquele microfone e sala (ex.: "lapela na sala da bancada: ruído média, compressão leve").
+9. **Estado:** `--set transcricao '{"motor": …, "palavras": {"cam01": "_CLAUDE/palavras_cam01.json"}, "frases": {…}, "silencios": {…}, "lacunas": […]}'`.
+10. **Resumo** curto: arquivos, duração total, alertas, lacunas, notas encontradas. Não há o que revisar no programa: com a pessoa de acordo, `--etapa preparar=concluido`, sugerir `/clear` e `/edicao:editar`.

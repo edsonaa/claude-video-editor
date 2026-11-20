@@ -41,7 +41,9 @@ Abra o Claude Code na pasta do vídeo e digite:
 ```
 Ela vê em que etapa o vídeo está e te guia, uma etapa por vez. Entre as etapas, `/clear` e `/edicao:editar` de novo: tudo fica salvo no estado do vídeo (`_CLAUDE/projeto.json`).
 
-As etapas também podem ser chamadas direto: `/edicao:iniciar`, `/edicao:preparar`, `/edicao:cortes`, `/edicao:motion-mapa`, `/edicao:assets`, `/edicao:motion-render`, `/edicao:camera`, `/edicao:sfx` e `/edicao:render`.
+As etapas também podem ser chamadas direto: `/edicao:iniciar`, `/edicao:preparar`, `/edicao:cortes`, `/edicao:motion-mapa`, `/edicao:assets`, `/edicao:motion-render`, `/edicao:camera`, `/edicao:sfx`, `/edicao:legendas` e `/edicao:render`.
+
+No caminho, o motor também trata a voz (ruído, compressão e loudness no alvo da plataforma, sem tirar de sincronia), monta a música de fundo abaixando sob a fala e faz as legendas: arquivo SRT/VTT ou queimadas, palavra a palavra no estilo de vídeo curto.
 
 Outros comandos:
 - `/edicao:editar aprendizados`: aplica o que você corrigiu nos vídeos ao seu estilo e aos seus ajustes;
@@ -50,7 +52,7 @@ Outros comandos:
 - `/edicao:montar`: muda o fluxo, troca de preset, cria um perfil ou uma etapa sua.
 
 ## Efeitos e estilos prontos
-O motor traz uma **biblioteca de 13 efeitos** de animação (título de impacto, contador, gráfico de barras, comparação, lista de passos, card lateral, print com destaque, cursor, capítulo, transição, tarja de nome, logo, ênfase de frase), todos parametrizados e com prévia animada em [`efeitos/`](efeitos/README.md), e **4 estilos completos** para começar (limpo, tech-neon, editorial, impacto) em [`estilos/`](estilos/README.md). O plano de animação usa os efeitos como repertório, nunca como molde: o conteúdo decide.
+O motor traz uma **biblioteca de 14 efeitos** de animação (título de impacto, contador, gráfico de barras, comparação, lista de passos, card lateral, print com destaque, cursor, capítulo, transição, tarja de nome, logo, ênfase de frase, legenda animada), todos parametrizados e com prévia animada em [`efeitos/`](efeitos/README.md), e **4 estilos completos** para começar (limpo, tech-neon, editorial, impacto) em [`estilos/`](estilos/README.md). O plano de animação usa os efeitos como repertório, nunca como molde: o conteúdo decide.
 
 ![Os quatro estilos](estilos/limpo/previa.png)
 

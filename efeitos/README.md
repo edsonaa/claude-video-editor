@@ -92,6 +92,17 @@ A frase que está sendo dita aparece grande sobre a filmagem, com um marca-texto
 - **Bom para:** a frase-chave dita pelo apresentador; números e nomes que precisam ficar na cabeça
 - **Evitar:** repetir a mesma ênfase várias vezes no corpo (perde força)
 
+## Legenda animada · `legenda-animada`
+
+![Legenda animada](legenda-animada/previa.gif)
+
+Legenda queimada no estilo de vídeo curto: os blocos entram com um pulo leve e, no modo palavra, a palavra falada acende na cor de destaque. Os blocos vêm do legendas.py (exportar --formatos hyperframes).
+
+- **Formato:** sobreposição (MOV com alpha) · **duração:** 6 s (1–300 s)
+- **Parâmetros:** `blocos`, `modo`, `posicao`
+- **Bom para:** reels e shorts (a maioria assiste sem som); trechos-chave de um vídeo longo
+- **Evitar:** junto com legenda do programa (duas legendas); sobre texto de animação na mesma altura
+
 ## Lista de passos · `lista-passos`
 
 ![Lista de passos](lista-passos/previa.gif)

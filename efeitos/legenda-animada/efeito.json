@@ -1,0 +1,131 @@
+{
+  "titulo": "Legenda animada",
+  "descricao": "Legenda queimada no estilo de vídeo curto: os blocos entram com um pulo leve e, no modo palavra, a palavra falada acende na cor de destaque. Os blocos vêm do legendas.py (exportar --formatos hyperframes).",
+  "formato": "sobreposicao",
+  "duracao": {
+    "padrao": 6,
+    "min": 1,
+    "max": 300
+  },
+  "parametros": [
+    {
+      "id": "blocos",
+      "tipo": "lista",
+      "rotulo": "Blocos (do legendas.py)",
+      "obrigatorio": true,
+      "padrao": [
+        {
+          "i": 0.2,
+          "f": 2.0,
+          "l": 0,
+          "p": [
+            [
+              "legenda",
+              0.2
+            ],
+            [
+              "animada",
+              0.8
+            ]
+          ]
+        }
+      ],
+      "descricao": "Gerado por `legendas.py exportar --formatos hyperframes`; tempos em segundos desde o início do trecho."
+    },
+    {
+      "id": "modo",
+      "tipo": "opcao",
+      "rotulo": "Modo",
+      "opcoes": [
+        "palavra",
+        "frase"
+      ],
+      "padrao": "palavra"
+    },
+    {
+      "id": "posicao",
+      "tipo": "opcao",
+      "rotulo": "Posição",
+      "opcoes": [
+        "baixo",
+        "centro"
+      ],
+      "padrao": "baixo"
+    }
+  ],
+  "exemplo": {
+    "modo": "palavra",
+    "blocos": [
+      {
+        "i": 0.1,
+        "f": 1.6,
+        "l": 0,
+        "p": [
+          [
+            "o",
+            0.1
+          ],
+          [
+            "defeito",
+            0.35
+          ],
+          [
+            "estava",
+            0.85
+          ]
+        ]
+      },
+      {
+        "i": 1.7,
+        "f": 3.4,
+        "l": 0,
+        "p": [
+          [
+            "na",
+            1.7
+          ],
+          [
+            "bobina",
+            1.95
+          ],
+          [
+            "queimada",
+            2.6
+          ]
+        ]
+      },
+      {
+        "i": 3.5,
+        "f": 5.6,
+        "l": 2,
+        "p": [
+          [
+            "e",
+            3.5
+          ],
+          [
+            "ninguém",
+            3.7
+          ],
+          [
+            "tinha",
+            4.3
+          ],
+          [
+            "medido",
+            4.7
+          ]
+        ]
+      }
+    ]
+  },
+  "eventos_som": [],
+  "bom_para": "reels e shorts (a maioria assiste sem som); trechos-chave de um vídeo longo",
+  "evitar": "junto com legenda do programa (duas legendas); sobre texto de animação na mesma altura",
+  "tags": [
+    "legenda",
+    "texto",
+    "reels",
+    "sobreposicao"
+  ]
+}

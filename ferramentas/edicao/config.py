@@ -35,7 +35,8 @@ ETAPAS = {
     "assets": "busca logos, ícones e prints que as animações precisam",
     "motion_render": "constrói e renderiza cada animação",
     "camera": "zooms e movimentos casados com a fala e as animações",
-    "sfx": "efeitos sonoros em camadas, alinhados ao que se vê",
+    "sfx": "efeitos sonoros em camadas, alinhados ao que se vê, e a música com ducking",
+    "legendas": "legendas pela transcrição e pelos cortes: arquivo (SRT/VTT) ou queimada e animada",
     "render": "monta e exporta o vídeo pronto (quem não revisa num programa)",
 }
 
@@ -45,7 +46,7 @@ PADRAO = {
     "preset": None,
     "motor_versao_lida": None,
     "python": None,
-    "fluxo": list(ETAPAS)[:-1],
+    "fluxo": [e for e in ETAPAS if e not in ("legendas", "render")],
     "etapas_proprias": {},
     "revisao": {"programa": "premiere", "etapas_no_programa": ["cortes", "motion_render", "camera", "sfx"],
                 "correcoes": "ambos"},
@@ -58,6 +59,11 @@ PADRAO = {
     "motion": {"ativo": True, "ferramenta": "hyperframes", "densidade": "media"},
     "camera": {"ativa": True, "seguir_rosto": True},
     "som": {"ativo": True, "biblioteca": None, "musica": "manual"},
+    "legendas": {"ativas": False, "modo": "frase", "saidas": ["srt"], "queimar": False, "max_caracteres": 42,
+                 "linhas": 2, "remover_hesitacoes": True, "caixa_alta": False, "posicao": "baixo",
+                 "quebrar_no_corte": False},
+    "audio": {"tratar": True, "alvo_lufs": -14.0, "pico_dbtp": -1.0, "reducao_ruido": "auto", "passa_alta_hz": 80,
+              "compressao": "leve", "musica_nivel_livre": -20.0, "musica_nivel_fala": -32.0},
     "perfil_padrao": "padrao",
 }
 
@@ -173,6 +179,15 @@ def validar(cfg: dict) -> tuple[list[str], list[str]]:
         avisos.append("câmera desligada, mas a etapa 'camera' está no fluxo")
     if not cfg["som"]["ativo"] and "sfx" in fl:
         avisos.append("som desligado, mas a etapa 'sfx' está no fluxo")
+    leg = cfg["legendas"]
+    if leg["ativas"] and "legendas" not in fl:
+        avisos.append("legendas ativas, mas a etapa 'legendas' não está no fluxo")
+    if "legendas" in fl and not leg["ativas"]:
+        avisos.append("a etapa 'legendas' está no fluxo, mas legendas.ativas é falso")
+    if leg["ativas"] and leg["modo"] == "palavra" and not leg["queimar"]:
+        avisos.append("legenda palavra a palavra só aparece queimada (legendas.queimar); em arquivo SRT ela vira frase")
+    if cfg["som"]["musica"] == "fluxo" and "sfx" not in fl:
+        avisos.append("música pelo fluxo (som.musica) precisa da etapa 'sfx'")
     if "sfx" in fl and cfg["som"]["ativo"] and not cfg["som"].get("biblioteca"):
         avisos.append("a etapa de som não tem biblioteca de sons (som.biblioteca)")
     if cfg["revisao"]["programa"] == "finalcut":

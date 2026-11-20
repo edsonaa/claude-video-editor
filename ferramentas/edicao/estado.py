@@ -367,6 +367,13 @@ def alertas(dados: dict) -> list[str]:
         if motions_v and bm and bm != motions_v:
             out.append(f"{bloco}: feito sobre o plano de animação v{bm}, o plano agora é v{motions_v}")
 
+    bl = obter(dados, "legendas.base_cortes_versao")
+    if cortes_v and bl and bl != cortes_v:
+        out.append(f"legendas: geradas sobre o corte v{bl}, o corte agora é v{cortes_v} (gere de novo)")
+    for a in obter(dados, "midia.arquivos", []) or []:
+        if a.get("audio_tratado") and not Path(a["audio_tratado"]).exists():
+            out.append(f"{a['id']}: a voz tratada {a['audio_tratado']} não existe mais")
+
     fluxo = dados.get("fluxo", [])
     for i, e in enumerate(fluxo):
         if etapas.get(e) in ("concluido", "aguardando_aprovacao"):

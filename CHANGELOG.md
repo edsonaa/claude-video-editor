@@ -2,6 +2,12 @@
 
 Cada versão nova do motor (skills, guias e ferramentas) entra aqui, a mais nova em cima. A skill `/edicao:editar` mostra o que mudou desde a última vez que a pessoa viu. Ao lançar uma versão, suba o `version` em `.claude-plugin/plugin.json` para o mesmo número (um teste confere).
 
+## 0.4.0
+- **Legendas** (etapa nova `legendas`, `legendas.py`): blocos pela transcrição e pelos cortes, no tempo da sequência, com as regras de leitura (até 2 linhas, ~42 caracteres, ~17 caracteres por segundo, sem terminar linha em artigo ou preposição), correções de grafia e revisão por id (`l014`). Saídas: SRT e VTT (programa, YouTube, plataformas de curso), ASS para queimar no render (no modo palavra, a palavra falada acende) e o efeito novo `legenda-animada` (HyperFrames), que entra no XML em V5.
+- **Áudio** (`audio.py`): medição (loudness, pico real, ruído de fundo, fala/ruído, clipping) com recomendações; tratamento da voz (passa-alta, redução de ruído pelo piso medido, compressão leve, loudness em duas passadas) com **a mesma duração e o mesmo início do original** (o atraso dos filtros é medido e compensado), e a voz tratada entra no XML no lugar do áudio da câmera; música de fundo com ducking sob a fala e fades, numa trilha própria; conferência da mixagem final.
+- Configuração: blocos `legendas` e `audio`; presets com legendas (reels: queimada palavra a palavra; aula técnica: SRT e VTT).
+- `guias/legendas-e-audio.md`: o ofício de legendas, alvos de loudness por plataforma, a ordem do tratamento de voz e a música.
+
 ## 0.3.0
 - **Biblioteca de efeitos** (`efeitos/`): 13 composições HyperFrames prontas e parametrizadas, com prévia animada: título de impacto, ênfase de frase, contador, gráfico de barras, lista de passos, comparação lado a lado, card lateral, revelação de logo, print com destaque, marcador de capítulo, transição com rampa, cursor e clique, tarja de nome. Funcionam em 16:9, 9:16, 1:1 e 4:5, pegam cores, fontes e curvas do perfil e mostram ASSET FALTANDO quando falta uma imagem.
 - `efeitos.py`: `listar`, `mostrar`, `criar` (copia o efeito para o item do plano com o tema, o conteúdo, a duração exata em frames e os eventos de som), `previa` e `vitrine`.
