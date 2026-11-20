@@ -38,6 +38,7 @@ import webbrowser
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from edicao import boas_vindas as BV  # noqa: E402
 from edicao import estado as E  # noqa: E402
+from edicao import galeria as G  # noqa: E402
 from edicao import painel as P  # noqa: E402
 
 WEB = Path(__file__).resolve().parent / "painel_web"
@@ -88,6 +89,16 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self.send_header("Cache-Control", "no-store")
         self.end_headers()
         self.wfile.write(corpo)
+
+    def _html(self, texto: str):
+        corpo = texto.encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(corpo)))
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        if self.command != "HEAD":
+            self.wfile.write(corpo)
 
     def _erro(self, status, msg, **extra):
         self._json({"erro": msg, **extra}, status)
@@ -190,9 +201,24 @@ class Handler(http.server.BaseHTTPRequestHandler):
             if not arq or not arq.exists():
                 return self._erro(404, "mídia indisponível")
             return self._arquivo(arq)
+        if caminho == "/api/galeria":
+            return self._json(G.catalogo(self.painel.pasta))
+        if caminho == "/api/efeito":
+            try:
+                params = json.loads(q.get("p", ["{}"])[0] or "{}")
+                dur = float(q["d"][0]) if q.get("d") else None
+                return self._html(G.pagina_efeito(self.painel.pasta, q.get("nome", [""])[0], params,
+                                                  q.get("formato", [None])[0], dur))
+            except (G.ErroGaleria, ValueError, json.JSONDecodeError) as e:
+                return self._html(f"<!doctype html><meta charset='utf-8'><body style='font:14px system-ui;"
+                                  f"color:#e5675c;background:#26282b;padding:16px'>{G.html_escape(str(e))}</body>")
+        if caminho == "/api/som":
+            arq = G.arquivo_som(q.get("id", [""])[0])
+            return self._arquivo(arq, cache=True) if arq else self._erro(404, "som não encontrado")
         if caminho == "/api/miniatura":
             try:
-                arq = P.miniatura(self.painel.pasta, q["video"][0], float(q["tempo"][0]))
+                larg = max(96, min(640, int(q.get("largura", ["192"])[0])))
+                arq = P.miniatura(self.painel.pasta, q["video"][0], float(q["tempo"][0]), larg)
             except (KeyError, ValueError, E.ErroEstado) as e:
                 return self._erro(404, str(e))
             except Exception as e:  # noqa: BLE001 (ffmpeg não conseguiu tirar o quadro)
@@ -215,11 +241,14 @@ class Handler(http.server.BaseHTTPRequestHandler):
             return self._erro(401, "token inválido")
         self.painel.ultimo_acesso = time.monotonic()
         pasta = self.painel.pasta
+        info = None
         try:
             c = self._corpo()
             rev = c.get("revisao")
             acao = u.path
-            if acao == "/api/cortes":
+            if acao.startswith("/api/galeria/"):
+                info = self._galeria(acao[len("/api/galeria/"):], c, rev)
+            elif acao == "/api/cortes":
                 P.editar_cortes(pasta, rev, c["acao"], **{k: v for k, v in c.items() if k not in ("acao", "revisao")})
             elif acao == "/api/cortes/desfazer":
                 P.desfazer_cortes(pasta, rev)
@@ -248,7 +277,25 @@ class Handler(http.server.BaseHTTPRequestHandler):
         except (E.ErroEstado, BV.C.ErroConfig, KeyError, ValueError, TypeError) as e:
             msg = f"faltou o campo {e}" if isinstance(e, KeyError) else str(e)
             return self._erro(400, msg)
-        return self._json({"ok": True, "dados": P.dados(pasta)})
+        return self._json({"ok": True, "dados": P.dados(pasta), **({"info": info} if info else {})})
+
+    def _galeria(self, qual: str, c: dict, rev) -> dict:
+        pasta = self.painel.pasta
+        if qual == "pacote-sons":
+            return G.criar_pacote_sons()
+        with P._editar(pasta, rev) as d:
+            if qual == "animacao":
+                return {"id": G.inserir_animacao(d, pasta, c["efeito"], c.get("params"), float(c["inicio_seq"]),
+                                                 c.get("duracao"))}
+            if qual == "transicao":
+                tr = G.mudar_transicao(d, c["id"], {"tipo": c.get("tipo"), "duracao": c.get("duracao")}
+                                       if c.get("tipo") else None)
+                return {"id": c["id"], "transicao": tr}
+            if qual == "som":
+                return {"id": G.inserir_som(d, pasta, c["id"], float(c["tempo_seq"]), float(c.get("ganho_db", -12)))}
+            if qual == "legenda":
+                return G.escolher_legenda(d, c["estilo"], c.get("posicao"))
+        raise P.ErroPainel(f"galeria: '{qual}' não existe")
 
 
 class Servidor(socketserver.ThreadingMixIn, http.server.HTTPServer):

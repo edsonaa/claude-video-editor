@@ -52,6 +52,7 @@ No caminho, o motor também trata a voz (ruído, compressão e loudness no alvo 
 - o **roteiro** mostra a fala com o que saiu do corte riscado: selecione palavras para cortar ou devolver ao vídeo (Ctrl+Z desfaz);
 - a **linha do tempo** mostra cada trilha, e cada segmento se ajusta quadro a quadro;
 - os **pedidos** ficam presos ao ponto do vídeo e voltam para o Claude como pendências; animações do plano se aprovam ou riscam ali; legendas se corrigem ali;
+- a **galeria** (tecla G) mostra legendas, animações, transições e sons com prévia sobre o seu próprio quadro, e põe o escolhido no ponto do cursor (a animação já toca por cima do vídeo antes do render);
 - quando estiver bom, **Aprovar** fecha a etapa.
 
 Roda só no seu computador (não sobe nada para a internet). O que o navegador não toca (ProRes, HEVC 10 bits, áudio PCM em MOV, animações com transparência) ganha uma prévia leve com um clique.

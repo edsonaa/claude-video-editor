@@ -36,6 +36,8 @@ fluxo-de-edicao/
 │   ├── _comum/              tema.css e tema.js, a base que todo efeito usa
 │   └── <efeito>/            index.html, efeito.json, previa.gif
 ├── estilos/                 perfis completos prontos (limpo, tech-neon, editorial, impacto)
+├── transicoes/              transicoes.json: as transições (dissolver, passar pelo preto, clarão, zoom,
+│                            empurrar, chicote), com o filtro do render e o efeito do XML
 ├── legendas/                estilos.json: os padrões de legenda (clássica, caixa, palavra a palavra,
 │                            impacto, minimalista, brilho), iguais na prévia do painel e no render
 ├── presets/                 os pontos de partida da montagem (youtube-apresentador, reels…)
@@ -99,7 +101,8 @@ Uma pasta por vídeo, no padrão de `pastas.padrao_projeto` (por padrão `AAAA-M
 ```
 2026-01-15_Nome/
 ├── Brutos/                  as suas gravações (o Claude só lê)
-├── Assets/                  logos, ícones, prints e o que você mandar para as animações
+├── Assets/                  logos, ícones, prints e o que você mandar para as animações; sons/ com
+│                            os efeitos sonoros escolhidos na galeria do painel
 ├── Docs/                    roteiro e documentos de apoio
 ├── Renders/                 o vídeo pronto: <projeto>_final_vNN.mp4
 ├── _CLAUDE/                 tudo o que o Claude gera (veja abaixo)

@@ -57,6 +57,7 @@ As fontes e as licenças mudam: a etapa pesquisa as atuais antes de escrever o s
 
 A etapa de som (`/edicao:sfx`) escolhe os efeitos sonoros na **sua biblioteca**, uma pasta no seu computador (`som.biblioteca` na configuração).
 
+- **Pacote inicial:** sem biblioteca ainda? `sons.py pacote <pasta>` (ou o botão da galeria do painel, que também liga `som.biblioteca`) cria 12 sons feitos pelo próprio motor, livres de direitos: whoosh curto e longo, impacto grave, batida, pop, bolha, clique, tecla, sino, notificação, subida e falha digital. É um começo: junte os seus na mesma pasta e reindexe.
 - **Organização:** uma pasta por categoria (`whoosh`, `impacto`, `grave`, `riser`, `pop`, `clique`, `glitch`, `interface`, `ding`, `papel`…). A categoria de cada som é a primeira pasta do caminho.
 - **Índice:** `sons.py indexar <biblioteca>` mede cada som e grava `<biblioteca>/indice.json`. Ele é incremental: rodar de novo só mede o que é novo. O índice guarda:
   - a duração;
@@ -66,6 +67,8 @@ A etapa de som (`/edicao:sfx`) escolhe os efeitos sonoros na **sua biblioteca**,
 - **Busca:** `sons.py buscar <índice> --categoria whoosh --dur-max 1.5` ou `--texto "vidro"`; `sons.py categorias <índice>` mostra o que existe.
 - **Licença:** confira a de cada som e escreva no campo `licenca` do índice. Som sem licença clara não entra no vídeo.
 - **Faltou som?** Não force um ruim: o melhor possível, ou nenhum, e o que faltou vai para uma lista de sons para buscar.
+
+Pela **galeria do painel**, a pessoa ouve os sons e põe um no ponto do cursor (o pico cai ali); o arquivo é copiado para `Assets/sons/` do projeto e o item entra em `sfx.itens` com `origem: painel`, que a etapa de som mantém.
 
 Os efeitos da biblioteca de animações já dizem onde pedem som (os eventos em `eventos.json`, veja [efeitos.md](efeitos.md)), e a etapa de som parte deles.
 

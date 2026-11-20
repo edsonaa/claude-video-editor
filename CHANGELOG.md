@@ -2,6 +2,21 @@
 
 Cada versão nova do motor (skills, guias e ferramentas) entra aqui, a mais nova em cima. A skill `/edicao:editar` mostra o que mudou desde a última vez que a pessoa viu. Ao lançar uma versão, suba o `version` em `.claude-plugin/plugin.json` para o mesmo número (um teste confere).
 
+## 0.8.0
+- **Galeria no painel** (aba Galeria, tecla G): o que dá para pôr no vídeo, com prévia sobre o quadro do ponto do cursor, e um botão que põe ali.
+  - **Legendas:** os seis estilos com o texto do ponto do cursor, nas medidas do render, e a posição. A escolha vale para o vídeo (`video.legendas`); se a divisão em blocos muda, fica um pedido para gerar de novo.
+  - **Animações:** os 14 efeitos tocando no navegador com o tema do seu perfil. Você preenche o conteúdo vendo a prévia e insere no cursor: o item entra aprovado no plano, com `efeito` e `params`, e já toca por cima do vídeo no painel antes do render.
+  - **Transições:** dissolver, passar pelo preto, clarão, zoom, empurrar e chicote, com prévia nas duas imagens do corte mais perto e a duração num controle.
+  - **Sons:** a sua biblioteca por categoria, para ouvir e inserir com o pico no cursor (o arquivo vai para `Assets/sons/`). Sem biblioteca, um botão cria o pacote inicial.
+  - Tudo entra com `origem: painel`, e as skills tratam como escolha da pessoa: o plano de animação e a etapa de som mantêm esses itens.
+- **Transições** (`transicoes/transicoes.json`, no segmento que entra):
+  - no render, centradas no corte com o xfade do FFmpeg e a mídia que sobra de cada lado, sem mudar a duração do vídeo;
+  - no XML, Cross Dissolve ou Dip to Color (as que o programa não tem entram como dissolver, com um marcador);
+  - na volta do programa, voltam para o segmento certo;
+  - no painel, aparecem na linha do tempo e no inspetor do segmento, e com uma prévia aproximada ao tocar.
+- **Pacote inicial de sons** (`sons.py pacote`): 12 sons sintetizados pelo próprio motor, livres de direitos: whoosh, impacto, pop, clique, sino, subida e falha digital.
+- Painel: animações que se sobrepõem no tempo ficam em faixas na trilha, e as miniaturas aceitam largura (`/api/miniatura?largura=`).
+
 ## 0.7.0
 - **Boas-vindas pelo painel:** a `/edicao:iniciar` pergunta se o briefing vai pela conversa ou pelo painel. Pelo painel (`painel.py boas-vindas`), num só lugar:
   - a verificação do que está pronto (pasta, subpastas, gravações, FFmpeg, transcrição, Node e sons quando o fluxo pede), com o que fazer no que falta;

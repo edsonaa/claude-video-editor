@@ -1,0 +1,21 @@
+# Transições
+
+As transições do motor. A pessoa escolhe na galeria do painel (com prévia nas duas imagens do corte) e a escolha fica no segmento que entra: `cortes.segmentos[i].transicao = {"tipo": "dissolver", "duracao": 0.5}`.
+
+| Id | Nome | Duração (padrão) | Render (xfade) | No Premiere e no Resolve |
+|---|---|---|---|---|
+| `dissolver` | Dissolver | 0,2 a 2 s (0,5) | `fade` | Cross Dissolve |
+| `fade_preto` | Passar pelo preto | 0,3 a 2,5 s (0,8) | `fadeblack` | Dip to Color Dissolve, preto |
+| `fade_branco` | Clarão | 0,2 a 1,2 s (0,4) | `fadewhite` | Dip to Color Dissolve, branco |
+| `zoom` | Zoom | 0,25 a 1 s (0,45) | `zoomin` | Cross Dissolve + marcador |
+| `empurrar` | Empurrar | 0,25 a 1 s (0,4) | `slideleft` | Cross Dissolve + marcador |
+| `chicote` | Chicote | 0,15 a 0,7 s (0,3) | `hblur` | Cross Dissolve + marcador |
+
+## Como cada caminho faz
+
+- **Render** (`render.py`): a transição é centrada no corte, metade de cada lado, e a duração do vídeo não muda. O fim do segmento que sai continua além do corte, e o começo do que entra começa antes, com a mídia que sobra no arquivo; sem sobra, o quadro da borda fica parado. As animações e a legenda vão por cima.
+- **XML** (`exportar_xml.py`): `transitionitem` em V1, alinhado ao centro, só com mídia sobrando dos dois lados (sem sobra, corte seco e aviso). As que o programa não tem entram como Cross Dissolve, com um marcador no corte dizendo qual era.
+- **Volta do programa**: a transição lida volta para o segmento que entra; se o programa devolveu o equivalente da que estava (o Cross Dissolve de um zoom, por exemplo), a da biblioteca continua.
+- **Painel**: ao tocar, uma prévia aproximada na troca de segmento; na galeria, a prévia com as duas imagens do corte.
+
+Uma transição nova é um bloco a mais no `transicoes.json`: `titulo`, `descricao`, `bom_para`, `evitar`, `xfade` (um dos tipos do filtro xfade do FFmpeg), `duracao` (`padrao`, `min`, `max`) e `xml` (`nome`, `effectid`, `categoria`, `cor` opcional, `aproximada` quando o programa não tem igual). Para a prévia da galeria, ponha também a animação dela em `ANIM`, no `painel_web/galeria.js` (sem ela, a galeria mostra um dissolver).

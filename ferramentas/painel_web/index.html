@@ -68,6 +68,7 @@
       <button role="tab" data-aba="roteiro" aria-selected="true">Roteiro</button>
       <button role="tab" data-aba="legendas">Legendas</button>
       <button role="tab" data-aba="animacoes">Animações</button>
+      <button role="tab" data-aba="galeria" title="Legendas, animações, transições e sons para pôr no vídeo (G)">Galeria</button>
       <button role="tab" data-aba="pedidos">Pedidos <span id="n-pedidos" class="contagem"></span></button>
     </div>
     <div id="aba-roteiro" class="aba" role="tabpanel">
@@ -76,6 +77,10 @@
     </div>
     <div id="aba-legendas" class="aba" role="tabpanel" hidden></div>
     <div id="aba-animacoes" class="aba" role="tabpanel" hidden></div>
+    <div id="aba-galeria" class="aba aba-galeria" role="tabpanel" hidden>
+      <div id="gal-secoes" class="gal-secoes" role="tablist" aria-label="O que escolher"></div>
+      <div id="gal-corpo" class="gal-corpo"></div>
+    </div>
     <div id="aba-pedidos" class="aba" role="tabpanel" hidden>
       <form id="form-pedido" class="form-pedido">
         <label for="pedido-texto">O que mudar</label>
@@ -127,6 +132,7 @@
     <dt>Delete</dt><dd>cortar as palavras selecionadas no roteiro</dd>
     <dt>Ctrl+Z</dt><dd>desfazer a última mudança de corte</dd>
     <dt>N</dt><dd>novo pedido neste ponto</dd>
+    <dt>G</dt><dd>galeria: legendas, animações, transições e sons</dd>
     <dt>+ −</dt><dd>aproximar e afastar a linha do tempo</dd>
   </dl>
   <p class="discreto">No roteiro, clique numa palavra para ir até ela; com Shift, estende a seleção. O que está riscado saiu do corte.</p>
@@ -152,6 +158,7 @@
 </dialog>
 
 <script src="/web/legenda-estilo.js"></script>
+<script src="/web/galeria.js"></script>
 <script src="/web/painel.js"></script>
 </body>
 </html>

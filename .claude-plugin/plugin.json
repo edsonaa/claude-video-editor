@@ -1,7 +1,7 @@
 {
   "name": "edicao",
   "displayName": "Fluxo de edição de vídeo",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Edita vídeo com o Claude Code etapa por etapa (cortes, animações, câmera, som) no seu estilo, com entrega no Premiere/Resolve ou o vídeo pronto. O motor se atualiza; suas escolhas, seu estilo e seus ajustes ficam em ~/.edicao.",
   "author": {
     "name": "Edson",

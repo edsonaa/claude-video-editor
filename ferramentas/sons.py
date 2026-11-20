@@ -7,6 +7,9 @@ Uso:
       (padrão: <biblioteca>/indice.json). Incremental; mantém licenca/tags/nota.
   sons.py buscar <indice.json> [--categoria whoosh] [--texto "vidro"] [--dur-max 1.5] [--json]
   sons.py categorias <indice.json>
+  sons.py pacote <pasta> [--sobrescrever]
+      Cria o pacote inicial: 12 sons sintetizados pelo motor (whoosh, impacto, pop,
+      clique, sino, subida, falha), livres de direitos, em pastas por categoria, e o índice.
 
 Para alinhar: um som com pico em P segundos entra em (tempo do evento − P).
 Confira sempre a licença de uso de cada som (campo "licenca", escrito à mão).
@@ -28,10 +31,18 @@ def main(argv=None):
     p.add_argument("--dur-min", type=float); p.add_argument("--dur-max", type=float)
     p.add_argument("--limite", type=int, default=30); p.add_argument("--json", action="store_true")
     p = sub.add_parser("categorias"); p.add_argument("indice")
+    p = sub.add_parser("pacote"); p.add_argument("pasta"); p.add_argument("--sobrescrever", action="store_true")
     a = ap.parse_args(argv)
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
 
+    if a.cmd == "pacote":
+        r = sons.pacote_inicial(a.pasta, sobrescrever=a.sobrescrever)
+        print(f"{len(r['feitos'])} sons criados em {r['pasta']}" + (f" ({len(r['pulados'])} já existiam)" if r["pulados"] else ""))
+        print(f"índice: {r['indice']} ({r['sons']} sons)")
+        for e in r["erros"]:
+            print(f"  ! {e}")
+        return 0
     if a.cmd == "indexar":
         destino = Path(a.indice) if a.indice else Path(a.biblioteca) / "indice.json"
         velho = json.loads(destino.read_text(encoding="utf-8")) if destino.exists() else None

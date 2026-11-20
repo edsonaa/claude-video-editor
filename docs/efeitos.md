@@ -76,7 +76,7 @@ flowchart LR
     C -. "eventos.json" .-> G["sfx<br/>sons nos momentos certos"]
 ```
 
-1. **No plano** (`/edicao:motion-mapa`), um item que usa um efeito ganha `"efeito": "contador"` e `"params": {…}`, além de tempo, formato e ideia.
+1. **No plano** (`/edicao:motion-mapa`), um item que usa um efeito ganha `"efeito": "contador"` e `"params": {…}`, além de tempo, formato e ideia. Você também escolhe direto na **galeria do painel**: o efeito toca no navegador com o tema do seu perfil, você preenche o conteúdo vendo a prévia e insere no ponto do cursor (o item entra `aprovado`, com `origem: painel`, e já toca por cima do vídeo no painel antes do render).
 2. **No render** (`/edicao:motion-render`), o efeito vira um projeto do vídeo:
    ```bash
    efeitos.py criar contador _CLAUDE/motion/mo04 --perfil ~/.edicao/perfis/padrao \

@@ -24,6 +24,8 @@ const NOME_ETAPA = {
   assets: "Materiais", motion_render: "Animações", camera: "Câmera", sfx: "Som", legendas: "Legendas", render: "Render",
 };
 const nomeEtapa = (e) => NOME_ETAPA[e] || e.replace(/_/g, " ");
+const NOME_TRANSICAO = { dissolver: "dissolver", fade_preto: "passar pelo preto", fade_branco: "clarão", zoom: "zoom", empurrar: "empurrar", chicote: "chicote" };
+const nomeTransicao = (t) => NOME_TRANSICAO[t] || String(t || "").replace(/_/g, " ");
 const FORMATO = { tela_cheia: "tela cheia", sobreposicao: "sobreposição", sobreposicao_lateral: "lateral", enfase: "ênfase" };
 const CORES_CAM = ["--cam-1", "--cam-2", "--cam-3", "--cam-4"];
 const FORMATOS = { "16:9": [1920, 1080], "9:16": [1080, 1920], "1:1": [1080, 1080], "4:5": [1080, 1350] };
@@ -159,6 +161,7 @@ const T = {
     t = Math.max(0, Math.min(t, this.dur() - 1e-3));
     const i = this.indice(t), seg = s[i];
     const v = this.v[this.ativo];
+    Transicao.limpar();
     v.muted = !$("#ck-voz").checked;
     const tem = this.preparar(v, seg, seg.in + (t - seg.seq_ini));
     this.i = i; this.t = t; this.ultimoT = t;
@@ -228,6 +231,7 @@ const T = {
     novo.play().catch(() => {});
     novo.classList.add("ativo");
     velho.classList.remove("ativo");
+    if (s[i].transicao) Transicao.tocar(velho, novo, s[i].transicao);
     velho.pause();
     velho.muted = true;
     this.ativo = 1 - this.ativo;
@@ -239,6 +243,28 @@ const T = {
   passoQuadro(n) {
     this.pausar();
     this.ir(Math.round((this.t + n / fps) * fps) / fps + 1e-4);
+  },
+};
+
+// prévia aproximada da transição de entrada (o render faz a exata, centrada no corte)
+const Transicao = {
+  tocar(velho, novo, tr) {
+    const an = (Galeria.ANIM || {})[tr.tipo];
+    if (!an || !$("#ck-motion").checked) return;
+    this.limpar();
+    const ms = Math.max(120, (tr.duracao || 0.5) * 1000 / 2);
+    $("#quadro").style.background = an.fundo || "#000";
+    velho.classList.add("saindo");
+    velho.style.zIndex = an.aCima ? 2 : 0;
+    novo.style.zIndex = an.aCima ? 0 : 1;
+    const op = { duration: ms, easing: "ease-in-out" };
+    const a = an.a && velho.animate(an.a.map((k) => ({ ...k })), op);
+    const b = novo.animate((an.b || [{ opacity: 0 }, { opacity: 1 }]).map((k) => ({ ...k })), op);
+    (b || a).finished.then(() => this.limpar()).catch(() => {});
+  },
+  limpar() {
+    T.v.forEach((v) => { v.getAnimations().forEach((x) => x.cancel()); v.classList.remove("saindo"); v.style.zIndex = ""; });
+    $("#quadro").style.background = "";
   },
 };
 
@@ -285,6 +311,8 @@ const Som = {
 // ------------------------------------------------------------------ animações por cima
 const Motion = {
   videos: new Map(),
+  vivos: new Map(),            // animações da biblioteca ainda sem render: a página do efeito tocando
+  chaveVivos: "",
   montar() {
     const camada = $("#camada-motion");
     repor(camada);
@@ -297,6 +325,27 @@ const Motion = {
       camada.append(v);
       this.videos.set(m.id, v);
     }
+    this.chaveVivos = "";
+    this.vivos.clear();
+    this.montarVivos();
+  },
+  montarVivos() {
+    const lista = D.motions.filter((m) => m.efeito && !this.videos.has(m.id) && m.status !== "riscado" &&
+      m.inicio_seq !== null && m.inicio_seq !== undefined);
+    const chave = JSON.stringify(lista.map((m) => [m.id, m.efeito, m.params, m.inicio_seq, m.fim_seq]));
+    if (chave === this.chaveVivos) return;
+    this.chaveVivos = chave;
+    this.vivos.forEach((fr) => fr.remove());
+    this.vivos.clear();
+    const fmtEf = D.formato || (D.tema && D.tema.formato) || "16:9";
+    const [w, h] = FORMATOS[fmtEf] || [1920, 1080];
+    for (const m of lista) {
+      const fr = el("iframe", { class: "efeito-vivo", title: `Prévia de ${m.id}`, tabindex: "-1", width: w, height: h, dataset: { w, h },
+        src: Galeria.srcEfeitoPara(m.efeito, m.params, m.fim_seq !== null && m.fim_seq !== undefined ? +(m.fim_seq - m.inicio_seq).toFixed(3) : null) });
+      $("#camada-motion").append(fr);
+      this.vivos.set(m.id, fr);
+    }
+    Galeria.escalarIframes();
   },
   atualizar(t, tocando) {
     const ligado = $("#ck-motion").checked;
@@ -315,6 +364,13 @@ const Motion = {
             else if (Math.abs(v.currentTime - alvo) > 0.15) v.currentTime = alvo;
           } else if (Math.abs(v.currentTime - alvo) > 0.5 / fps) { v.pause(); v.currentTime = alvo; }
         } else if (!v.paused) v.pause();
+      } else if (this.vivos.has(m.id)) {
+        const fr = this.vivos.get(m.id);
+        fr.classList.toggle("visivel", ativo);
+        if (ativo) {
+          try { fr.contentWindow.postMessage({ cmd: "ir", t: t - m.inicio_seq }, "*"); } catch (_) { /* carregando */ }
+          etiquetas.push(el("div", { class: "etiqueta" }, `${m.id} · prévia da galeria (o render vem na etapa de animações)`));
+        }
       } else if (ativo) {
         const semPrevia = m.chave && D.midias[m.chave] && D.midias[m.chave].precisa_previa;
         etiquetas.push(el("div", { class: "etiqueta" }, `${m.id} · ${FORMATO[m.formato] || m.formato || "animação"} · ${semPrevia ? "gere as prévias para ver" : "ainda sem render"}`,
@@ -375,7 +431,7 @@ function aplicarDados(novo) {
   $("#tc-total").textContent = fmt(D.duracao);
   desenharEtapas();
   desenharPrevias();
-  if (mudouMidia || primeira) { Som.montar(); Motion.montar(); }
+  if (mudouMidia || primeira) { Som.montar(); Motion.montar(); } else Motion.montarVivos();
   Legenda.montar();
   if (primeira) encaixar(); else desenharLinha();
   desenharRoteiro();
@@ -387,6 +443,7 @@ function aplicarDados(novo) {
   ajustarQuadro();
   const eraTocando = T.tocando;
   T.ir(primeira ? 0 : Math.min(tAntes, D.duracao), eraTocando);
+  Galeria.aoMudarDados();
 }
 
 function desenharEtapas() {
@@ -436,6 +493,7 @@ function ajustarQuadro() {
   const qw = Math.max(1, Math.floor(w * esc)), qh = Math.max(1, Math.floor(h * esc));
   Object.assign(q.style, { width: qw + "px", height: qh + "px", left: Math.floor((palco.clientWidth - qw) / 2) + "px", top: Math.floor((palco.clientHeight - qh) / 2) + "px" });
   T.v.forEach((v) => aplicarQuadro(v, D.segmentos[+v.dataset.seg]));
+  Galeria.escalarIframes();
 }
 
 function desenharTempo() {
@@ -449,6 +507,7 @@ function desenharTempo() {
   }
   $("#pedido-tempo-txt").textContent = `em ${fmt(T.t)}`;
   marcarPalavraAtual();
+  Galeria.atualizarCursor();
 }
 
 // ------------------------------------------------------------------ linha do tempo
@@ -494,13 +553,31 @@ function desenharLinha() {
         }, el("span", {}, s.id));
         t.append(b);
       }
-    } else if (k === "animacoes") {
-      for (const m of D.motions) {
-        if (m.inicio_seq === null || m.inicio_seq === undefined) continue;
-        const fim = m.fim_seq ?? m.inicio_seq + 2;
+      for (const s of D.segmentos.slice(1)) {
+        if (!s.transicao) continue;
+        const d = s.transicao.duracao || 0.5;
         t.append(el("div", {
-          class: `bloco motion ${m.status || ""}` + (isSel("motion", m.id) ? " sel" : ""), title: `${m.id} · ${m.status} · ${m.ideia || ""}`,
-          style: `left:${pos(m.inicio_seq)}px;width:${larg(m.inicio_seq, fim)}px`, dataset: { tipo: "motion", id: m.id },
+          class: "tr-marca", title: `Transição: ${nomeTransicao(s.transicao.tipo)}, ${String(d).replace(".", ",")} s (entrada de ${s.id})`,
+          style: `left:${pos(s.seq_ini - d / 2)}px;width:${Math.max(8, d * pxs)}px`, dataset: { tipo: "seg", id: s.id },
+        }));
+      }
+    } else if (k === "animacoes") {
+      // animações que se sobrepõem no tempo vão para faixas (como trilhas V3, V4… no programa)
+      const faixas = [], itens = D.motions.filter((m) => m.inicio_seq !== null && m.inicio_seq !== undefined)
+        .map((m) => ({ m, ini: m.inicio_seq, fim: m.fim_seq ?? m.inicio_seq + 2 })).sort((a, b) => a.ini - b.ini);
+      for (const it of itens) {
+        let f = faixas.findIndex((fim) => fim <= it.ini + 1e-3);
+        if (f < 0) { faixas.push(0); f = faixas.length - 1; }
+        faixas[f] = it.fim;
+        it.faixa = f;
+      }
+      const n = Math.max(1, faixas.length), alt = (24 - (n - 1) * 2) / n;
+      for (const { m, ini, fim, faixa } of itens) {
+        t.append(el("div", {
+          class: `bloco motion ${m.status || ""}` + (isSel("motion", m.id) ? " sel" : "") + (n > 1 ? " fino" : ""),
+          title: `${m.id} · ${m.status} · ${m.ideia || ""}`,
+          style: `left:${pos(ini)}px;width:${larg(ini, fim)}px` + (n > 1 ? `;top:${3 + faixa * (alt + 2)}px;bottom:auto;height:${alt}px` : ""),
+          dataset: { tipo: "motion", id: m.id },
         }, el("span", {}, m.id)));
       }
     } else if (k === "legendas") {
@@ -660,6 +737,7 @@ function desenharInspetor() {
       bt("Início no cursor", () => aparar("inicio"), { title: "[" }), bt("Fim no cursor", () => aparar("fim"), { title: "]" }),
       bt("Tirar do corte", () => acao("/api/cortes", { acao: "remover_segmento", id: s.id }, `${s.id} saiu do corte`), { class: "perigo" }),
       D.formato ? controlesQuadro(s) : null,
+      controlesTransicao(s),
       loc.din || loc.dout ? el("span", { class: "pendente-local" }, "aplicando…") : null,
       s.texto ? el("div", { class: "insp-texto" }, s.texto) : null);
   } else if (sel.tipo === "motion") {
@@ -693,6 +771,14 @@ function desenharInspetor() {
     repor(box, id, el("span", { class: "st" }, nomeEtapa(it.etapa)), el("span", {}, it.texto),
       !it.resolvida_em ? bt("Marcar como resolvido", () => acao("/api/pedido/resolver", { id: it.id }, `${it.id} resolvido`)) : el("span", { class: "discreto" }, "resolvido"));
   }
+}
+
+function controlesTransicao(s) {
+  if (D.segmentos.indexOf(s) < 1) return null;
+  const abrir = () => { T.ir(s.seq_ini + 1e-3); Galeria.mostrar("transicoes"); };
+  if (!s.transicao) return el("span", { class: "grupo" }, bt("Transição na entrada…", abrir, { title: "Abre a galeria de transições neste corte" }));
+  return el("span", { class: "grupo" }, el("span", {}, `Entrada: ${nomeTransicao(s.transicao.tipo)} ${String(s.transicao.duracao).replace(".", ",")} s`),
+    bt("Trocar…", abrir), bt("Tirar", () => acao("/api/galeria/transicao", { id: s.id, tipo: null }, `Corte seco na entrada de ${s.id}`)));
 }
 
 let quadroTimer = null;
@@ -891,7 +977,8 @@ function desenharAnimacoes() {
     const plano = ["proposto", "aprovado", "ajustar", "riscado"].includes(m.status);
     const parar = (fn) => (e) => { e.stopPropagation(); fn(); };
     return el("li", { class: isSel("motion", m.id) ? "sel" : "", dataset: { id: m.id }, onclick: () => selecionar("motion", m.id) },
-      cab(el("b", {}, m.id), el("span", { class: "st " + m.status }, m.status), FORMATO[m.formato] || m.formato || null, fmt(m.inicio_seq)),
+      cab(el("b", {}, m.id), el("span", { class: "st " + m.status }, m.status), FORMATO[m.formato] || m.formato || null, fmt(m.inicio_seq),
+        m.origem === "painel" ? el("span", { class: "chip-galeria" }, "da galeria") : null),
       m.ideia ? el("div", { class: "corpo" }, m.ideia) : null,
       el("div", { class: "acoes" },
         plano && m.status !== "aprovado" && m.status !== "riscado" ? el("button", { onclick: parar(() => acao("/api/motion", { id: m.id, status: "aprovado" }, `${m.id} aprovada`)) }, "Aprovar") : null,
@@ -1031,6 +1118,7 @@ document.addEventListener("keydown", (ev) => {
   else if (k === "+" || k === "=") zoom(1.5);
   else if (k === "-") zoom(1 / 1.5);
   else if (k === "?") $("#dlg-ajuda").showModal();
+  else if (k === "g" || k === "G") { ev.preventDefault(); Galeria.mostrar(); }
   else if (k === "Escape") { limparSelecao(); selecionar(null); }
 });
 
@@ -1070,6 +1158,7 @@ async function vigiar() {
     repor(document.body, el("p", { class: "vazio" }, "Abra o endereço completo que o painel mostrou no terminal (com ?t=…)."));
     return;
   }
+  Galeria.iniciar();
   try {
     aplicarDados(await api("/api/dados"));
   } catch (e) {

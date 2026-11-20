@@ -321,6 +321,22 @@
                     "type": "boolean"
                   }
                 }
+              },
+              "transicao": {
+                "type": "object",
+                "description": "Transição de entrada deste segmento (transicoes/transicoes.json), centrada no corte.",
+                "required": [
+                  "tipo"
+                ],
+                "properties": {
+                  "tipo": {
+                    "type": "string"
+                  },
+                  "duracao": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  }
+                }
               }
             }
           }
@@ -440,6 +456,18 @@
                     "minimum": 1
                   }
                 }
+              },
+              "efeito": {
+                "type": "string",
+                "description": "Efeito da biblioteca (efeitos/<nome>)."
+              },
+              "origem": {
+                "type": "string",
+                "description": "painel: inserido pela galeria do painel."
+              },
+              "params": {
+                "type": "object",
+                "description": "Conteúdo do efeito (os parâmetros do efeito.json)."
               }
             }
           }

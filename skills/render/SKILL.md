@@ -13,7 +13,8 @@ Motor: `${CLAUDE_PLUGIN_ROOT}`. Ferramentas: `<f>` = `${CLAUDE_PLUGIN_ROOT}/ferr
 
 ## O script (pronto)
 `<py> <f>/render.py plano|rascunho|final . [--de S --ate S] [--formato F] [--legenda auto|ass|animada|nao] [--perfil <pessoa>/perfis/<perfil>]`
-- **plano:** mostra o que vai entrar, sem renderizar: cada segmento com quadro de entrada e quantidade de quadros, o enquadramento, as animações, a música e os efeitos, e os avisos. Rode antes do primeiro render de cada vídeo.
+- **plano:** mostra o que vai entrar, sem renderizar: cada segmento com quadro de entrada e quantidade de quadros, o enquadramento, as transições, as animações, a música e os efeitos, e os avisos.
+- **Transições** (`cortes.segmentos[i].transicao`, da biblioteca `transicoes/transicoes.json`; a pessoa escolhe na galeria do painel): centradas no corte, com a mídia que sobra de cada lado (sem sobra, o quadro da borda fica parado); a duração do vídeo não muda. Uma transição que passa da borda de um trecho `--de/--ate` vira corte seco, com aviso. Rode antes do primeiro render de cada vídeo.
 - Os cortes saem com **quadros exatos** (a mesma conversão da entrega em XML). A voz sai com **amostras exatas** e fades curtos nas junções, e é a tratada quando houver.
 - **Enquadramento:** em cada segmento (`cortes.segmentos[].quadro`) vale `inteiro`, `cortar` (com o centro `x`/`y` de 0 a 1 e `zoom`) ou `encaixar` (o quadro inteiro sobre fundo desfocado). Sem `quadro`, o padrão é inteiro quando a proporção bate, câmera recortada no centro e tela encaixada. Animações em outra proporção ficam de fora, com aviso.
 - **Legenda:** no `auto`, queima quando o config pede (`legendas.queimar`) ou quando o formato é vertical. A legenda animada (`legendas.render`) tem prioridade quando existe. Legenda feita sobre outro corte faz o render recusar antes de gastar tempo.

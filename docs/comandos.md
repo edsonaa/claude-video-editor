@@ -285,7 +285,7 @@ uma trilha suavizada, sem buracos. Roda local e leve; não precisa de GPU.
 ```
 
 ### sons.py
-A biblioteca de sons.
+A biblioteca de sons e o pacote inicial.
 
 ```text
 Biblioteca de sons: índice e busca.
@@ -296,6 +296,9 @@ Uso:
       (padrão: <biblioteca>/indice.json). Incremental; mantém licenca/tags/nota.
   sons.py buscar <indice.json> [--categoria whoosh] [--texto "vidro"] [--dur-max 1.5] [--json]
   sons.py categorias <indice.json>
+  sons.py pacote <pasta> [--sobrescrever]
+      Cria o pacote inicial: 12 sons sintetizados pelo motor (whoosh, impacto, pop,
+      clique, sino, subida, falha), livres de direitos, em pastas por categoria, e o índice.
 
 Para alinhar: um som com pico em P segundos entra em (tempo do evento − P).
 Confira sempre a licença de uso de cada som (campo "licenca", escrito à mão).

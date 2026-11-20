@@ -24,6 +24,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from edicao import estado as E, midia, xmeml  # noqa: E402
+from edicao import transicoes as TR  # noqa: E402
 from edicao.tempo import hms  # noqa: E402
 
 
@@ -87,6 +88,20 @@ def cmd_volta(a):
             if v["video"] == s["video"] and v["inicio"] < s["fim"] and s["inicio"] < v["fim"] and v.get("texto"):
                 s.setdefault("texto", v["texto"])
                 break
+    # Transição que o programa não tem (zoom, chicote…) voltou como Cross Dissolve: mantém a da biblioteca.
+    for i, s in enumerate(novos):
+        tr = s.get("transicao")
+        if not tr:
+            continue
+        efeito = tr.pop("efeito", None)
+        v = velhos[i] if i < len(velhos) else None
+        if v and v.get("transicao") and v["video"] == s["video"]:
+            try:
+                meta = TR.carregar(v["transicao"]["tipo"])
+            except TR.ErroTransicao:
+                continue
+            if meta["xml"]["nome"] == efeito:
+                s["transicao"] = {**v["transicao"], "duracao": tr["duracao"]}
     print(f"volta: {len(novos)} segmentos em V1 ({r['fps']} fps); antes: {len(velhos)}")
     dur_velha = sum(s["fim"] - s["inicio"] for s in velhos)
     dur_nova = sum(s["fim"] - s["inicio"] for s in novos)

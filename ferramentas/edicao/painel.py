@@ -432,7 +432,7 @@ def dados(pasta) -> dict:
         out["segmentos"] = [{"id": p.id, "video": p.video, "in": taxa.segundos(p.in_f), "out": taxa.segundos(p.out_f),
                              "seq_ini": taxa.segundos(p.seq_ini), "seq_fim": taxa.segundos(p.seq_fim),
                              "in_f": p.in_f, "out_f": p.out_f, "texto": brutos[p.id].get("texto", ""),
-                             "quadro": brutos[p.id].get("quadro")}
+                             "quadro": brutos[p.id].get("quadro"), "transicao": brutos[p.id].get("transicao")}
                             for p in linha.pedacos]
         out["duracao"] = linha.duracao
     else:
@@ -471,14 +471,16 @@ def dados(pasta) -> dict:
     # animações, câmera, som
     out["motions"] = [{"id": it["id"], "status": it.get("status"), "inicio_seq": it.get("inicio_seq"),
                        "fim_seq": it.get("fim_seq"), "formato": it.get("formato"), "ideia": it.get("ideia", ""),
-                       "efeito": it.get("efeito"), "chave": f"mo:{it['id']}" if f"mo:{it['id']}" in fts else None}
+                       "efeito": it.get("efeito"), "params": it.get("params") or {}, "origem": it.get("origem"),
+                       "chave": f"mo:{it['id']}" if f"mo:{it['id']}" in fts else None}
                       for it in (d.get("motions") or {}).get("itens") or []]
     out["camera"] = [{k: v for k, v in it.items() if not isinstance(v, (list, dict)) or k in ("keyframes",)}
                      for it in (d.get("camera") or {}).get("movimentos") or []]
     sfx = d.get("sfx") or {}
     out["sfx"] = [{"id": it["id"], "inicio_seq": it.get("inicio_seq"), "ganho_db": it.get("ganho_db", 0),
                    "status": it.get("status"), "nome": Path(it.get("arquivo") or it["id"]).stem,
-                   "evento": it.get("evento") or it.get("motivo") or "", "chave": f"sfx:{it['id']}"}
+                   "evento": it.get("evento") or it.get("motivo") or "", "chave": f"sfx:{it['id']}",
+                   "origem": it.get("origem")}
                   for it in sfx.get("itens") or [] if it.get("inicio_seq") is not None]
     mus = sfx.get("musica")
     out["musica"] = ({"inicio_seq": mus.get("inicio_seq", 0.0), "duracao": mus.get("duracao"),

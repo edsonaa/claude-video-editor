@@ -88,7 +88,7 @@ Os blocos, na ordem em que as etapas os preenchem:
 | `fluxo`, `etapas` | as etapas deste vídeo e o status de cada uma (`pendente`, `em_andamento`, `aguardando_aprovacao`, `concluido`, `nao_precisa`) |
 | `midia` | fps exato, resolução e cada arquivo (`cam01`, `tela01`…) com tipo, duração, proxy e voz tratada |
 | `transcricao`, `notas_edicao` | as palavras de cada arquivo e as notas faladas ("nota de edição … fim da nota") |
-| `cortes` | os segmentos (`s001`…) no tempo do arquivo de origem, com versão |
+| `cortes` | os segmentos (`s001`…) no tempo do arquivo de origem, com versão; cada um pode ter o enquadramento (`quadro`) e a transição de entrada (`transicao`) |
 | `marcadores` | dúvidas de take, sugestões e alertas do Claude |
 | `motions` | o plano de animação (`mo01`…), com status, formato, efeito, assets e o render |
 | `camera`, `sfx` | movimentos de câmera; efeitos sonoros (`sfx01`…) e a música |
@@ -113,6 +113,17 @@ Como as entregas chegam até você depende de `revisao.programa` na configuraç�
 | `premiere` / `resolve` | um **FCP 7 XML** por entrega (`_CLAUDE/entregas/`): V1 câmera, V3 animações em tela cheia, V4 sobreposições, V5 legenda animada; A1 voz, A2 música, efeitos abaixo. A primeira entrega de todas é um arquivo de teste. Ajustou no programa? A **volta** (`exportar_xml.py volta`) lê o que você exportou, e os seus ajustes valem mais. |
 | `nenhum` | o **painel** e o **rascunho** (`render.py rascunho`); o final sai na etapa `render`. |
 | qualquer um | o **painel** (`/edicao:painel`): o vídeo já cortado no navegador, com animações, legenda e som, sem renderizar. O roteiro mostra o que saiu do corte e deixa cortar ou devolver frases, os pedidos ficam presos ao ponto do vídeo e a etapa se aprova ali. |
+
+### A galeria do painel
+
+A aba **Galeria** (tecla G) mostra o que dá para pôr no vídeo, com prévia sobre o quadro do ponto do cursor. Cada escolha vai para o estado com `origem: painel`, e as etapas seguintes tratam como decisão sua (não propõem de novo, não trocam sem perguntar).
+
+| Seção | A prévia | O que "pôr no vídeo" grava |
+|---|---|---|
+| Legendas | os seis estilos de `legendas/estilos.json` com o texto do ponto do cursor, nas medidas do render; a posição (baixo, centro, topo) | `video.legendas` (estilo e posição deste vídeo). Se a divisão em blocos muda (frase para palavra, caracteres por linha), fica um pedido para a etapa de legendas gerar de novo |
+| Animações | os efeitos da biblioteca tocando no navegador com o tema do seu perfil (passe o mouse); o conteúdo de cada um se preenche num formulário e a prévia acompanha | um item `aprovado` do plano, no cursor, com `efeito` e `params`. Ele já toca por cima do vídeo no painel; o render de verdade sai na etapa de animações |
+| Transições | as seis de `transicoes/transicoes.json` com as duas imagens do corte mais perto do cursor; a duração por um controle | `transicao` no segmento que entra. O render faz a exata (xfade, centrada no corte, a duração do vídeo não muda); no XML entra a equivalente do programa |
+| Sons | a sua biblioteca por categoria, para ouvir; sem biblioteca, um botão cria o pacote inicial | um item de `sfx.itens` com o pico no cursor e o volume escolhido; o arquivo é copiado para `Assets/sons/` |
 
 ## Aprendizados
 

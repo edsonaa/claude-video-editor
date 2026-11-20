@@ -28,9 +28,10 @@ O formato que funcionou no fluxo de referência é o **FCP 7 XML (xmeml)**, impo
 - **Câmera em keyframes:** o efeito de Movimento (Basic Motion) com escala e posição por keyframe. Para a curva sair como foi desenhada, use keyframes densos (vários por movimento), com a curva calculada pelo script. A posição é relativa ao centro e normalizada.
 - **Fades de áudio:** `transitionitem` com o efeito Cross Fade, alinhamento `center` entre dois clipes e `start-black`/`end-black` nas pontas. O Premiere importa a duração escrita, mas **exporta** os fades com o tamanho padrão dele (ex.: 30 frames). Na volta, ignore o tamanho que vier e considere o seu.
 - **Links entre clipes** (vídeo e áudio do mesmo take): o índice do clipe conta os clipes **e** as transições da trilha.
+- **Transições de vídeo** (da biblioteca `transicoes/`): `transitionitem` em V1, alinhamento `center`, com mídia sobrando dos dois lados (sem sobra, corte seco e aviso). Dissolver vira Cross Dissolve; passar pelo preto e clarão, Dip to Color Dissolve com a cor; as que o programa não tem (zoom, empurrar, chicote) entram como Cross Dissolve com um marcador no corte. Na volta, a transição lida volta para o segmento que entra, e a da biblioteca é mantida quando o programa devolveu o equivalente dela.
 - **A volta (feedback pelo programa):** a pessoa exporta a sequência (Arquivo → Exportar → Final Cut Pro XML) para a pasta de trabalho. Um script lê os clipes de V1 (arquivo, entrada, saída) e reconstrói a lista de cortes. **Os ajustes dela valem mais que os do Claude.**
   - Os marcadores dela viram instrução naquele ponto.
-  - Avise, sem tentar resolver sozinho, o que estiver fora do modelo: L-cut/J-cut, mudança de velocidade, transições de vídeo, efeitos, clipes desconhecidos.
+  - Avise, sem tentar resolver sozinho, o que estiver fora do modelo: L-cut/J-cut, mudança de velocidade, transições de vídeo fora de um corte de V1, efeitos, clipes desconhecidos.
   - O Premiere exporta com o nome da sequência: salve a cópia como `<nome>_editado.xml`, para não sobrescrever o seu.
 - **Ajuste manual no programa** depois de uma etapa não volta para as etapas seguintes, salvo os cortes (pela volta acima). Combine com a pessoa: o retoque fino fica para depois da última etapa, ou é pedido por número ("cam07 mais lento").
 

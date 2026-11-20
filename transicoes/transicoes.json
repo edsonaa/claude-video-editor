@@ -1,0 +1,117 @@
+{
+  "dissolver": {
+    "titulo": "Dissolver",
+    "descricao": "Uma imagem some enquanto a outra aparece. A passagem de tempo ou de assunto mais discreta que existe.",
+    "bom_para": "mudança de assunto, passagem de tempo, juntar dois takes parecidos sem pulo",
+    "evitar": "em todo corte (vira vício); no meio de uma frase",
+    "xfade": "fade",
+    "duracao": {
+      "padrao": 0.5,
+      "min": 0.2,
+      "max": 2.0
+    },
+    "xml": {
+      "nome": "Cross Dissolve",
+      "effectid": "Cross Dissolve",
+      "categoria": "Dissolve"
+    }
+  },
+  "fade_preto": {
+    "titulo": "Passar pelo preto",
+    "descricao": "A imagem escurece até o preto e a próxima nasce dele. Fecha um bloco e abre outro.",
+    "bom_para": "fim de capítulo, antes de um bloco novo, encerramento",
+    "evitar": "no meio de uma explicação (parece que acabou)",
+    "xfade": "fadeblack",
+    "duracao": {
+      "padrao": 0.8,
+      "min": 0.3,
+      "max": 2.5
+    },
+    "xml": {
+      "nome": "Dip to Color Dissolve",
+      "effectid": "Dip to Color Dissolve",
+      "categoria": "Dissolve",
+      "cor": [
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "fade_branco": {
+    "titulo": "Clarão",
+    "descricao": "Um clarão branco curto entre as duas imagens. Dá energia e marca uma virada.",
+    "bom_para": "revelação, antes e depois, virada no assunto",
+    "evitar": "mais de uma vez por vídeo; vídeo calmo",
+    "xfade": "fadewhite",
+    "duracao": {
+      "padrao": 0.4,
+      "min": 0.2,
+      "max": 1.2
+    },
+    "xml": {
+      "nome": "Dip to Color Dissolve",
+      "effectid": "Dip to Color Dissolve",
+      "categoria": "Dissolve",
+      "cor": [
+        255,
+        255,
+        255
+      ]
+    }
+  },
+  "zoom": {
+    "titulo": "Zoom",
+    "descricao": "A imagem avança para dentro e a próxima surge no lugar. Puxa o olho para o que vem.",
+    "bom_para": "entrar num detalhe, ir da fala para a tela, ritmo de vídeo curto",
+    "evitar": "vídeo longo e calmo; seguido de outro zoom",
+    "xfade": "zoomin",
+    "duracao": {
+      "padrao": 0.45,
+      "min": 0.25,
+      "max": 1.0
+    },
+    "xml": {
+      "nome": "Cross Dissolve",
+      "effectid": "Cross Dissolve",
+      "categoria": "Dissolve",
+      "aproximada": true
+    }
+  },
+  "empurrar": {
+    "titulo": "Empurrar",
+    "descricao": "A próxima imagem entra de lado e empurra a anterior para fora. Sensação de próximo item.",
+    "bom_para": "lista de passos, comparar um e outro, sequência de exemplos",
+    "evitar": "entre takes da mesma fala",
+    "xfade": "slideleft",
+    "duracao": {
+      "padrao": 0.4,
+      "min": 0.25,
+      "max": 1.0
+    },
+    "xml": {
+      "nome": "Cross Dissolve",
+      "effectid": "Cross Dissolve",
+      "categoria": "Dissolve",
+      "aproximada": true
+    }
+  },
+  "chicote": {
+    "titulo": "Chicote",
+    "descricao": "Um giro rápido de câmera borrado, de uma imagem para a outra. Energia de vídeo curto.",
+    "bom_para": "reels, ganchos, trocar de lugar ou de assunto com pressa",
+    "evitar": "aula e tutorial longo; mais de duas seguidas",
+    "xfade": "hblur",
+    "duracao": {
+      "padrao": 0.3,
+      "min": 0.15,
+      "max": 0.7
+    },
+    "xml": {
+      "nome": "Cross Dissolve",
+      "effectid": "Cross Dissolve",
+      "categoria": "Dissolve",
+      "aproximada": true
+    }
+  }
+}

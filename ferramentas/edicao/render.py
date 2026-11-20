@@ -28,6 +28,7 @@ from . import efeitos as EF
 from . import estado as E
 from . import ff
 from . import legendas as L
+from . import transicoes as TR
 from .linha import Linha
 from .tempo import Taxa
 
@@ -168,6 +169,28 @@ def plano(pasta, rascunho: bool = False, de: float | None = None, ate: float | N
         })
     t0, t1 = taxa.segundos(f_de), taxa.segundos(f_ate)
     avisos = []
+    # transições: no corte entre dois pedaços vizinhos, centradas (metade de cada lado)
+    transicoes = []
+    total_f = f_ate - f_de
+    for k in range(1, len(pedacos)):
+        a, b = pedacos[k - 1], pedacos[k]
+        try:
+            tr = TR.normalizar(brutos[b["id"]].get("transicao"))
+        except TR.ErroTransicao as e:
+            avisos.append(f"{b['id']}: {e} (ficou corte seco)")
+            continue
+        if not tr:
+            continue
+        n = TR.quadros(tr, float(taxa.fps))
+        corte = b["seq_ini_f"]
+        ini = corte - n // 2
+        if ini < 0 or ini + n > total_f:
+            avisos.append(f"{b['id']}: a transição passa da borda do trecho renderizado (ficou corte seco)")
+            continue
+        meta = TR.carregar(tr["tipo"])
+        transicoes.append({"id": b["id"], "tipo": tr["tipo"], "xfade": meta["xfade"], "quadros": n, "ini_f": ini,
+                           "de": {**a, "fonte_f": a["in_f"] + a["quadros"] - n // 2},
+                           "para": {**b, "fonte_f": b["in_f"] - n // 2}})
     sobre = []
     for it in (d.get("motions") or {}).get("itens") or []:
         r = (it.get("render") or {}).get("arquivo")
@@ -202,7 +225,7 @@ def plano(pasta, rascunho: bool = False, de: float | None = None, ate: float | N
                   "ganho_db": mus.get("ganho_db", 0)}
     return {"projeto": d.get("projeto"), "fps": str(taxa), "formato": formato, "tamanho": [W, H],
             "rascunho": rascunho, "de": t0, "ate": t1, "quadros": f_ate - f_de, "duracao": taxa.segundos(f_ate - f_de),
-            "pedacos": pedacos, "sobreposicoes": sobre, "efeitos": efeitos, "musica": musica, "avisos": avisos,
+            "pedacos": pedacos, "transicoes": transicoes, "sobreposicoes": sobre, "efeitos": efeitos, "musica": musica, "avisos": avisos,
             "cortes_versao": (d.get("cortes") or {}).get("versao")}
 
 
@@ -221,6 +244,33 @@ def _pedaco_video(p: dict, taxa: Taxa, tam: tuple[int, int], saida: Path, rascun
             "-filter_complex", filtro, "-map", "[vq]", "-frames:v", str(p["quadros"]), "-an",
             "-c:v", "libx264", "-preset", "ultrafast", "-crf", "18" if rascunho else "12", "-pix_fmt", "yuv420p",
             "-r", str(taxa.fps), "-video_track_timescale", "90000", str(saida)])
+
+
+def _rotular(filtro: str, pfx: str) -> str:
+    return re.sub(r"\[(\w+)\]", lambda m: f"[{pfx}{m.group(1)}]", filtro)
+
+
+def _clipe_transicao(tr: dict, taxa: Taxa, tam: tuple[int, int], saida: Path, rascunho: bool) -> None:
+    """Os `quadros` da transição: o fim do pedaço que sai (com a mídia além do corte) cruzando com o começo
+    do que entra (com a mídia antes do corte). Sem mídia sobrando, o quadro da borda fica congelado."""
+    n, fps = tr["quadros"], float(taxa.fps)
+    entradas, cadeias = [], []
+    for k, lado in enumerate(("de", "para")):
+        p = tr[lado]
+        f0 = p["fonte_f"]
+        falta = max(0, -f0)               # quadros antes do começo do arquivo
+        ss = max(0.0, (max(0, f0) - 0.5) / fps)
+        entradas += ["-ss", f"{ss:.6f}", "-i", p["origem"]]
+        pfx = "a" if k == 0 else "b"
+        q = _rotular(filtro_quadro(tuple(p["src"]), tam, p["quadro"]), pfx)
+        pad = f"tpad=start_mode=clone:start={falta}," if falta else ""
+        cadeias.append(f"[{k}:v]fps={taxa.fps},setpts=PTS-STARTPTS[{pfx}v0];{q};[{pfx}vq]{pad}"
+                       f"tpad=stop_mode=clone:stop={n},trim=end_frame={n},setpts=PTS-STARTPTS,format=yuv420p[{pfx}]")
+    dur = n / fps
+    filtro = ";".join(cadeias) + f";[a][b]xfade=transition={tr['xfade']}:duration={dur:.6f}:offset=0,format=yuv420p[vt]"
+    _rodar([ff.ffmpeg(), "-v", "error", "-y", "-nostdin", *entradas, "-filter_complex", filtro, "-map", "[vt]",
+            "-frames:v", str(n), "-an", "-c:v", "libx264", "-preset", "ultrafast", "-crf", "18" if rascunho else "12",
+            "-pix_fmt", "yuv420p", "-r", str(taxa.fps), str(saida)])
 
 
 def _pedaco_audio(p: dict, taxa: Taxa, n: int, saida: Path) -> None:
@@ -348,6 +398,12 @@ def renderizar(pasta, rascunho: bool = False, de: float | None = None, ate: floa
             pa.append(a)
         _juntar(pv, tmp / "base.mp4", tmp)
         _juntar(pa, tmp / "voz.wav", tmp)
+        clipes_tr = []
+        for k, tr in enumerate(pl["transicoes"], 1):
+            progresso(f"transição {k}/{len(pl['transicoes'])} ({tr['id']}, {tr['tipo']}, {tr['quadros']} quadros)")
+            arq = tmp / f"t{k:04d}.mp4"
+            _clipe_transicao(tr, taxa, (W, H), arq, rascunho)
+            clipes_tr.append((tr, arq))
 
         # 2. mixagem: voz + música + efeitos, e loudness no alvo
         progresso("mixagem")
@@ -385,6 +441,15 @@ def renderizar(pasta, rascunho: bool = False, de: float | None = None, ate: floa
         filtros = []
         atual = "[0:v]"
         k = 2
+        meio = 0.5 / float(taxa.fps)
+        for tr, arq in clipes_tr:
+            ini = tr["ini_f"] / float(taxa.fps)
+            fim = (tr["ini_f"] + tr["quadros"]) / float(taxa.fps)
+            entradas += ["-i", arq.name]
+            filtros.append(f"[{k}:v]setpts=PTS-STARTPTS+{ini:.6f}/TB[o{k}]")
+            filtros.append(f"{atual}[o{k}]overlay=eof_action=pass:enable='between(t,{ini - meio:.6f},{fim - meio:.6f})'[c{k}]")
+            atual = f"[c{k}]"
+            k += 1
         for s in pl["sobreposicoes"]:
             entradas += ["-i", s["arquivo"]]
             filtros.append(f"[{k}:v]scale={W}:{H},format=yuva420p,setpts=PTS-STARTPTS+{s['ini']:.6f}/TB[o{k}]")
@@ -438,7 +503,7 @@ def renderizar(pasta, rascunho: bool = False, de: float | None = None, ate: floa
     return {"arquivo": str(saida), "tipo": tipo, "formato": pl["formato"], "tamanho": [int(vs["width"]), int(vs["height"])],
             "duracao": round(dur, 3), "duracao_sequencia": round(pl["duracao"], 3), "lufs": medida["lufs"],
             "pico_dbtp": medida["pico_dbtp"], "pedacos": len(pl["pedacos"]), "animacoes": len(pl["sobreposicoes"]),
-            "efeitos": len(pl["efeitos"]), "musica": bool(pl["musica"]), "legenda": modo_leg, "avisos": avisos}
+            "efeitos": len(pl["efeitos"]), "transicoes": len(pl["transicoes"]), "musica": bool(pl["musica"]), "legenda": modo_leg, "avisos": avisos}
 
 
 def resumo_plano(pl: dict) -> str:
@@ -449,6 +514,8 @@ def resumo_plano(pl: dict) -> str:
         extra = f" x={q.get('x')}" if q.get("modo") == "cortar" else ""
         linhas.append(f"  {p['id']} {p['video']} quadro {p['in_f']} +{p['quadros']} · {q.get('modo')}{extra}"
                       + (" · voz tratada" if p["voz"] else ""))
+    for t in pl.get("transicoes", []):
+        linhas.append(f"  transição {t['tipo']} na entrada de {t['id']} ({t['quadros']} quadros, centrada no corte)")
     for s in pl["sobreposicoes"]:
         linhas.append(f"  animação {s['id']} {s['ini']:.2f}–{s['fim']:.2f}")
     if pl["musica"]:

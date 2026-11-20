@@ -109,6 +109,8 @@ class Sequencia:
         self.clipes: list[Clipe] = []
         self.marcadores: list[Marcador] = []
         self.avisos: list[str] = []
+        # transições de vídeo em V1: {"frame": corte, "quadros": n, "efeito": {...}}
+        self.transicoes_v: list[dict] = []
         self._grupo = 0
 
     def novo_grupo(self) -> int:
@@ -194,7 +196,8 @@ class Sequencia:
         cid = 0
         trilhas_v: list[list[dict]] = []
         for t in range(1, n_vid + 1):
-            trilhas_v.append([{"clipe": c, "start": c.start, "end": c.end} for c in vid.get(t, [])])
+            itens_v = [{"clipe": c, "start": c.start, "end": c.end} for c in vid.get(t, [])]
+            trilhas_v.append(self._com_transicoes(itens_v) if t == 1 else itens_v)
         # cada trilha lógica de áudio vira 2 trilhas no XML (canal 1 e 2)
         trilhas_a: list[list[dict]] = []
         for t in range(1, n_aud + 1):
@@ -206,6 +209,8 @@ class Sequencia:
         posicao: dict[tuple[int, int], tuple[str, int, int]] = {}  # (id(clipe), canal) → (clipitem id, trilha xml, índice)
         for tv, itens in enumerate(trilhas_v, start=1):
             for k, it in enumerate(itens, start=1):
+                if it.get("tr"):
+                    continue
                 cid += 1
                 it["id"] = f"clipitem-{cid}"
                 posicao[(id(it["clipe"]), 0)] = (it["id"], tv, k)
@@ -251,7 +256,8 @@ class Sequencia:
         for itens in trilhas_v:
             o.append("        <track>")
             for it in itens:
-                o += self._clipitem(it, "video", fid, arquivos_declarados, grupos, None)
+                o += self._transicao_video(it) if it.get("tr") else \
+                    self._clipitem(it, "video", fid, arquivos_declarados, grupos, None)
             o += ["          <enabled>TRUE</enabled>", "          <locked>FALSE</locked>", "        </track>"]
         o += ["      </video>", "      <audio>", "        <numOutputChannels>2</numOutputChannels>",
               "        <format>", "          <samplecharacteristics>", "            <depth>16</depth>",
@@ -353,6 +359,47 @@ class Sequencia:
         o.append("          </clipitem>")
         return o
 
+    def _com_transicoes(self, itens: list[dict]) -> list[dict]:
+        """V1 com as transições de vídeo entre clipes colados, quando há mídia sobrando dos dois lados."""
+        por_frame = {t["frame"]: t for t in self.transicoes_v}
+        out: list[dict] = []
+        for i, it in enumerate(itens):
+            c = it["clipe"]
+            t = por_frame.get(c.start)
+            ant = out[-1] if out and not out[-1].get("tr") else None
+            if t and ant and ant["clipe"].end == c.start:
+                n, meio = t["quadros"], t["quadros"] // 2
+                a = ant["clipe"]
+                sobra = a.out_f + (n - meio) <= self.f(a.midia.duracao) and c.in_f - meio >= 0
+                if not sobra:
+                    self.avisos.append(f"transição em {c.start}: sem mídia sobrando ({a.midia.id} → {c.midia.id}); "
+                                       "ficou corte seco no XML (o render congela o quadro da borda)")
+                else:
+                    ant["end"] = self._borda(ant["end"])
+                    out.append({"tr": True, "start": c.start - meio, "end": c.start - meio + n, "align": "center",
+                                "efeito": t["efeito"]})
+                    it = dict(it, start=self._borda(it["start"]))
+            out.append(it)
+        return out
+
+    def _transicao_video(self, it) -> list[str]:
+        ef = it["efeito"]
+        o = ["          <transitionitem>", f"            <start>{it['start']}</start>",
+             f"            <end>{it['end']}</end>", f"            <alignment>{it['align']}</alignment>",
+             f"            {self._rate()}", "            <effect>",
+             f"              <name>{escape(ef['nome'])}</name>",
+             f"              <effectid>{escape(ef['effectid'])}</effectid>",
+             f"              <effectcategory>{escape(ef.get('categoria', 'Dissolve'))}</effectcategory>",
+             "              <effecttype>transition</effecttype>", "              <mediatype>video</mediatype>"]
+        if ef.get("cor"):
+            r, g, b = ef["cor"]
+            o += ["              <parameter>", "                <parameterid>color</parameterid>",
+                  "                <name>Color</name>", "                <value>", "                  <alpha>255</alpha>",
+                  f"                  <red>{r}</red>", f"                  <green>{g}</green>",
+                  f"                  <blue>{b}</blue>", "                </value>", "              </parameter>"]
+        o += ["            </effect>", "          </transitionitem>"]
+        return o
+
     def _transicao(self, it) -> list[str]:
         return ["          <transitionitem>", f"            <start>{it['start']}</start>",
                 f"            <end>{it['end']}</end>", f"            <alignment>{it['align']}</alignment>",
@@ -428,6 +475,22 @@ def montar(dados: dict, nome: str | None = None, teste: bool = False, sondar=Non
             voz_cache[ident] = Midia(id=f"{ident}_voz", caminho=tratado, duracao=m.duracao, canais=1, tem_video=False)
         return voz_cache[ident]
 
+    from . import transicoes as TR
+    brutos = {s["id"]: s for s in segs}
+    for k, p in enumerate(linha.pedacos):
+        try:
+            tr = TR.normalizar(brutos[p.id].get("transicao")) if k else None
+        except TR.ErroTransicao as e:
+            seq.avisos.append(f"{p.id}: {e}")
+            tr = None
+        if tr:
+            meta = TR.carregar(tr["tipo"])
+            seq.transicoes_v.append({"frame": p.seq_ini, "quadros": TR.quadros(tr, float(seq.taxa.fps)),
+                                     "efeito": meta["xml"]})
+            if meta["xml"].get("aproximada"):
+                seq.marcadores.append(Marcador(p.seq_ini, f"{p.id} transição {meta['titulo']}",
+                                               f"No render é '{meta['titulo']}'. Aqui entrou um "
+                                               f"{meta['xml']['nome']} no lugar: troque pela do programa, se quiser."))
     for p in linha.pedacos:
         m = m_de(p.video)
         g = seq.novo_grupo()
@@ -544,8 +607,18 @@ def ler_volta(xml_texto: str, arquivos: list[dict]) -> dict:
     if not trilhas_v:
         raise ErroXML("a sequência não tem trilhas de vídeo")
     v1 = trilhas_v[0]
-    if v1.findall("transitionitem"):
-        avisos.append(f"V1 tem {len(v1.findall('transitionitem'))} transições de vídeo: ficaram de fora do modelo")
+    from . import transicoes as TR
+    trans_v1 = {}
+    for ti in v1.findall("transitionitem"):
+        ts, te = int(ti.findtext("start", "0")), int(ti.findtext("end", "0"))
+        nome = ti.findtext("effect/name") or ti.findtext("effect/effectid")
+        cor = None
+        for prm in ti.iter("parameter"):
+            if (prm.findtext("parameterid") or "").lower() == "color" and prm.find("value") is not None:
+                v = prm.find("value")
+                cor = tuple(int(v.findtext(c, "0")) for c in ("red", "green", "blue"))
+        trans_v1[(ts + te) // 2] = {"tipo": TR.do_efeito_xml(nome, cor),
+                                    "duracao": round(taxa.segundos(te - ts), 2), "efeito": nome}
     for n, ci in enumerate(v1.findall("clipitem"), start=1):
         if ci.findtext("enabled", "TRUE").upper() == "FALSE":
             avisos.append(f"clipe {n} de V1 desligado: ignorado")
@@ -565,6 +638,19 @@ def ler_volta(xml_texto: str, arquivos: list[dict]) -> dict:
         segs.append({"id": f"s{len(segs) + 1:03d}", "video": ident,
                      "inicio": round(taxa.segundos(cin), 4), "fim": round(taxa.segundos(cout), 4),
                      "_seq": (start, end)})
+        if start == -1 or end == -1:   # borda dentro de transição (a forma -1 da especificação)
+            ini_real = segs[-2]["_seq"][1] if start == -1 and len(segs) > 1 else start
+            segs[-1]["_seq"] = (ini_real, ini_real + cout - cin)
+    # a transição fica no segmento que entra: o corte é o meio dela
+    if trans_v1:
+        pos = 0
+        for s in segs:
+            ini_s = s["_seq"][0]
+            if ini_s in trans_v1 and pos:
+                s["transicao"] = trans_v1.pop(ini_s)
+            pos += 1
+        for meio in trans_v1:
+            avisos.append(f"transição de vídeo em {meio} não está num corte entre dois clipes de V1: ignorada")
     # L-cut / J-cut: áudio da voz com bordas diferentes do vídeo
     trilhas_a = seq.findall("media/audio/track")
     if trilhas_a:

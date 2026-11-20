@@ -134,9 +134,9 @@ def _ajustar_versoes(antes: dict | None, depois: dict) -> None:
         if not isinstance(novo, dict):
             continue
         velho = (antes or {}).get(bloco) or {}
-        # Mudar só o status/render de uma animação, ou o texto/enquadramento de um segmento,
-        # não muda os tempos: não é um corte (ou plano) novo.
-        fora = ("status", "render") if bloco == "motions" else ("texto", "quadro")
+        # Mudar só o status/render de uma animação, ou o texto/enquadramento/transição de um
+        # segmento, não muda os tempos: não é um corte (ou plano) novo.
+        fora = ("status", "render") if bloco == "motions" else ("texto", "quadro", "transicao")
 
         def plano(itens, fora=fora):
             return [{k: v for k, v in i.items() if k not in fora} if isinstance(i, dict) else i for i in itens or []]
