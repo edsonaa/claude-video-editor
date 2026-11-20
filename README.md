@@ -2,6 +2,8 @@
 
 Um plugin para o Claude Code que edita vídeo com você, etapa por etapa: cortes, animações, movimentos de câmera e efeitos sonoros, no seu estilo, com entrega no Premiere/DaVinci Resolve ou o vídeo pronto.
 
+Como tudo funciona por dentro (etapas, pastas, efeitos, assets, comandos): [documentação](docs/README.md).
+
 Não é um prompt mágico. É um fluxo de etapas pequenas, cada uma com um trabalho só, que você aprova antes de seguir, com scripts testados fazendo as contas (tempo, frames, XML) e o Claude decidindo sobre o texto. Partiu do fluxo de 8 etapas que o Lucas Leite usa nos vídeos dele ([LeiteZ/fluxo-de-edicao](https://github.com/LeiteZ/fluxo-de-edicao)), com os bons costumes de animação e de fluxo que ele aprendeu testando.
 
 ## O que você precisa
@@ -85,6 +87,7 @@ O plugin é o **motor**: skills, guias e ferramentas. Ele se atualiza, e ningué
 ## O que tem aqui
 | Pasta | O que tem |
 |---|---|
+| `docs/` | A documentação: como funciona, pastas e arquivos, efeitos e estilos, assets, comandos |
 | `skills/` | A montagem, a `editar` (com as regras comuns), o `painel` de revisão, `curtos`, `publicar` e uma skill por etapa |
 | `guias/` | O ofício: princípios do fluxo, decisões, referências, animação, HyperFrames, entrega no programa de edição e o de cada etapa |
 | `ferramentas/` | Os scripts prontos e testados: estado do vídeo, configuração, inventário, silêncios, transcrição, XML (ida e volta), tempo e timecode, legendas, tratamento de áudio, painel de revisão, render, cortes curtos, publicação, folha de contato, índice de sons e rastreio de rosto. Veja o [README](ferramentas/README.md) |

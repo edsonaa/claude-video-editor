@@ -41,7 +41,7 @@ Quer decidir tudo em detalhe (outro programa, outro formato, ordem das etapas)? 
 1. **Ambiente Python** em `<pessoa>/venv` (explique: isola as bibliotecas do fluxo): `python3 -m venv ~/.edicao/venv`, depois `<venv>/bin/python -m pip install -r <f>/requirements.txt pytest` (no Windows, `<venv>\Scripts\python.exe`). Daí em diante, `<py>` é esse python.
 2. **Configuração:** `<py> <f>/config.py criar --nome "<nome>" --preset <preset> --estilo <estilo> --python <py> --json '<respostas>'` (o estilo é escolhido no passo 4; pode fazer o 4 antes), com as respostas no formato do config (ex.: `{"revisao":{"programa":"resolve"},"transcricao":{"termos":["VRM","BIOS"]},"som":{"biblioteca":"D:/Sons"}}`). Mostre o resumo e os avisos.
 3. **Histórico:** `git init` em `<pessoa>` e um primeiro commit ("montagem: preset <preset>"). Assim toda mudança de perfil e de ajuste pode ser desfeita.
-4. **Testes das ferramentas:** `<py> -m pytest <f>/testes -q`. Geram um clipe sintético e passam o fluxo inteiro pelos scripts em ~10 s. Passou: Python, FFmpeg e os scripts funcionam neste computador. Falhou: resolva antes de seguir.
+4. **Testes das ferramentas:** `<py> -m pytest <f>/testes -q`. Geram um clipe sintético e passam o fluxo inteiro pelos scripts (1–3 minutos). Passou: Python, FFmpeg e os scripts funcionam neste computador. Falhou: resolva antes de seguir.
 5. **Só o que o fluxo usa**, uma instalação por vez, explicada:
    - transcrição local: WhisperX no venv. Com GPU NVIDIA, confirme que o PyTorch enxerga a placa antes de transcrever;
    - Scribe: a chave em `ELEVENLABS_API_KEY` (nunca no config);

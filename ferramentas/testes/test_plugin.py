@@ -116,3 +116,42 @@ def test_claude_plugin_validate():
     p = subprocess.run(["claude", "plugin", "validate", str(RAIZ)], capture_output=True, text=True, timeout=120)
     saida = p.stdout + p.stderr
     assert p.returncode == 0 and "passed" in saida.lower(), saida
+
+
+# ------------------------------------------------------------------ documentação (docs/)
+DOCS = RAIZ / "docs"
+SCRIPTS = sorted(p for p in (RAIZ / "ferramentas").glob("*.py") if "__main__" in p.read_text(encoding="utf-8"))
+EFEITOS = sorted(p.parent.name for p in (RAIZ / "efeitos").glob("*/efeito.json"))
+
+
+@pytest.mark.parametrize("script", SCRIPTS, ids=lambda p: p.name)
+def test_docs_comandos_igual_ao_help(script):
+    """docs/comandos.md traz cada script com o mesmo texto do --help (a docstring do script)."""
+    import ast
+    texto = (DOCS / "comandos.md").read_text(encoding="utf-8")
+    assert f"### {script.name}" in texto, f"docs/comandos.md não documenta {script.name}"
+    doc = ast.get_docstring(ast.parse(script.read_text(encoding="utf-8"))).strip()
+    assert doc in texto, (f"o --help de {script.name} mudou: copie a docstring nova para docs/comandos.md "
+                          "(a seção do script, dentro do bloco ```text)")
+
+
+def test_docs_efeitos_cobrem_a_biblioteca():
+    texto = (DOCS / "efeitos.md").read_text(encoding="utf-8")
+    for nome in EFEITOS:
+        assert f"| `{nome}` |" in texto, f"docs/efeitos.md: falta {nome} no catálogo"
+    for md in MDS:
+        if md.name == "CHANGELOG.md":
+            continue  # o histórico conta os efeitos de cada versão
+        for n in re.findall(r"\b(\d+) efeitos\b", md.read_text(encoding="utf-8")):
+            assert int(n) == len(EFEITOS), f"{md.relative_to(RAIZ)} fala em {n} efeitos; a biblioteca tem {len(EFEITOS)}"
+
+
+@pytest.mark.parametrize("md", sorted(DOCS.glob("*.md")) + [RAIZ / "README.md"], ids=lambda p: str(p.relative_to(RAIZ)))
+def test_links_relativos_existem(md):
+    texto = md.read_text(encoding="utf-8")
+    texto = re.sub(r"```.*?```", "", texto, flags=re.S)
+    for alvo in re.findall(r"\]\(([^)\s]+)\)", texto):
+        if re.match(r"[a-z]+:", alvo) or alvo.startswith("#"):
+            continue
+        caminho = (md.parent / alvo.split("#")[0]).resolve()
+        assert caminho.exists(), f"{md.relative_to(RAIZ)}: o link {alvo} não existe"
