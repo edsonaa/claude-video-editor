@@ -368,7 +368,11 @@ def _tema(d: dict) -> dict:
     except Exception:  # noqa: BLE001 (sem config, o tema neutro)
         cfg = {}
         t = EF.mesclar_tema()
-    return {"cores": t["cores"], "fontes": t["fontes"], "legendas": {**L_PADRAO, **(cfg.get("legendas") or {})},
+    try:
+        leg = L.opcoes_legenda(d, cfg)
+    except ValueError:  # estilo de legenda que não existe mais: o padrão
+        leg = L.opcoes_legenda(None, {})
+    return {"cores": t["cores"], "fontes": t["fontes"], "legendas": leg,
             "formato": (cfg.get("video") or {}).get("formato")}
 
 

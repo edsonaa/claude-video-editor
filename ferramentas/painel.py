@@ -10,6 +10,10 @@ Uso (a pasta do vídeo primeiro):
       PCM em MOV), da voz tratada e das animações com transparência
   painel.py verificar <pasta>
       o que o navegador toca direto e o que precisa de prévia (sem gerar nada)
+  painel.py boas-vindas <pasta> [--porta 8765] [--navegador] [--ocioso 60]
+      o começo de um vídeo novo pelo navegador: verificação, briefing, tipo de vídeo, estilo e
+      padrão de legenda (com prévia). Ao enviar, grava no estado e em _CLAUDE/briefing_painel.md,
+      mostra o resumo em JSON e termina (código 0). Fechado sem enviar: código 3.
 
 No painel: o vídeo toca já cortado, com as animações, a legenda e o som; o roteiro
 mostra o que saiu do corte (riscado) e deixa cortar ou devolver frases; os pedidos
@@ -32,6 +36,7 @@ from urllib.parse import parse_qs, unquote, urlparse
 import webbrowser
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from edicao import boas_vindas as BV  # noqa: E402
 from edicao import estado as E  # noqa: E402
 from edicao import painel as P  # noqa: E402
 
@@ -46,13 +51,16 @@ BLOCO = 256 * 1024
 
 
 class Painel:
-    def __init__(self, pasta: str, token: str | None = None):
+    def __init__(self, pasta: str, token: str | None = None, modo: str = "painel"):
         self.pasta = str(Path(pasta).resolve())
         E.ler(self.pasta)  # falha cedo se o vídeo não foi iniciado
         self.token = token or secrets.token_urlsafe(18)
         self.fila = P.Fila(self.pasta)
         self.ultimo_acesso = time.monotonic()
         self.porta = None
+        self.modo = modo            # "painel" ou "boas_vindas"
+        self.enviado = None         # o resumo, quando as boas-vindas forem enviadas
+        self.fim = threading.Event()
 
 
 class Handler(http.server.BaseHTTPRequestHandler):
@@ -150,7 +158,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         caminho = unquote(u.path)
         self.painel.ultimo_acesso = time.monotonic()
         if caminho in ("/", "/index.html"):
-            return self._arquivo(WEB / "index.html")
+            return self._arquivo(WEB / ("boas-vindas.html" if self.painel.modo == "boas_vindas" else "index.html"))
         if caminho.startswith("/web/"):
             alvo = (WEB / caminho[5:]).resolve()
             if WEB.resolve() not in alvo.parents or not alvo.is_file():
@@ -158,6 +166,18 @@ class Handler(http.server.BaseHTTPRequestHandler):
             return self._arquivo(alvo)
         if not self._token_ok(q):
             return self._erro(401, "token inválido: abra o endereço que o painel mostrou no terminal")
+        if caminho == "/api/boas-vindas":
+            return self._json(BV.opcoes(self.painel.pasta))
+        if caminho == "/api/exemplo.jpg":
+            try:
+                arq = BV.quadro_exemplo(self.painel.pasta)
+            except Exception as e:  # noqa: BLE001 (ffmpeg não leu o arquivo)
+                return self._erro(500, str(e))
+            return self._arquivo(arq) if arq else self._erro(404, "sem gravações ainda")
+        if caminho.startswith("/api/previa-tema/"):
+            partes = caminho.split("/")
+            arq = BV.previa_tema(partes[3], partes[4]) if len(partes) == 5 else None
+            return self._arquivo(arq, cache=True) if arq else self._erro(404, "sem prévia")
         if caminho == "/api/dados":
             return self._json(P.dados(self.painel.pasta))
         if caminho == "/api/revisao":
@@ -216,11 +236,16 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 P.corrigir_legenda(pasta, c["id"], c["texto"])
             elif acao == "/api/previas":
                 return self._json(self.painel.fila.iniciar(bool(c.get("todas"))))
+            elif acao == "/api/boas-vindas":
+                resumo = BV.salvar(pasta, c)
+                self.painel.enviado = resumo
+                threading.Timer(1.5, self.painel.fim.set).start()  # a página recebe a resposta antes de fechar
+                return self._json({"ok": True, "resumo": resumo})
             else:
                 return self._erro(404, "ação desconhecida")
         except E.Conflito as e:
             return self._erro(409, str(e), dados=P.dados(pasta))
-        except (E.ErroEstado, KeyError, ValueError, TypeError) as e:
+        except (E.ErroEstado, BV.C.ErroConfig, KeyError, ValueError, TypeError) as e:
             msg = f"faltou o campo {e}" if isinstance(e, KeyError) else str(e)
             return self._erro(400, msg)
         return self._json({"ok": True, "dados": P.dados(pasta)})
@@ -231,8 +256,9 @@ class Servidor(socketserver.ThreadingMixIn, http.server.HTTPServer):
     allow_reuse_address = True
 
 
-def criar_servidor(pasta: str, porta: int = 0, token: str | None = None) -> tuple[Servidor, Painel]:
-    painel = Painel(pasta, token)
+def criar_servidor(pasta: str, porta: int = 0, token: str | None = None,
+                   modo: str = "painel") -> tuple[Servidor, Painel]:
+    painel = Painel(pasta, token, modo)
     h = type("H", (Handler,), {"painel": painel})
     srv = Servidor(("127.0.0.1", porta), h)
     painel.porta = srv.server_address[1]
@@ -258,6 +284,29 @@ def cmd_abrir(a):
         pass
     srv.shutdown()
     return 0
+
+
+def cmd_boas_vindas(a):
+    srv, painel = criar_servidor(a.pasta, a.porta, modo="boas_vindas")
+    url = f"http://127.0.0.1:{painel.porta}/?t={painel.token}"
+    print(f"Boas-vindas: {url}", flush=True)
+    print("(só desta máquina; termina sozinho quando a pessoa enviar)", flush=True)
+    if a.navegador:
+        threading.Timer(0.5, lambda: webbrowser.open(url)).start()
+    t = threading.Thread(target=srv.serve_forever, daemon=True)
+    t.start()
+    try:
+        while not painel.fim.wait(1):
+            if a.ocioso and time.monotonic() - painel.ultimo_acesso > a.ocioso * 60:
+                break
+    except KeyboardInterrupt:
+        pass
+    srv.shutdown()
+    if painel.enviado:
+        print("ENVIADO " + json.dumps(painel.enviado, ensure_ascii=False), flush=True)
+        return 0
+    print("fechado sem enviar: nada foi gravado", flush=True)
+    return 3
 
 
 def cmd_verificar(a):
@@ -298,6 +347,10 @@ def main(argv=None):
     p = sub.add_parser("previas"); p.add_argument("pasta"); p.add_argument("--todas", action="store_true")
     p.set_defaults(f=cmd_previas)
     p = sub.add_parser("verificar"); p.add_argument("pasta"); p.set_defaults(f=cmd_verificar)
+    p = sub.add_parser("boas-vindas"); p.add_argument("pasta"); p.add_argument("--porta", type=int, default=8765)
+    p.add_argument("--navegador", action="store_true", help="abre o navegador padrão")
+    p.add_argument("--ocioso", type=float, default=60, help="minutos sem a página aberta até fechar (0 = nunca)")
+    p.set_defaults(f=cmd_boas_vindas)
     a = ap.parse_args(argv)
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")

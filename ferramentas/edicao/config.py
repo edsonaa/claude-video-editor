@@ -59,7 +59,7 @@ PADRAO = {
     "motion": {"ativo": True, "ferramenta": "hyperframes", "densidade": "media"},
     "camera": {"ativa": True, "seguir_rosto": True},
     "som": {"ativo": True, "biblioteca": None, "musica": "manual"},
-    "legendas": {"ativas": False, "modo": "frase", "saidas": ["srt"], "queimar": False, "max_caracteres": 42,
+    "legendas": {"ativas": False, "estilo": None, "modo": "frase", "saidas": ["srt"], "queimar": False, "max_caracteres": 42,
                  "linhas": 2, "remover_hesitacoes": True, "caixa_alta": False, "posicao": "baixo",
                  "quebrar_no_corte": False},
     "audio": {"tratar": True, "alvo_lufs": -14.0, "pico_dbtp": -1.0, "reducao_ruido": "auto", "passa_alta_hz": 80,
@@ -151,6 +151,11 @@ def validar(cfg: dict) -> tuple[list[str], list[str]]:
     for e in cfg["fluxo"]:
         if e not in ETAPAS and e not in proprias:
             erros.append(f"fluxo: etapa '{e}' não existe no motor nem em etapas_proprias")
+    estilo_leg = (cfg.get("legendas") or {}).get("estilo")
+    if estilo_leg:
+        from .legendas import estilos_legenda
+        if estilo_leg not in estilos_legenda():
+            erros.append(f"legendas.estilo: '{estilo_leg}' não existe ({', '.join(estilos_legenda())})")
     for e, caminho in proprias.items():
         if e in ETAPAS:
             erros.append(f"etapas_proprias: '{e}' já é uma etapa do motor; use ajustes/{e}.md para mudar o ofício dela")

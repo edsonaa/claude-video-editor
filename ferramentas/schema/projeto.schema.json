@@ -664,6 +664,38 @@
               "type": "integer"
             }
           }
+        },
+        "tipo": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "preset": {
+          "type": "string",
+          "description": "O tipo de vídeo escolhido nas boas-vindas (presets/<id>.json)."
+        },
+        "legendas": {
+          "type": "object",
+          "description": "Legenda deste vídeo, por cima da configuração (boas-vindas ou estado.py --set).",
+          "properties": {
+            "estilo": {
+              "type": "string"
+            },
+            "queimar": {
+              "type": "boolean"
+            },
+            "posicao": {
+              "enum": [
+                "baixo",
+                "centro",
+                "topo"
+              ]
+            },
+            "ativas": {
+              "type": "boolean"
+            }
+          }
         }
       }
     },
@@ -751,6 +783,42 @@
         },
         "pacote": {
           "type": "object"
+        }
+      }
+    },
+    "boas_vindas": {
+      "type": "object",
+      "description": "O que a pessoa enviou pelas boas-vindas do painel (painel.py boas-vindas).",
+      "properties": {
+        "em": {
+          "$ref": "#/$defs/data"
+        },
+        "preset": {
+          "type": "string"
+        },
+        "perfil": {
+          "type": "string"
+        },
+        "perfil_criado": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "legenda": {
+          "type": "object"
+        },
+        "termos": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "padrao": {
+          "type": "boolean"
+        },
+        "briefing": {
+          "type": "string"
         }
       }
     }

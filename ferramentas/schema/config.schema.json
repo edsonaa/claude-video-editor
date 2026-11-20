@@ -325,6 +325,13 @@
         },
         "quebrar_no_corte": {
           "type": "boolean"
+        },
+        "estilo": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Estilo de legenda da biblioteca (legendas/estilos.json): classica, caixa, karaoke, impacto, minimalista, brilho. Define modo, caixa alta, caracteres e o visual da legenda queimada."
         }
       }
     },

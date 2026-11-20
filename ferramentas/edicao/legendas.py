@@ -221,18 +221,108 @@ def _esc_ass(t: str) -> str:
     return t.replace("\\", "\\\\").replace("{", "(").replace("}", ")")
 
 
-def ass(bls: list[dict], tema: dict, largura: int, altura: int, modo: str = "frase", posicao: str = "baixo",
-        caixa_alta: bool = False, tamanho: int | None = None) -> str:
-    """ASS para queimar com o FFmpeg (filtro `ass`). modo 'palavra': a palavra falada fica na cor de destaque."""
+ESTILOS_ARQ = Path(__file__).resolve().parents[2] / "legendas" / "estilos.json"
+POSICOES = {"baixo": 2, "centro": 5, "topo": 8}
+
+
+def estilos_legenda() -> dict:
+    """A biblioteca de estilos de legenda do motor (legendas/estilos.json), na ordem do arquivo."""
+    return json.loads(ESTILOS_ARQ.read_text(encoding="utf-8"))
+
+
+def estilo_legenda(ident: str) -> dict:
+    est = estilos_legenda()
+    if ident not in est:
+        raise ValueError(f"estilo de legenda '{ident}' não existe; há: {', '.join(est)}")
+    return {"id": ident, **est[ident]}
+
+
+def opcoes_legenda(d: dict | None = None, cfg: dict | None = None, vertical: bool | None = None) -> dict:
+    """As opções de legenda que valem para um vídeo, com o estilo resolvido.
+
+    Ordem: configuração (`legendas`) → estilo (do vídeo ou da configuração) → escolhas
+    do vídeo (`video.legendas` no estado). Sem estilo escolhido em lugar nenhum, os
+    campos da configuração (modo, caixa alta, caracteres) valem por cima do estilo
+    implícito (palavra a palavra ou clássica), como antes dos estilos existirem.
+    """
+    cl = dict((cfg or {}).get("legendas") or {})
+    dv = dict(((d or {}).get("video") or {}).get("legendas") or {})
+    escolhido = dv.get("estilo") or cl.get("estilo")
+    ident = escolhido or ("karaoke" if cl.get("modo") == "palavra" else "classica")
+    est = estilo_legenda(ident)
+    if vertical is None:
+        f = ((d or {}).get("video") or {}).get("formato") or ((cfg or {}).get("video") or {}).get("formato") or "16:9"
+        vertical = f in ("9:16", "4:5")
+    op = {"ativas": cl.get("ativas", False), "saidas": cl.get("saidas", ["srt"]), "queimar": cl.get("queimar", False),
+          "remover_hesitacoes": cl.get("remover_hesitacoes", True), "quebrar_no_corte": cl.get("quebrar_no_corte", False),
+          "modo": est["modo"], "caixa_alta": est["caixa_alta"], "linhas": est["linhas"],
+          "max_caracteres": est["max_caracteres_vertical"] if vertical else est["max_caracteres"],
+          "posicao": est.get("posicao", "baixo")}
+    if not escolhido:  # configuração antiga, sem estilo: os campos dela valem
+        for k in ("modo", "caixa_alta", "linhas", "max_caracteres", "posicao"):
+            if k in cl:
+                op[k] = cl[k]
+        est = dict(est, modo=op["modo"], caixa_alta=op["caixa_alta"])
+    for k in ("ativas", "queimar", "posicao"):
+        if k in dv:
+            op[k] = dv[k]
+    op["estilo"] = est
+    return op
+
+
+def _cor_tema(valor: str, tema: dict) -> str:
+    """Uma cor do estilo: hexadecimal, ou o nome de uma cor do tema (destaque, apoio, texto…)."""
+    if valor and valor.startswith("#"):
+        return valor
+    return tema["cores"].get(valor or "destaque", "#FFFFFF")
+
+
+def ass(bls: list[dict], tema: dict, largura: int, altura: int, modo: str | None = None, posicao: str | None = None,
+        caixa_alta: bool | None = None, tamanho: int | None = None, estilo: dict | None = None) -> str:
+    """ASS para queimar com o FFmpeg (filtro `ass`), no estilo de legenda pedido.
+
+    Sem `estilo`: o comportamento de antes (frase clássica, ou palavra a palavra na cor de
+    destaque do tema). `modo`, `posicao` e `caixa_alta` passados aqui valem por cima do estilo.
+    """
+    if estilo is None:
+        estilo = estilo_legenda("karaoke" if modo == "palavra" else "classica")
+        if (modo or "frase") == "frase":
+            estilo["cor"] = tema["cores"]["texto"]
+    est = dict(estilo)
+    if modo:
+        est["modo"] = modo
+    if caixa_alta is not None:
+        est["caixa_alta"] = caixa_alta
+    posicao = posicao or est.get("posicao", "baixo")
     vertical = altura > largura
-    fonte = tema["fontes"].get("titulo" if modo == "palavra" else "texto", "Inter")
-    tamanho = tamanho or int(round((0.062 if vertical else 0.052) * (largura if vertical else altura) * (1.25 if modo == "palavra" else 1)))
-    texto = _cor_ass(tema["cores"]["texto"] if modo == "frase" else "#FFFFFF")
-    destaque = _cor_ass(tema["cores"]["destaque"])
-    contorno = _cor_ass("#000000")
-    alinh = 2 if posicao == "baixo" else 5
+    palavra = est["modo"] == "palavra"
+    fk = est.get("fonte", "texto")
+    fonte = tema["fontes"].get(fk, fk) if fk in ("titulo", "texto", "numeros") else fk
+    base = (0.062 if vertical else 0.052) * (largura if vertical else altura)
+    tamanho = tamanho or int(round(base * float(est.get("tamanho", 1.0))))
+    cor = _cor_ass(_cor_tema(est.get("cor", "#FFFFFF"), tema))
+    destaque = _cor_ass(_cor_tema(est.get("cor_destaque", "destaque"), tema))
+    caixa = est.get("caixa")
+    negrito = -1 if int(est.get("peso", 700)) >= 600 else 0
+    alinh = POSICOES.get(posicao, 2)
     margem_v = int(altura * (0.30 if vertical and posicao == "baixo" else 0.08))
-    negrito = -1 if modo == "palavra" or tema["pesos"].get("texto", 500) >= 600 else 0
+    if caixa:
+        borda_estilo, contorno_px, sombra_px = 3, max(4, tamanho // 4), 0
+        cor_contorno = _cor_ass(caixa.get("cor", "#000000"), int(round((1 - float(caixa.get("opacidade", 0.6))) * 255)))
+        cor_fundo = cor_contorno
+    else:
+        borda_estilo = 1
+        contorno_px = round(float(est.get("contorno", 1.0)) * tamanho / 14, 1)
+        sombra_px = round(float(est.get("sombra", 1.0)) * tamanho / 28, 1)
+        alfa = int(round((1 - float(est.get("opacidade_contorno", 1.0))) * 255))
+        cor_contorno = _cor_ass(_cor_tema(est.get("cor_contorno", "#000000"), tema), alfa)
+        cor_fundo = _cor_ass("#000000", 0x80)
+    efeito = ""
+    # brilho: uma camada de trás com o contorno grosso, desfocado, na cor de destaque (e o
+    # preenchimento transparente); a camada da frente é o texto nítido de sempre
+    brilho = (f"{{\\1a&HFF&\\3c{_cor_ass(_cor_tema(est.get('cor_destaque', 'destaque'), tema))}\\3a&H50&"
+              f"\\bord{max(4, tamanho // 5)}\\blur{max(4, tamanho // 6)}\\shad0}}") if est.get("brilho") else ""
+    escala = int(round(100 * float(est.get("escala_destaque", 1.08))))
     cab = [
         "[Script Info]", "ScriptType: v4.00+", f"PlayResX: {largura}", f"PlayResY: {altura}",
         "WrapStyle: 2", "ScaledBorderAndShadow: yes", "YCbCr Matrix: TV.709", "",
@@ -240,19 +330,23 @@ def ass(bls: list[dict], tema: dict, largura: int, altura: int, modo: str = "fra
         "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, "
         "Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, "
         "MarginR, MarginV, Encoding",
-        f"Style: Legenda,{fonte},{tamanho},{texto},{texto},{contorno},{_cor_ass('#000000', 0x80)},{negrito},0,0,0,"
-        f"100,100,0,0,1,{max(2, tamanho // 14)},{max(1, tamanho // 28)},{alinh},{int(largura * 0.08)},{int(largura * 0.08)},{margem_v},1",
+        f"Style: Legenda,{fonte},{tamanho},{cor},{cor},{cor_contorno},{cor_fundo},{negrito},0,0,0,"
+        f"100,100,0,0,{borda_estilo},{contorno_px:g},{sombra_px:g},{alinh},{int(largura * 0.08)},{int(largura * 0.08)},"
+        f"{margem_v},1",
         "", "[Events]", "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text",
     ]
+    alta = bool(est.get("caixa_alta"))
     ev = []
     for b in bls:
-        ls = [l.upper() if caixa_alta else l for l in b["linhas"]]
-        if modo != "palavra":
+        ls = [l.upper() if alta else l for l in b["linhas"]]
+        if not palavra:
             texto_b = "\\N".join(_esc_ass(l) for l in ls)
-            ev.append(f"Dialogue: 0,{_tc_ass(b['inicio'])},{_tc_ass(b['fim'])},Legenda,,0,0,0,,{texto_b}")
+            if brilho:
+                ev.append(f"Dialogue: 0,{_tc_ass(b['inicio'])},{_tc_ass(b['fim'])},Legenda,,0,0,0,,{brilho}{texto_b}")
+            ev.append(f"Dialogue: 1,{_tc_ass(b['inicio'])},{_tc_ass(b['fim'])},Legenda,,0,0,0,,{efeito}{texto_b}")
             continue
         ws = b["palavras"]
-        textos = [w["texto"].upper() if caixa_alta else w["texto"] for w in ws]
+        textos = [w["texto"].upper() if alta else w["texto"] for w in ws]
         # onde cai a quebra de linha (pelas linhas já calculadas)
         quebra_em = len(ls[0].split()) if len(ls) > 1 else None
         for i, w in enumerate(ws):
@@ -267,8 +361,11 @@ def ass(bls: list[dict], tema: dict, largura: int, altura: int, modo: str = "fra
                 elif j:
                     partes.append(" ")
                 t = _esc_ass(t)
-                partes.append(f"{{\\c{destaque}\\fscx108\\fscy108}}{t}{{\\c{texto}\\fscx100\\fscy100}}" if j == i else t)
-            ev.append(f"Dialogue: 0,{_tc_ass(t0)},{_tc_ass(t1)},Legenda,,0,0,0,,{''.join(partes)}")
+                partes.append(f"{{\\c{destaque}\\fscx{escala}\\fscy{escala}}}{t}{{\\c{cor}\\fscx100\\fscy100}}"
+                              if j == i else t)
+            if brilho:
+                ev.append(f"Dialogue: 0,{_tc_ass(t0)},{_tc_ass(t1)},Legenda,,0,0,0,,{brilho}{''.join(partes)}")
+            ev.append(f"Dialogue: 1,{_tc_ass(t0)},{_tc_ass(t1)},Legenda,,0,0,0,,{efeito}{''.join(partes)}")
     return "\n".join(cab + ev) + "\n"
 
 

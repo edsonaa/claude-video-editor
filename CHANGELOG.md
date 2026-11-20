@@ -2,6 +2,16 @@
 
 Cada versão nova do motor (skills, guias e ferramentas) entra aqui, a mais nova em cima. A skill `/edicao:editar` mostra o que mudou desde a última vez que a pessoa viu. Ao lançar uma versão, suba o `version` em `.claude-plugin/plugin.json` para o mesmo número (um teste confere).
 
+## 0.7.0
+- **Boas-vindas pelo painel:** a `/edicao:iniciar` pergunta se o briefing vai pela conversa ou pelo painel. Pelo painel (`painel.py boas-vindas`), num só lugar:
+  - a verificação do que está pronto (pasta, subpastas, gravações, FFmpeg, transcrição, Node e sons quando o fluxo pede), com o que fazer no que falta;
+  - o briefing livre e os termos para a transcrição;
+  - o tipo de vídeo (preset), o estilo das animações (com prévia e aviso de fonte que falta) e o padrão de legenda tocando sobre um quadro da sua gravação, no formato do vídeo;
+  - "Enviar para o Claude" grava as escolhas só neste vídeo (ou também como padrão, se marcado), fecha o painel e o Claude segue dali, a partir de `_CLAUDE/briefing_painel.md`.
+- **Estilos de legenda** (`legendas/estilos.json`): clássica, caixa, palavra a palavra, impacto, minimalista e brilho. Cada um define a divisão (frase ou palavra, caracteres, caixa alta) e o visual queimado (contorno, sombra, faixa, brilho, cor e tamanho da palavra falada).
+  - Escolha em camadas: `legendas.estilo` na configuração, `video.legendas` no vídeo, opções da linha de comando. Configuração antiga sem estilo continua igual.
+  - O painel desenha a legenda com as mesmas medidas do ASS do render (`painel_web/legenda-estilo.js`).
+
 ## 0.6.0
 - **Render pronto** (`render.py plano|rascunho|final`): antes, a etapa de render pedia para escrever o script no primeiro vídeo.
   - Cortes com quadros exatos (a mesma conversão da entrega em XML) e voz com amostras exatas, com fades curtos nas junções e a voz tratada quando houver.

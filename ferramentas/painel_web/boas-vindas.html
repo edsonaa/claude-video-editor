@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Novo vídeo</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='1' y='3' width='14' height='10' rx='2' fill='%2326282B'/%3E%3Cpath d='M6 5.5v5l4.5-2.5z' fill='%23F0A43A'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/web/boas-vindas.css">
+</head>
+<body>
+<header class="topo">
+  <h1>Novo vídeo <span id="projeto" class="discreto"></span></h1>
+  <p id="saudacao" class="discreto"></p>
+</header>
+
+<div class="corpo">
+  <nav class="trilho" aria-label="Passos">
+    <ol id="passos"></ol>
+  </nav>
+
+  <main id="conteudo" class="conteudo">
+    <section data-passo="verificar" aria-labelledby="t-verificar">
+      <h2 id="t-verificar">O que já está pronto</h2>
+      <p class="intro">Antes de começar, uma olhada na pasta do vídeo e nas ferramentas. O que faltar não trava: o Claude resolve com você depois de enviar.</p>
+      <ul id="verificacao" class="verificacao"></ul>
+    </section>
+
+    <section data-passo="briefing" aria-labelledby="t-briefing" hidden>
+      <h2 id="t-briefing">Sobre o vídeo</h2>
+      <p class="intro">Conte do jeito que vier: o assunto, para quem é, o que não pode faltar, o que você quer evitar. O Claude organiza sem inventar nada.</p>
+      <textarea id="briefing" rows="11" placeholder="Ex.: vídeo sobre as 20 placas que chegaram com o mesmo defeito de alimentação. Quero mostrar a medição na bancada e terminar com a dica de como evitar. Sem música agitada."></textarea>
+      <label for="termo" class="rotulo">Nomes próprios e termos técnicos <span class="discreto">(a transcrição acerta a grafia)</span></label>
+      <div class="termos">
+        <div id="lista-termos" class="chips"></div>
+        <input id="termo" placeholder="Digite e aperte Enter (ex.: VRM, BIOS, Notion)">
+      </div>
+    </section>
+
+    <section data-passo="tipo" aria-labelledby="t-tipo" hidden>
+      <h2 id="t-tipo">Tipo de vídeo</h2>
+      <p class="intro">Define o formato e as etapas deste vídeo. Dá para ligar ou desligar etapas depois.</p>
+      <div id="presets" class="grade-cards" role="radiogroup" aria-labelledby="t-tipo"></div>
+    </section>
+
+    <section data-passo="estilo" aria-labelledby="t-estilo" hidden>
+      <h2 id="t-estilo">Estilo das animações</h2>
+      <p class="intro">Cores, fontes e o jeito de mover das animações e dos cards. As vitrines mostram os mesmos seis efeitos em cada estilo.</p>
+      <div id="estilos"></div>
+    </section>
+
+    <section data-passo="legenda" aria-labelledby="t-legenda" hidden>
+      <h2 id="t-legenda">Padrão de legenda</h2>
+      <div class="legenda-layout">
+        <div class="previa-legenda">
+          <div id="palco-legenda" class="palco-legenda">
+            <div id="quadro-legenda" class="quadro-legenda">
+              <img id="exemplo" alt="">
+              <div id="camada-legenda"></div>
+            </div>
+          </div>
+          <p id="nota-exemplo" class="discreto nota"></p>
+        </div>
+        <div class="opcoes-legenda">
+          <div id="estilos-legenda" class="lista-opcoes" role="radiogroup" aria-label="Estilo de legenda"></div>
+          <fieldset class="grupo">
+            <legend>Posição</legend>
+            <div class="segmentos" id="posicao">
+              <label><input type="radio" name="posicao" value="baixo" checked> Embaixo</label>
+              <label><input type="radio" name="posicao" value="centro"> Centro</label>
+              <label><input type="radio" name="posicao" value="topo"> Em cima</label>
+            </div>
+          </fieldset>
+          <fieldset class="grupo" id="grupo-queimar">
+            <legend>Como entregar</legend>
+            <label class="radio-linha"><input type="radio" name="queimar" value="1"> <span><b>Queimada no vídeo</b><br><span class="discreto">sempre visível, no estilo escolhido</span></span></label>
+            <label class="radio-linha"><input type="radio" name="queimar" value="0" checked> <span><b>Arquivo de legenda (SRT)</b><br><span class="discreto">a plataforma mostra; dá para corrigir sem renderizar</span></span></label>
+            <p id="nota-queimar" class="discreto nota" hidden>Palavra a palavra só existe queimada.</p>
+          </fieldset>
+        </div>
+      </div>
+    </section>
+
+    <section data-passo="enviar" aria-labelledby="t-enviar" hidden>
+      <h2 id="t-enviar">Revisar e enviar</h2>
+      <dl id="resumo" class="resumo"></dl>
+      <label class="caixa-padrao"><input type="checkbox" id="padrao"> <span><b>Usar estas escolhas como padrão nos próximos vídeos</b><br>
+        <span class="discreto">Sem marcar, valem só para este vídeo.</span></span></label>
+      <p id="erro" class="erro" role="alert" hidden></p>
+    </section>
+
+    <section data-passo="pronto" aria-labelledby="t-pronto" hidden>
+      <div class="pronto">
+        <h2 id="t-pronto">Enviado para o Claude</h2>
+        <p>O briefing e as escolhas estão gravados no vídeo. O Claude já recebeu e segue a partir daqui: pode voltar para a conversa.</p>
+        <p class="discreto">Esta página pode ser fechada.</p>
+      </div>
+    </section>
+
+    <footer class="navegacao" id="navegacao">
+      <button id="voltar" class="bt-fantasma">Voltar</button>
+      <span class="espaco"></span>
+      <button id="avancar" class="bt-primario">Continuar</button>
+    </footer>
+  </main>
+</div>
+
+<script src="/web/legenda-estilo.js"></script>
+<script src="/web/boas-vindas.js"></script>
+</body>
+</html>

@@ -263,15 +263,18 @@ def ass_do_projeto(pasta, tam: tuple[int, int], de: float, ate: float, perfil_di
                   palavras=[dict(w, inicio=max(0.0, w["inicio"] - de), fim=max(0.0, w["fim"] - de))
                             for w in b["palavras"]])
         bls.append(nb)
-    cfg = {}
-    try:
-        from . import config as C
-        cfg = (C.carregar(obrigatorio=False) or {}).get("legendas") or {}
-    except Exception:  # noqa: BLE001
-        pass
+    op = L.opcoes_legenda(d, _config(), vertical=tam[1] > tam[0])
     tema = EF.tema_de(perfil_dir=perfil_dir) if perfil_dir else EF.mesclar_tema()
     return L.ass(bls, tema, tam[0], tam[1], conteudo.get("opcoes", {}).get("modo", "frase"),
-                 cfg.get("posicao", "baixo"), bool(cfg.get("caixa_alta")))
+                 op["posicao"], bool(op["caixa_alta"]), estilo=op["estilo"])
+
+
+def _config() -> dict:
+    try:
+        from . import config as C
+        return C.carregar(obrigatorio=False) or {}
+    except Exception:  # noqa: BLE001
+        return {}
 
 
 # ------------------------------------------------------------------ render
@@ -310,12 +313,7 @@ def renderizar(pasta, rascunho: bool = False, de: float | None = None, ate: floa
     saida = Path(saida)
     avisos = list(pl["avisos"])
     # a legenda é decidida antes de tudo: legenda velha recusa o render antes de gastar tempo
-    cfg_leg = {}
-    try:
-        from . import config as C
-        cfg_leg = (C.carregar(obrigatorio=False) or {}).get("legendas") or {}
-    except Exception:  # noqa: BLE001
-        pass
+    cfg_leg = L.opcoes_legenda(d, _config(), vertical=H > W)
     modo_leg = legenda
     if modo_leg == "auto":
         animada = (d.get("legendas") or {}).get("render")

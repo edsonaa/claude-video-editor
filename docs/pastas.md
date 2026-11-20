@@ -26,7 +26,8 @@ fluxo-de-edicao/
 ├── ferramentas/             os scripts prontos e testados (veja comandos.md)
 │   ├── *.py                 as linhas de comando (estado.py, render.py, painel.py…)
 │   ├── edicao/              os módulos que os scripts (e os seus scripts) importam
-│   ├── painel_web/          a interface do painel de revisão (HTML, CSS e JS, sem dependências)
+│   ├── painel_web/          a interface do painel de revisão e das boas-vindas (HTML, CSS e JS,
+│                            sem dependências)
 │   ├── schema/              o formato do estado do vídeo e da configuração
 │   ├── modelos/             o modelo de rastreio de rosto, quando baixado (rosto.py baixar)
 │   ├── testes/              os testes (clipe sintético, vídeo de demonstração)
@@ -35,6 +36,8 @@ fluxo-de-edicao/
 │   ├── _comum/              tema.css e tema.js, a base que todo efeito usa
 │   └── <efeito>/            index.html, efeito.json, previa.gif
 ├── estilos/                 perfis completos prontos (limpo, tech-neon, editorial, impacto)
+├── legendas/                estilos.json: os padrões de legenda (clássica, caixa, palavra a palavra,
+│                            impacto, minimalista, brilho), iguais na prévia do painel e no render
 ├── presets/                 os pontos de partida da montagem (youtube-apresentador, reels…)
 ├── modelos/                 o perfil inicial, o formato do perfil e o do estado do vídeo
 ├── docs/                    esta documentação
@@ -83,7 +86,7 @@ Mudado sempre campo a campo (`config.py set <caminho> <valor>`), nunca reescrito
 | `transcricao` | motor (WhisperX local ou Scribe na nuvem), idioma, modelo, termos técnicos |
 | `notas_faladas` | as frases que abrem e fecham uma nota para o editor |
 | `cortes`, `motion`, `camera`, `som` | o que cada etapa usa (roteiro, ferramenta de animação e densidade, seguir o rosto, a biblioteca de sons) |
-| `legendas` | modo (frase ou palavra), saídas, se queima, caracteres por linha, posição |
+| `legendas` | o estilo padrão (`estilo`, de `legendas/estilos.json`), saídas, se queima, posição; sem estilo, modo, caracteres e caixa alta valem como antes |
 | `audio` | alvo de loudness e pico, redução de ruído, níveis da música |
 | `perfil_padrao`, `python` | o perfil dos vídeos novos; o Python do ambiente |
 
@@ -111,6 +114,7 @@ Uma pasta por vídeo, no padrão de `pastas.padrao_projeto` (por padrão `AAAA-M
 |---|---|---|
 | `projeto.json` | o estado do vídeo (a memória do fluxo) | todas as etapas, pelo `estado.py` |
 | `briefing.md` | o que você contou sobre o vídeo, organizado | iniciar |
+| `briefing_painel.md` | o que você escreveu e escolheu nas boas-vindas do painel, antes de o Claude organizar | painel (boas-vindas) |
 | `aprendizados.md` | o caderno de correções que valem para outros vídeos | qualquer etapa, na revisão |
 | `palavras_<id>.json` | a transcrição normalizada de cada arquivo | preparar |
 | `frases_<id>.txt`, `silencios_<id>.json` | a fala em frases (o que o Claude lê) e o mapa de silêncios | preparar |
@@ -122,7 +126,7 @@ Uma pasta por vídeo, no padrão de `pastas.padrao_projeto` (por padrão `AAAA-M
 | `rosto_<id>.json` | onde está o rosto ao longo de cada arquivo | câmera |
 | `legendas/` | `blocos_vNN.json`, `revisao.txt`, `correcoes.json` e as saídas (`.srt`, `.vtt`, `.ass`) | legendas |
 | `rascunhos/` | `<projeto>_rascunho_vNN.mp4`, para revisar | render |
-| `painel/` | prévias leves para o navegador, miniaturas, o histórico do desfazer | painel |
+| `painel/` | prévias leves para o navegador, miniaturas, o histórico do desfazer, `exemplo.jpg` (o quadro da prévia de legenda das boas-vindas) | painel |
 | `curtos/` | `frases.txt` e `frases.json`: a fala do corte final, com id por frase | curtos |
 | `publicar/capas/` | as candidatas a capa e a folha `candidatas.png` | publicar |
 | `creditos.md` | o que pede crédito na descrição (ícones CC BY, por exemplo) | assets |

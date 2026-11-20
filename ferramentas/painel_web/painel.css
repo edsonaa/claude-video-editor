@@ -117,19 +117,7 @@ svg { width: 18px; height: 18px; fill: currentColor; stroke: currentColor; strok
 }
 .etiqueta.cam { border-left-color: var(--cam); }
 
-.camada-legenda { position: absolute; left: 6%; right: 6%; text-align: center; pointer-events: none; }
-.camada-legenda.baixo { bottom: 8%; }
-.camada-legenda.baixo.vertical { bottom: 27%; }
-.camada-legenda.centro { top: 50%; transform: translateY(-50%); }
-.camada-legenda.topo { top: 8%; }
-.camada-legenda .lin {
-  display: block; font-weight: 700; color: #fff; line-height: 1.2; font-size: 4.6cqh;
-  text-shadow: 0 0 .12em #000, 0 0 .12em #000, .06em .06em .1em #000;
-  -webkit-text-stroke: .02em rgba(0,0,0,.6);
-}
-.camada-legenda.vertical .lin { font-size: 3.4cqh; }
-.camada-legenda.caixa .lin { text-transform: uppercase; }
-.camada-legenda .w.falada { color: var(--leg-destaque, #FACC15); }
+/* a legenda usa o estilo do vídeo: legenda-estilo.js */
 
 /* ---------- transporte */
 .transporte {

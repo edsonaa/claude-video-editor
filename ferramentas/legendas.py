@@ -33,9 +33,11 @@ PADRAO = {"modo": "frase", "max_caracteres": 42, "linhas": 2, "remover_hesitacoe
           "posicao": "baixo", "saidas": ["srt"], "quebrar_no_corte": False}
 
 
-def _cfg():
+def _cfg(pasta=None):
+    """As opções que valem para o vídeo: configuração → estilo de legenda → escolhas do vídeo."""
     c = C.carregar(obrigatorio=False) or {}
-    return {**PADRAO, **(c.get("legendas") or {})}
+    d = E.ler(pasta) if pasta else None
+    return {**PADRAO, **L.opcoes_legenda(d, {**c, "legendas": {**PADRAO, **(c.get("legendas") or {})}})}
 
 
 _pasta_legendas = L.pasta_legendas
@@ -44,7 +46,7 @@ _gravar_versao = L.gravar_versao
 
 
 def cmd_gerar(a):
-    cfg = _cfg()
+    cfg = _cfg(a.pasta)
     modo = a.modo or cfg["modo"]
     max_car = a.max_caracteres or cfg["max_caracteres"]
     linhas = a.linhas or cfg["linhas"]
@@ -65,9 +67,11 @@ def cmd_gerar(a):
     bls = L.blocos(ws, fps, max_car, linhas, quebrar_no_corte=a.quebrar_no_corte or cfg["quebrar_no_corte"])
     conteudo = {"base_cortes_versao": d["cortes"]["versao"], "fps": str(linha.taxa),
                 "duracao": round(linha.duracao, 3),
-                "opcoes": {"modo": modo, "max_caracteres": max_car, "linhas": linhas}, "blocos": bls}
+                "opcoes": {"modo": modo, "max_caracteres": max_car, "linhas": linhas, "estilo": cfg["estilo"]["id"]},
+                "blocos": bls}
     arq = _gravar_versao(a.pasta, conteudo)
-    print(f"{arq}: {len(bls)} blocos de {len(ws)} palavras ({modo}, até {linhas}×{max_car} caracteres)")
+    print(f"{arq}: {len(bls)} blocos de {len(ws)} palavras ({modo}, até {linhas}×{max_car} caracteres, "
+          f"estilo {cfg['estilo']['titulo']})")
     print(f"  para revisar: {arq.parent / 'revisao.txt'}")
     for av in L.avisos(bls, max_car=max_car):
         print(f"  ! {av}")
@@ -89,7 +93,7 @@ def cmd_corrigir(a):
 
 
 def cmd_exportar(a):
-    cfg = _cfg()
+    cfg = _cfg(a.pasta)
     conteudo, arq = _atual(a.pasta)
     d = E.ler(a.pasta)
     if conteudo["base_cortes_versao"] != (d.get("cortes") or {}).get("versao"):
@@ -107,9 +111,11 @@ def cmd_exportar(a):
             p = destino / f"{nome}.vtt"; p.write_text(L.vtt(bls, caixa), encoding="utf-8")
         elif f == "ass":
             tema = EF.tema_de(perfil_dir=a.perfil) if a.perfil else EF.mesclar_tema()
-            w, h = EF.FORMATOS[a.formato or (C.carregar(obrigatorio=False) or {}).get("video", {}).get("formato", "16:9")]
+            w, h = EF.FORMATOS[a.formato or (d.get("video") or {}).get("formato")
+                               or (C.carregar(obrigatorio=False) or {}).get("video", {}).get("formato", "16:9")]
             p = destino / f"{nome}.ass"
-            p.write_text(L.ass(bls, tema, w, h, conteudo["opcoes"]["modo"], cfg["posicao"], caixa), encoding="utf-8")
+            p.write_text(L.ass(bls, tema, w, h, conteudo["opcoes"]["modo"], cfg["posicao"], caixa, estilo=cfg["estilo"]),
+                         encoding="utf-8")
         elif f == "hyperframes":
             de = a.de or 0.0
             ate = a.ate if a.ate is not None else conteudo["duracao"]

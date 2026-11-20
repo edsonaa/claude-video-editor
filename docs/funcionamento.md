@@ -48,7 +48,7 @@ O fluxo completo tem dez etapas. Cada preset liga as que fazem sentido (o `reels
 
 | Etapa | Skill | O que faz | Grava | Scripts principais |
 |---|---|---|---|---|
-| 1. Iniciar | `/edicao:iniciar` | abre o projeto, cria o estado e organiza o briefing que você dita | `projeto.json`, `briefing.md` | `estado.py --init` |
+| 1. Iniciar | `/edicao:iniciar` | abre o projeto, cria o estado e faz o briefing, pela conversa ou pelas boas-vindas do painel | `projeto.json`, `briefing.md` | `estado.py --init`, `painel.py boas-vindas` |
 | 2. Preparar | `/edicao:preparar` | inventário, sincronia, transcrição, silêncios, notas faladas e o tratamento da voz | `midia`, `transcricao`, `notas_edicao`, voz tratada | `midia.py`, `transcrever.py`, `silencios.py`, `audio.py` |
 | 3. Cortes | `/edicao:cortes` | escolhe os takes, tira erros e pausas, entrega o primeiro corte | `cortes`, `marcadores` | `exportar_xml.py`, `painel.py` |
 | 4. Plano de animação | `/edicao:motion-mapa` | decide onde entra animação, o que mostra e em que formato, sem animar | `motions` (itens `proposto`) | `transcrever.py fala`, `efeitos.py listar` |
@@ -64,6 +64,18 @@ Depois do vídeo pronto, duas skills que não são etapas:
 - **`/edicao:publicar`**: títulos, descrição, capítulos, tags, capa e a pasta `Publicar/` pronta para subir.
 
 E uma que serve a qualquer etapa: **`/edicao:painel`**, a revisão no navegador.
+
+### Começar pelo painel
+
+A `/edicao:iniciar` pergunta como você quer fazer o briefing: **pela conversa** (você conta, o Claude organiza) ou **pelo painel**. Pelo painel, o Claude abre `painel.py boas-vindas` e você segue cinco passos no navegador:
+
+1. **Verificação:** o padrão da pasta, as subpastas, quantas gravações há em `Brutos/`, FFmpeg, a transcrição (WhisperX ou a chave do Scribe) e, se o fluxo pedir, Node e a biblioteca de sons. O que falta aparece com o que fazer.
+2. **Briefing:** o texto livre sobre o vídeo e os termos (nomes e siglas que a transcrição costuma errar).
+3. **Tipo de vídeo:** os presets (YouTube com apresentador, reels, só cortes…), cada um com o formato e as etapas que liga.
+4. **Estilo das animações:** os seus perfis e os estilos do motor, com a prévia de cada um (e o aviso de fonte que falta nesta máquina).
+5. **Legenda:** os estilos de `legendas/estilos.json` tocando por cima de um quadro da sua gravação, no formato do tipo escolhido; posição e se vai queimada ou em arquivo. "Sem legenda" tira a etapa do fluxo.
+
+Ao enviar, as escolhas valem **só para este vídeo** (o fluxo, `video.formato`, `video.legendas` e o perfil no estado); marcando "usar como padrão", viram também a configuração. O painel fecha sozinho e o Claude continua: organiza o briefing a partir de `_CLAUDE/briefing_painel.md` e confirma as escolhas com você.
 
 ## O estado do vídeo
 
@@ -81,7 +93,8 @@ Os blocos, na ordem em que as etapas os preenchem:
 | `motions` | o plano de animação (`mo01`…), com status, formato, efeito, assets e o render |
 | `camera`, `sfx` | movimentos de câmera; efeitos sonoros (`sfx01`…) e a música |
 | `legendas` | a versão atual dos blocos (`l001`…) e as saídas exportadas |
-| `video` | o que é só deste vídeo (formato de um curto, de onde ele veio) |
+| `video` | o que é só deste vídeo: formato, tipo de vídeo escolhido, o estilo de legenda (`video.legendas`), de onde veio um curto |
+| `boas_vindas` | o que você enviou pelas boas-vindas do painel (tipo, estilo, legenda, termos, se virou padrão) |
 | `curtos`, `publicacao` | os curtos tirados deste vídeo; os textos, capítulos, capa e o pacote |
 | `pendencias`, `entregas` | os pedidos ainda não aplicados (`p01`…) e cada arquivo entregue |
 

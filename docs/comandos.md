@@ -181,7 +181,7 @@ copiados de um XML exportado pelo Premiere com marcadores daquela cor.
 ```
 
 ### painel.py
-O painel de revisão no navegador.
+O painel de revisão no navegador e as boas-vindas de um vídeo novo (a `/edicao:iniciar` oferece o briefing por ali).
 
 ```text
 Painel de revisão no navegador: assistir ao corte, apontar ajustes e aprovar.
@@ -195,6 +195,10 @@ Uso (a pasta do vídeo primeiro):
       PCM em MOV), da voz tratada e das animações com transparência
   painel.py verificar <pasta>
       o que o navegador toca direto e o que precisa de prévia (sem gerar nada)
+  painel.py boas-vindas <pasta> [--porta 8765] [--navegador] [--ocioso 60]
+      o começo de um vídeo novo pelo navegador: verificação, briefing, tipo de vídeo, estilo e
+      padrão de legenda (com prévia). Ao enviar, grava no estado e em _CLAUDE/briefing_painel.md,
+      mostra o resumo em JSON e termina (código 0). Fechado sem enviar: código 3.
 
 No painel: o vídeo toca já cortado, com as animações, a legenda e o som; o roteiro
 mostra o que saiu do corte (riscado) e deixa cortar ou devolver frases; os pedidos

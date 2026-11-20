@@ -337,11 +337,11 @@ const Motion = {
 // ------------------------------------------------------------------ legenda por cima
 const Legenda = {
   ultimo: null,
+  // o estilo de legenda do vídeo (legendas/estilos.json), igual ao que o render queima
   montar() {
     const c = $("#camada-legenda"), op = D.tema.legendas || {};
     const [w, h] = dimsQuadro();
-    c.className = "camada-legenda " + (op.posicao || "baixo") + (h > w ? " vertical" : "") + (op.caixa_alta ? " caixa" : "");
-    document.documentElement.style.setProperty("--leg-destaque", D.tema.cores.destaque || "#FACC15");
+    LegendaEstilo.aplicar(c, op.estilo, D.tema, { vertical: h > w, posicao: op.posicao });
     this.ultimo = null;
   },
   atualizar(t) {
@@ -356,15 +356,7 @@ const Legenda = {
     if (chave === this.ultimo) return;
     this.ultimo = chave;
     if (!b) { repor(c); return; }
-    if (!palavra) { repor(c, ...b.linhas.map((l) => el("span", { class: "lin" }, l))); return; }
-    // modo palavra: distribui as palavras pelas linhas do bloco
-    let k = 0;
-    const linhas = b.linhas.map((l) => {
-      const n = l.split(/\s+/).length, ws = b.p.slice(k, k + n), base = k;
-      k += n;
-      return el("span", { class: "lin" }, ws.flatMap((w, j) => [el("span", { class: "w" + (base + j === falada ? " falada" : "") }, w[0]), " "]));
-    });
-    repor(c, ...linhas);
+    LegendaEstilo.bloco(c, b.linhas, palavra, falada);
   },
 };
 
